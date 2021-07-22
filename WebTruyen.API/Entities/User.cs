@@ -14,5 +14,13 @@ namespace WebTruyen.API.Entities
         public bool? sex { get; set; }
         public string Address { get; set; }
         public string Fanpage { get; set; }
+        //Khóa ngoại
+        public virtual List<Report> Reports { get; set; }
+        public virtual List<TranslationOfUser> TranslationOfUsers { get; set; }
+        public virtual List<Bookmark> Bookmarks { get; set; }
+        public virtual List<NewComicAnnouncement> NewComicAnnouncements { get; set; }
+        public virtual List<HistoryRead> HistoryReads { get; set; }
+
+
     }
 }

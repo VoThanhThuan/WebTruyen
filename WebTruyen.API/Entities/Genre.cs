@@ -16,6 +16,6 @@ namespace WebTruyen.API.Entities
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public ComicInGenre ComicInGenre { get; set; }
+        public virtual ComicInGenre ComicInGenre { get; set; }
     }
 }

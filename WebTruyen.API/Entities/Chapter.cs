@@ -14,7 +14,12 @@ namespace WebTruyen.API.Entities
         public DateTime DateTimeUp { get; set; } = DateTime.Now;
         public int Views { get; set; } = 0;
 
+        //Khóa ngoại
         public Guid IdComic { get; set; }
-        public Comic Comic { get; set; }
+        public virtual Comic Comic { get; set; }
+        public virtual List<Page> Pages { get; set; }
+        public virtual List<Report> Reports { get; set; }
+        public virtual List<NewComicAnnouncement> NewComicAnnouncements { get; set; }
+
     }
 }

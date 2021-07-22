@@ -12,6 +12,8 @@ namespace WebTruyen.API.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<ComicInGenre> builder)
         {
+            builder.ToTable("ComicInGenre");
+            builder.HasKey(x => new { x.IdGenre, x.IdComic });
             builder
                 .HasOne(x => x.Genre)
                 .WithOne(x => x.ComicInGenre)

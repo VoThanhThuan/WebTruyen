@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace WebTruyen.API.Entities
 {
-    public class NewComicAnnouncement
+    public class Report
     {
-        public Guid Id { get; set; }
-        public Guid IdUser { get; set; }
+        public string Content { get; set; }
         public Guid IdChapter { get; set; }
-        public User User { get; set; }
+        public Guid IdUser { get; set; }
         public Chapter Chapter { get; set; }
+        public User User { get; set; }
     }
 }

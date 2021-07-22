@@ -9,7 +9,8 @@ namespace WebTruyen.API.Entities
     {
         public Guid IdComic { get; set; }
         public Guid IdUser { get; set; }
-        public Comic Comic { get; set; }
-        public User User { get; set; }
+
+        public virtual Comic Comic { get; set; }
+        public virtual User User { get; set; }
     }
 }
