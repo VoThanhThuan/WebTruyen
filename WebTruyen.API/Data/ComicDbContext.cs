@@ -50,5 +50,6 @@ namespace WebTruyen.API.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<NewComicAnnouncement> NewComicAnnouncements { get; set; }
         public DbSet<HistoryRead> HistoryReads { get; set; }
+        public DbSet<WebTruyen.API.Entities.Report> Report { get; set; }
     }
 }

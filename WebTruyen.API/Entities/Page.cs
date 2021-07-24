@@ -11,6 +11,7 @@ namespace WebTruyen.API.Entities
         [Key]
         public Guid Id { get; set; }
         public string Image { get; set; }
+        public bool IsLink { get; set; } = false;
         public int SortOrder { get; set; }
 
         public Guid IdChapter { get; set; }
