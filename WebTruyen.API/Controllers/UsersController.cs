@@ -13,47 +13,48 @@ namespace WebTruyen.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ChaptersController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly ComicDbContext _context;
 
-        public ChaptersController(ComicDbContext context)
+        public UsersController(ComicDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Chapters
+        // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ChapterVM>>> GetChapters()
+        public async Task<ActionResult<IEnumerable<UserVM>>> GetUsers()
         {
-            return await _context.Chapters.Select(x => x.ToViewModel()).ToListAsync();
+            return await _context.Users.Select(x => x.ToViewModel()).ToListAsync();
         }
 
-        // GET: api/Chapters/5
+        // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ChapterVM>> GetChapter(Guid id)
+        public async Task<ActionResult<UserVM>> GetUser(Guid id)
         {
-            var chapter = await _context.Chapters.FindAsync(id);
+            var user = await _context.Users.FindAsync(id);
 
-            if (chapter == null)
+            if (user == null)
             {
                 return NotFound();
             }
 
-            return chapter.ToViewModel();
+            return user.ToViewModel();
         }
 
-        // PUT: api/Chapters/5
+        // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutChapter(Guid id, ChapterVM chapter)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> PutUser(Guid id, [FromForm]UserVM user)
         {
-            if (id != chapter.Id)
+            if (id != user.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(chapter.ToChapter()).State = EntityState.Modified;
+            _context.Entry(user.ToUser()).State = EntityState.Modified;
 
             try
             {
@@ -61,7 +62,7 @@ namespace WebTruyen.API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ChapterExists(id))
+                if (!UserExists(id))
                 {
                     return NotFound();
                 }
@@ -74,36 +75,37 @@ namespace WebTruyen.API.Controllers
             return NoContent();
         }
 
-        // POST: api/Chapters
+        // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Chapter>> PostChapter(ChapterVM chapter)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<UserVM>> PostUser([FromForm]UserVM user)
         {
-            _context.Chapters.Add(chapter.ToChapter());
+            _context.Users.Add(user.ToUser());
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetChapter", new { id = chapter.Id }, chapter);
+            return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
 
-        // DELETE: api/Chapters/5
+        // DELETE: api/Users/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteChapter(Guid id)
+        public async Task<IActionResult> DeleteUser(Guid id)
         {
-            var chapter = await _context.Chapters.FindAsync(id);
-            if (chapter == null)
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
             {
                 return NotFound();
             }
 
-            _context.Chapters.Remove(chapter);
+            _context.Users.Remove(user);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool ChapterExists(Guid id)
+        private bool UserExists(Guid id)
         {
-            return _context.Chapters.Any(e => e.Id == id);
+            return _context.Users.Any(e => e.Id == id);
         }
     }
 }

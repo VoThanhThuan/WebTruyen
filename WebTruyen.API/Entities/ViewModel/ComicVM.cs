@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using WebTruyen.API.Entities.ViewModel;
 using WebTruyen.API.Enums;
 
-namespace WebTruyen.API.Entities
+namespace WebTruyen.API.Entities.ViewModel
 {
-    public class Comic
+    public class ComicVM
     {
-        public ComicVM ToViewModel()
+        public Comic ToComic()
         {
-            return new ComicVM()
+            return new Comic()
             {
                 Id = Id,
                 Name = Name,
@@ -24,7 +20,6 @@ namespace WebTruyen.API.Entities
                 Thumbnail = Thumbnail
             };
         }
-
         [Key]
         public Guid Id { get; set; }
         [Required]
@@ -35,14 +30,6 @@ namespace WebTruyen.API.Entities
         public int Views { get; set; } = 0;
         public string Description { get; set; }
         public string Thumbnail { get; set; }
-
-        //Khoa ngoai
-        public virtual List<ComicInGenre> ComicInGenres { get; set; }
-        public virtual List<Chapter> Chapters { get; set; }
-        public virtual List<TranslationOfUser> TranslationOfUsers { get; set; }
-        public virtual List<Bookmark> Bookmarks { get; set; }
-        public virtual List<NewComicAnnouncement> NewComicAnnouncements { get; set; }
-        public virtual List<HistoryRead> HistoryReads { get; set; }
 
     }
 }

@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using WebTruyen.API.Entities.ViewModel;
 
-namespace WebTruyen.API.Entities
+namespace WebTruyen.API.Entities.ViewModel
 {
-    public class Comment
+    public class CommentVM
     {
-        public CommentVM ToViewModel()
+        public Comment ToComment()
         {
-            return new CommentVM()
+            return new Comment()
             {
                 Id = Id,
                 DateTimeUp = DateTimeUp,
@@ -29,10 +25,7 @@ namespace WebTruyen.API.Entities
 
         public Guid IdComic { get; set; }
         public Guid IdUser { get; set; }
-        public Comic Comic { get; set; }
-        public virtual User User { get; set; }
+        public Guid IdCommentReply { get; set; }
 
-        public virtual Guid IdCommentReply { get; set; }
-        public virtual Comment CommentReply { get; set; }
     }
 }

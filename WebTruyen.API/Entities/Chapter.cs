@@ -3,11 +3,22 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using WebTruyen.API.Entities.ViewModel;
 
 namespace WebTruyen.API.Entities
 {
     public class Chapter
     {
+        public ChapterVM ToViewModel()
+        {
+            return new ChapterVM()
+            {
+                Id = Id,
+                DateTimeUp = DateTimeUp,
+                Views = Views
+            };
+        }
+
         [Key]
         public Guid Id { get; set; }
 

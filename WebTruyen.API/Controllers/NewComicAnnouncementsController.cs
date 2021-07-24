@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Data;
 using WebTruyen.API.Entities;
+using WebTruyen.API.Entities.ViewModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -23,14 +24,14 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/NewComicAnnouncements
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<NewComicAnnouncement>>> GetNewComicAnnouncements()
+        public async Task<ActionResult<IEnumerable<NewComicAnnouncementVM>>> GetNewComicAnnouncements()
         {
-            return await _context.NewComicAnnouncements.ToListAsync();
+            return await _context.NewComicAnnouncements.Select(x => x.ToViewModel()).ToListAsync();
         }
 
         // GET: api/NewComicAnnouncements/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<NewComicAnnouncement>> GetNewComicAnnouncement(Guid id)
+        public async Task<ActionResult<NewComicAnnouncementVM>> GetNewComicAnnouncement(Guid id)
         {
             var newComicAnnouncement = await _context.NewComicAnnouncements.FindAsync(id);
 
@@ -39,20 +40,20 @@ namespace WebTruyen.API.Controllers
                 return NotFound();
             }
 
-            return newComicAnnouncement;
+            return newComicAnnouncement.ToViewModel();
         }
 
         // PUT: api/NewComicAnnouncements/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutNewComicAnnouncement(Guid id, NewComicAnnouncement newComicAnnouncement)
+        public async Task<IActionResult> PutNewComicAnnouncement(Guid id, NewComicAnnouncementVM newComicAnnouncement)
         {
             if (id != newComicAnnouncement.IdUser)
             {
                 return BadRequest();
             }
 
-            _context.Entry(newComicAnnouncement).State = EntityState.Modified;
+            _context.Entry(newComicAnnouncement.ToNewComicAnnouncement()).State = EntityState.Modified;
 
             try
             {
@@ -76,9 +77,9 @@ namespace WebTruyen.API.Controllers
         // POST: api/NewComicAnnouncements
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<NewComicAnnouncement>> PostNewComicAnnouncement(NewComicAnnouncement newComicAnnouncement)
+        public async Task<ActionResult<NewComicAnnouncement>> PostNewComicAnnouncement(NewComicAnnouncementVM newComicAnnouncement)
         {
-            _context.NewComicAnnouncements.Add(newComicAnnouncement);
+            _context.NewComicAnnouncements.Add(newComicAnnouncement.ToNewComicAnnouncement());
             try
             {
                 await _context.SaveChangesAsync();

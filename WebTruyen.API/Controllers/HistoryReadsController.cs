@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Data;
 using WebTruyen.API.Entities;
+using WebTruyen.API.Entities.ViewModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -23,14 +24,14 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/HistoryReads
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HistoryRead>>> GetHistoryReads()
+        public async Task<ActionResult<IEnumerable<HistoryReadVM>>> GetHistoryReads()
         {
-            return await _context.HistoryReads.ToListAsync();
+            return await _context.HistoryReads.Select(x => x.ToViewModel()).ToListAsync();
         }
 
         // GET: api/HistoryReads/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<HistoryRead>> GetHistoryRead(Guid id)
+        public async Task<ActionResult<HistoryReadVM>> GetHistoryRead(Guid id)
         {
             var historyRead = await _context.HistoryReads.FindAsync(id);
 
@@ -39,20 +40,20 @@ namespace WebTruyen.API.Controllers
                 return NotFound();
             }
 
-            return historyRead;
+            return historyRead.ToViewModel();
         }
 
         // PUT: api/HistoryReads/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutHistoryRead(Guid id, HistoryRead historyRead)
+        public async Task<IActionResult> PutHistoryRead(Guid id, HistoryReadVM historyRead)
         {
             if (id != historyRead.IdUser)
             {
                 return BadRequest();
             }
 
-            _context.Entry(historyRead).State = EntityState.Modified;
+            _context.Entry(historyRead.ToHistoryRead()).State = EntityState.Modified;
 
             try
             {
@@ -76,9 +77,9 @@ namespace WebTruyen.API.Controllers
         // POST: api/HistoryReads
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<HistoryRead>> PostHistoryRead(HistoryRead historyRead)
+        public async Task<ActionResult<HistoryReadVM>> PostHistoryRead(HistoryReadVM historyRead)
         {
-            _context.HistoryReads.Add(historyRead);
+            _context.HistoryReads.Add(historyRead.ToHistoryRead());
             try
             {
                 await _context.SaveChangesAsync();

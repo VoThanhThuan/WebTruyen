@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using WebTruyen.API.Entities.ViewModel;
 
-namespace WebTruyen.API.Entities
+namespace WebTruyen.API.Entities.ViewModel
 {
-    public class Page
+    public class PageVM
     {
-        public PageVM ToViewModel()
+        public Page ToPage()
         {
-            return new PageVM()
+            return new Page()
             {
                 Id = Id,
                 Image = Image,
@@ -20,14 +19,11 @@ namespace WebTruyen.API.Entities
                 IdChapter = IdChapter
             };
         }
-
         [Key]
         public Guid Id { get; set; }
         public string Image { get; set; }
         public bool IsLink { get; set; } = false;
         public int SortOrder { get; set; }
-
         public Guid IdChapter { get; set; }
-        public virtual Chapter Chapter { get; set; }
     }
 }

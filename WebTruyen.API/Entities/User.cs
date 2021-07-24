@@ -3,11 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using WebTruyen.API.Entities.ViewModel;
 
 namespace WebTruyen.API.Entities
 {
     public class User : IdentityUser<Guid>
     {
+        public UserVM ToViewModel()
+        {
+            return new UserVM()
+            {
+                Id = Id,
+                Nickname = Nickname,
+                Dob = Dob,
+                sex = sex,
+                Address = Address,
+                Fanpage = Fanpage,
+                Email = Email,
+                PhoneNumber = PhoneNumber,
+                Username = UserName,
+                Password = PasswordHash
+            };
+        }
+
         public string Nickname { get; set; }
         public DateTime Dob { get; set; }
         public string Avatar { get; set; }

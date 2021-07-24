@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Data;
 using WebTruyen.API.Entities;
+using WebTruyen.API.Entities.ViewModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -23,14 +24,14 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Pages
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Page>>> GetPages()
+        public async Task<ActionResult<IEnumerable<PageVM>>> GetPages()
         {
-            return await _context.Pages.ToListAsync();
+            return await _context.Pages.Select(x => x.ToViewModel()).ToListAsync();
         }
 
         // GET: api/Pages/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Page>> GetPage(Guid id)
+        public async Task<ActionResult<PageVM>> GetPage(Guid id)
         {
             var page = await _context.Pages.FindAsync(id);
 
@@ -39,20 +40,20 @@ namespace WebTruyen.API.Controllers
                 return NotFound();
             }
 
-            return page;
+            return page.ToViewModel();
         }
 
         // PUT: api/Pages/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPage(Guid id, Page page)
+        public async Task<IActionResult> PutPage(Guid id, PageVM page)
         {
             if (id != page.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(page).State = EntityState.Modified;
+            _context.Entry(page.ToPage()).State = EntityState.Modified;
 
             try
             {
@@ -76,9 +77,9 @@ namespace WebTruyen.API.Controllers
         // POST: api/Pages
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Page>> PostPage(Page page)
+        public async Task<ActionResult<Page>> PostPage(PageVM page)
         {
-            _context.Pages.Add(page);
+            _context.Pages.Add(page.ToPage());
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetPage", new { id = page.Id }, page);

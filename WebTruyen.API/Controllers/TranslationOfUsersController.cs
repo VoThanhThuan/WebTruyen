@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Data;
 using WebTruyen.API.Entities;
+using WebTruyen.API.Entities.ViewModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -23,14 +24,14 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/TranslationOfUsers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TranslationOfUser>>> GetTranslationOfUsers()
+        public async Task<ActionResult<IEnumerable<TranslationOfUserVM>>> GetTranslationOfUsers()
         {
-            return await _context.TranslationOfUsers.ToListAsync();
+            return await _context.TranslationOfUsers.Select(x => x.ToViewModel()).ToListAsync();
         }
 
         // GET: api/TranslationOfUsers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TranslationOfUser>> GetTranslationOfUser(Guid id)
+        public async Task<ActionResult<TranslationOfUserVM>> GetTranslationOfUser(Guid id)
         {
             var translationOfUser = await _context.TranslationOfUsers.FindAsync(id);
 
@@ -39,20 +40,20 @@ namespace WebTruyen.API.Controllers
                 return NotFound();
             }
 
-            return translationOfUser;
+            return translationOfUser.ToViewModel();
         }
 
         // PUT: api/TranslationOfUsers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTranslationOfUser(Guid id, TranslationOfUser translationOfUser)
+        public async Task<IActionResult> PutTranslationOfUser(Guid id, TranslationOfUserVM translationOfUser)
         {
             if (id != translationOfUser.IdUser)
             {
                 return BadRequest();
             }
 
-            _context.Entry(translationOfUser).State = EntityState.Modified;
+            _context.Entry(translationOfUser.ToTranslationOfUser()).State = EntityState.Modified;
 
             try
             {
@@ -76,9 +77,9 @@ namespace WebTruyen.API.Controllers
         // POST: api/TranslationOfUsers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TranslationOfUser>> PostTranslationOfUser(TranslationOfUser translationOfUser)
+        public async Task<ActionResult<TranslationOfUserVM>> PostTranslationOfUser(TranslationOfUserVM translationOfUser)
         {
-            _context.TranslationOfUsers.Add(translationOfUser);
+            _context.TranslationOfUsers.Add(translationOfUser.ToTranslationOfUser());
             try
             {
                 await _context.SaveChangesAsync();

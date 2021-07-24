@@ -4,15 +4,14 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
-using WebTruyen.API.Entities.ViewModel;
 
-namespace WebTruyen.API.Entities
+namespace WebTruyen.API.Entities.ViewModel
 {
-    public class Genre
+    public class GenreVM
     {
-        public GenreVM ToViewModel()
+        public Genre ToGenre()
         {
-            return new GenreVM()
+            return new Genre()
             {
                 Id = Id,
                 Name = Name,
@@ -27,6 +26,5 @@ namespace WebTruyen.API.Entities
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public virtual ComicInGenre ComicInGenre { get; set; }
     }
 }

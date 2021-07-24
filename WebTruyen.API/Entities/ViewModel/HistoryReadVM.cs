@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebTruyen.API.Entities.ViewModel;
 
-namespace WebTruyen.API.Entities
+namespace WebTruyen.API.Entities.ViewModel
 {
-    public class HistoryRead
+    public class HistoryReadVM
     {
-        public HistoryReadVM ToViewModel()
+        public HistoryRead ToHistoryRead()
         {
-            return new HistoryReadVM()
+            return new HistoryRead()
             {
                 IdUser = IdUser,
                 IdComic = IdComic
@@ -19,7 +18,5 @@ namespace WebTruyen.API.Entities
 
         public Guid IdComic { get; set; }
         public Guid IdUser { get; set; }
-        public virtual Comic Comic { get; set; }
-        public virtual User User { get; set; }
     }
 }

@@ -2,26 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebTruyen.API.Entities.ViewModel;
 
-namespace WebTruyen.API.Entities
+namespace WebTruyen.API.Entities.ViewModel
 {
-    public class NewComicAnnouncement
+    public class NewComicAnnouncementVM
     {
-        public NewComicAnnouncementVM ToViewModel()
+        public NewComicAnnouncement ToNewComicAnnouncement()
         {
-            return new NewComicAnnouncementVM()
+            return new NewComicAnnouncement()
             {
                 Id = Id,
                 IdUser = IdUser,
                 IdChapter = IdChapter
             };
         }
-
         public Guid Id { get; set; }
         public Guid IdUser { get; set; }
         public Guid IdChapter { get; set; }
-        public virtual User User { get; set; }
-        public virtual Chapter Chapter { get; set; }
+
     }
 }

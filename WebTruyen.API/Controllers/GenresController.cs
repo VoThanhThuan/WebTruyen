@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Data;
 using WebTruyen.API.Entities;
+using WebTruyen.API.Entities.ViewModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -23,14 +24,14 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Genres
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Genre>>> GetGenres()
+        public async Task<ActionResult<IEnumerable<GenreVM>>> GetGenres()
         {
-            return await _context.Genres.ToListAsync();
+            return await _context.Genres.Select(x => x.ToViewModel()).ToListAsync();
         }
 
         // GET: api/Genres/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Genre>> GetGenre(int id)
+        public async Task<ActionResult<GenreVM>> GetGenre(int id)
         {
             var genre = await _context.Genres.FindAsync(id);
 
@@ -39,20 +40,20 @@ namespace WebTruyen.API.Controllers
                 return NotFound();
             }
 
-            return genre;
+            return genre.ToViewModel();
         }
 
         // PUT: api/Genres/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGenre(int id, Genre genre)
+        public async Task<IActionResult> PutGenre(int id, GenreVM genre)
         {
             if (id != genre.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(genre).State = EntityState.Modified;
+            _context.Entry(genre.ToGenre()).State = EntityState.Modified;
 
             try
             {
@@ -76,9 +77,9 @@ namespace WebTruyen.API.Controllers
         // POST: api/Genres
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Genre>> PostGenre(Genre genre)
+        public async Task<ActionResult<Genre>> PostGenre(GenreVM genre)
         {
-            _context.Genres.Add(genre);
+            _context.Genres.Add(genre.ToGenre());
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetGenre", new { id = genre.Id }, genre);

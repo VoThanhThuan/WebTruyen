@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Data;
 using WebTruyen.API.Entities;
+using WebTruyen.API.Entities.ViewModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -23,14 +24,14 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Reports
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Report>>> GetReport()
+        public async Task<ActionResult<IEnumerable<ReportVM>>> GetReport()
         {
-            return await _context.Report.ToListAsync();
+            return await _context.Report.Select(x => x.ToViewModel()).ToListAsync();
         }
 
         // GET: api/Reports/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Report>> GetReport(Guid id)
+        public async Task<ActionResult<ReportVM>> GetReport(Guid id)
         {
             var report = await _context.Report.FindAsync(id);
 
@@ -39,20 +40,20 @@ namespace WebTruyen.API.Controllers
                 return NotFound();
             }
 
-            return report;
+            return report.ToViewModel();
         }
 
         // PUT: api/Reports/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutReport(Guid id, Report report)
+        public async Task<IActionResult> PutReport(Guid id, ReportVM report)
         {
             if (id != report.IdUser)
             {
                 return BadRequest();
             }
 
-            _context.Entry(report).State = EntityState.Modified;
+            _context.Entry(report.ToReport()).State = EntityState.Modified;
 
             try
             {
@@ -76,9 +77,9 @@ namespace WebTruyen.API.Controllers
         // POST: api/Reports
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Report>> PostReport(Report report)
+        public async Task<ActionResult<Report>> PostReport(ReportVM report)
         {
-            _context.Report.Add(report);
+            _context.Report.Add(report.ToReport());
             try
             {
                 await _context.SaveChangesAsync();

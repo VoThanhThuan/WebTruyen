@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Data;
 using WebTruyen.API.Entities;
+using WebTruyen.API.Entities.ViewModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -23,14 +24,14 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Bookmarks
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Bookmark>>> GetBookmarks()
+        public async Task<ActionResult<IEnumerable<BookmarkVM>>> GetBookmarks()
         {
-            return await _context.Bookmarks.ToListAsync();
+            return await _context.Bookmarks.Select(x => x.ToViewModel()).ToListAsync();
         }
 
         // GET: api/Bookmarks/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Bookmark>> GetBookmark(Guid id)
+        public async Task<ActionResult<BookmarkVM>> GetBookmark(Guid id)
         {
             var bookmark = await _context.Bookmarks.FindAsync(id);
 
@@ -39,20 +40,20 @@ namespace WebTruyen.API.Controllers
                 return NotFound();
             }
 
-            return bookmark;
+            return bookmark.ToViewModel();
         }
 
         // PUT: api/Bookmarks/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBookmark(Guid id, Bookmark bookmark)
+        public async Task<IActionResult> PutBookmark(Guid id, BookmarkVM bookmark)
         {
             if (id != bookmark.IdUser)
             {
                 return BadRequest();
             }
 
-            _context.Entry(bookmark).State = EntityState.Modified;
+            _context.Entry(bookmark.ToBookmark()).State = EntityState.Modified;
 
             try
             {
@@ -76,9 +77,9 @@ namespace WebTruyen.API.Controllers
         // POST: api/Bookmarks
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Bookmark>> PostBookmark(Bookmark bookmark)
+        public async Task<ActionResult<BookmarkVM>> PostBookmark(BookmarkVM bookmark)
         {
-            _context.Bookmarks.Add(bookmark);
+            _context.Bookmarks.Add(bookmark.ToBookmark());
             try
             {
                 await _context.SaveChangesAsync();

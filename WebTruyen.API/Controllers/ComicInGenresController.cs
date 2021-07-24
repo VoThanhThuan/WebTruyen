@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Data;
 using WebTruyen.API.Entities;
+using WebTruyen.API.Entities.ViewModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -23,14 +24,14 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/ComicInGenres
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ComicInGenre>>> GetComicInGenres()
+        public async Task<ActionResult<IEnumerable<ComicInGenreVM>>> GetComicInGenres()
         {
-            return await _context.ComicInGenres.ToListAsync();
+            return await _context.ComicInGenres.Select(x => x.ToViewModel()).ToListAsync();
         }
 
         // GET: api/ComicInGenres/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ComicInGenre>> GetComicInGenre(int id)
+        public async Task<ActionResult<ComicInGenreVM>> GetComicInGenre(int id)
         {
             var comicInGenre = await _context.ComicInGenres.FindAsync(id);
 
@@ -39,20 +40,20 @@ namespace WebTruyen.API.Controllers
                 return NotFound();
             }
 
-            return comicInGenre;
+            return comicInGenre.ToViewModel();
         }
 
         // PUT: api/ComicInGenres/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutComicInGenre(int id, ComicInGenre comicInGenre)
+        public async Task<IActionResult> PutComicInGenre(int id, ComicInGenreVM comicInGenre)
         {
             if (id != comicInGenre.IdGenre)
             {
                 return BadRequest();
             }
 
-            _context.Entry(comicInGenre).State = EntityState.Modified;
+            _context.Entry(comicInGenre.ToComicInGenre()).State = EntityState.Modified;
 
             try
             {
@@ -76,9 +77,9 @@ namespace WebTruyen.API.Controllers
         // POST: api/ComicInGenres
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ComicInGenre>> PostComicInGenre(ComicInGenre comicInGenre)
+        public async Task<ActionResult<ComicInGenreVM>> PostComicInGenre(ComicInGenreVM comicInGenre)
         {
-            _context.ComicInGenres.Add(comicInGenre);
+            _context.ComicInGenres.Add(comicInGenre.ToComicInGenre());
             try
             {
                 await _context.SaveChangesAsync();

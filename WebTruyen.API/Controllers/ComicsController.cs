@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Data;
 using WebTruyen.API.Entities;
+using WebTruyen.API.Entities.ViewModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -23,14 +24,14 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Comics
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Comic>>> GetComics()
+        public async Task<ActionResult<IEnumerable<ComicVM>>> GetComics()
         {
-            return Ok(await _context.Comics.ToListAsync());
+            return await _context.Comics.Select(x => x.ToViewModel()).ToListAsync();
         }
 
         // GET: api/Comics/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Comic>> GetComic(Guid id)
+        public async Task<ActionResult<ComicVM>> GetComic(Guid id)
         {
             var comic = await _context.Comics.FindAsync(id);
 
@@ -39,20 +40,20 @@ namespace WebTruyen.API.Controllers
                 return NotFound();
             }
 
-            return comic;
+            return comic.ToViewModel();
         }
 
         // PUT: api/Comics/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutComic(Guid id, Comic comic)
+        public async Task<IActionResult> PutComic(Guid id, ComicVM comic)
         {
             if (id != comic.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(comic).State = EntityState.Modified;
+            _context.Entry(comic.ToComic()).State = EntityState.Modified;
 
             try
             {
