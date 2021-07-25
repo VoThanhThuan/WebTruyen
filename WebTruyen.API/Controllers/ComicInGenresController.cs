@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebTruyen.API.Data;
-using WebTruyen.API.Entities;
-using WebTruyen.API.Entities.ViewModel;
+using WebTruyen.Library.Data;
+using WebTruyen.Library.Entities.ViewModel;
 
 namespace WebTruyen.API.Controllers
 {

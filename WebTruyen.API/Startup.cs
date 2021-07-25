@@ -12,7 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using WebTruyen.API.Data;
+using WebTruyen.API.Repository.Bookmark;
+using WebTruyen.Library.Data;
 
 namespace WebTruyen.API
 {
@@ -33,6 +34,7 @@ namespace WebTruyen.API
                 options.UseSqlServer(Configuration.GetConnectionString("ConnectComic"));
             });
             services.AddControllers();
+            services.AddTransient<IBookmarkService, BookmarkService>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebTruyen.API", Version = "v1" });

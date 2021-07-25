@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using WebTruyen.API.Data;
+using WebTruyen.Library.Data;
 
 
 namespace WebTruyen.API

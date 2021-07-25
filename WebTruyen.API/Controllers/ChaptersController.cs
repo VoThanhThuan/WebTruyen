@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using WebTruyen.API.Data;
-using WebTruyen.API.Entities;
-using WebTruyen.API.Entities.ViewModel;
+using WebTruyen.API.Repository.Chapter;
+using WebTruyen.Library.Data;
+using WebTruyen.Library.Entities;
+using WebTruyen.Library.Entities.ViewModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -15,32 +15,32 @@ namespace WebTruyen.API.Controllers
     [ApiController]
     public class ChaptersController : ControllerBase
     {
-        private readonly ComicDbContext _context;
+        private readonly IChapterService _chapter;
 
-        public ChaptersController(ComicDbContext context)
+        public ChaptersController(IChapterService context)
         {
-            _context = context;
+            _chapter = context;
         }
 
         // GET: api/Chapters
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ChapterVM>>> GetChapters()
         {
-            return await _context.Chapters.Select(x => x.ToViewModel()).ToListAsync();
+            return Ok(await _chapter.GetChapters());
         }
 
         // GET: api/Chapters/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ChapterVM>> GetChapter(Guid id)
         {
-            var chapter = await _context.Chapters.FindAsync(id);
+            var result = await _chapter.GetChapter(id);
 
-            if (chapter == null)
+            if (result == null)
             {
                 return NotFound();
             }
 
-            return chapter.ToViewModel();
+            return Ok(result);
         }
 
         // PUT: api/Chapters/5
@@ -53,22 +53,11 @@ namespace WebTruyen.API.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(chapter.ToChapter()).State = EntityState.Modified;
+            var result = await _chapter.PutChapter(id, chapter);
 
-            try
+            if (result == false)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ChapterExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return NoContent();
@@ -77,10 +66,9 @@ namespace WebTruyen.API.Controllers
         // POST: api/Chapters
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Chapter>> PostChapter(ChapterVM chapter)
+        public async Task<ActionResult<ChapterVM>> PostChapter(ChapterVM chapter)
         {
-            _context.Chapters.Add(chapter.ToChapter());
-            await _context.SaveChangesAsync();
+            await _chapter.PostChapter(chapter);
 
             return CreatedAtAction("GetChapter", new { id = chapter.Id }, chapter);
         }
@@ -89,21 +77,14 @@ namespace WebTruyen.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteChapter(Guid id)
         {
-            var chapter = await _context.Chapters.FindAsync(id);
-            if (chapter == null)
+            var result = await _chapter.DeleteChapter(id);
+            if (result == false)
             {
                 return NotFound();
             }
 
-            _context.Chapters.Remove(chapter);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
 
-        private bool ChapterExists(Guid id)
-        {
-            return _context.Chapters.Any(e => e.Id == id);
-        }
     }
 }

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebTruyen.API.Data;
-using WebTruyen.API.Entities;
-using WebTruyen.API.Entities.ViewModel;
+using WebTruyen.API.Repository.Bookmark;
+using WebTruyen.Library.Data;
+using WebTruyen.Library.Entities.ViewModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -15,32 +15,32 @@ namespace WebTruyen.API.Controllers
     [ApiController]
     public class BookmarksController : ControllerBase
     {
-        private readonly ComicDbContext _context;
+        private readonly IBookmarkService _bookmark;
 
-        public BookmarksController(ComicDbContext context)
+        public BookmarksController(IBookmarkService context)
         {
-            _context = context;
+            _bookmark = context;
         }
 
         // GET: api/Bookmarks
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BookmarkVM>>> GetBookmarks()
         {
-            return await _context.Bookmarks.Select(x => x.ToViewModel()).ToListAsync();
+            return Ok(await _bookmark.GetBookmarks());
         }
 
         // GET: api/Bookmarks/5
         [HttpGet("{id}")]
         public async Task<ActionResult<BookmarkVM>> GetBookmark(Guid id)
         {
-            var bookmark = await _context.Bookmarks.FindAsync(id);
+            var result = await _bookmark.GetBookmark(id);
 
-            if (bookmark == null)
+            if (result == null)
             {
                 return NotFound();
             }
 
-            return bookmark.ToViewModel();
+            return Ok(result);
         }
 
         // PUT: api/Bookmarks/5
@@ -53,22 +53,11 @@ namespace WebTruyen.API.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(bookmark.ToBookmark()).State = EntityState.Modified;
+            var result = await _bookmark.PutBookmark(id, bookmark);
 
-            try
+            if (result == false)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BookmarkExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return NoContent();
@@ -79,21 +68,10 @@ namespace WebTruyen.API.Controllers
         [HttpPost]
         public async Task<ActionResult<BookmarkVM>> PostBookmark(BookmarkVM bookmark)
         {
-            _context.Bookmarks.Add(bookmark.ToBookmark());
-            try
+            var result = await _bookmark.PostBookmark(bookmark);
+            if (result == false)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (BookmarkExists(bookmark.IdUser))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return CreatedAtAction("GetBookmark", new { id = bookmark.IdUser }, bookmark);
@@ -103,21 +81,13 @@ namespace WebTruyen.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBookmark(Guid id)
         {
-            var bookmark = await _context.Bookmarks.FindAsync(id);
-            if (bookmark == null)
+            var result = await _bookmark.DeleteBookmark(id);
+            if (result == false)
             {
                 return NotFound();
             }
-
-            _context.Bookmarks.Remove(bookmark);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
 
-        private bool BookmarkExists(Guid id)
-        {
-            return _context.Bookmarks.Any(e => e.IdUser == id);
-        }
     }
 }
