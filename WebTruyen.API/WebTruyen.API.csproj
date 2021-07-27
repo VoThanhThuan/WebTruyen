@@ -19,4 +19,10 @@
     <ProjectReference Include="..\WebTruyen.Library\WebTruyen.Library.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\avatar\" />
+    <Folder Include="wwwroot\comic\" />
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>

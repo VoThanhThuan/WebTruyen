@@ -15,6 +15,7 @@ namespace WebTruyen.Library.Entities
             {
                 Id = Id,
                 Nickname = Nickname,
+                Avatar = Avatar,
                 Dob = Dob,
                 sex = sex,
                 Address = Address,
@@ -27,7 +28,7 @@ namespace WebTruyen.Library.Entities
         }
 
         public string Nickname { get; set; }
-        public DateTime Dob { get; set; }
+        public DateTime? Dob { get; set; }
         public string Avatar { get; set; }
         public bool? sex { get; set; }
         public string Address { get; set; }

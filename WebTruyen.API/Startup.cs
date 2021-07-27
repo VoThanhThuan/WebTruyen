@@ -1,21 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Repository.Announcement;
 using WebTruyen.API.Repository.Bookmark;
 using WebTruyen.API.Repository.Chapter;
-using WebTruyen.API.Repository.Comic;
 using WebTruyen.API.Repository.ComicInGenre;
 using WebTruyen.API.Repository.Comment;
 using WebTruyen.API.Repository.Genre;
@@ -25,6 +17,7 @@ using WebTruyen.API.Repository.Report;
 using WebTruyen.API.Repository.Role;
 using WebTruyen.API.Repository.TranslationOfUser;
 using WebTruyen.API.Repository.User;
+using WebTruyen.API.Service;
 using WebTruyen.Library.Data;
 
 namespace WebTruyen.API
@@ -46,6 +39,7 @@ namespace WebTruyen.API
                 options.UseSqlServer(Configuration.GetConnectionString("ConnectComic"));
             });
             services.AddControllers();
+            services.AddTransient<IStorageService, FileService>();
             services.AddTransient<IAnnouncementService, AnnouncementService>();
             services.AddTransient<IBookmarkService, BookmarkService>();
             services.AddTransient<IChapterService, ChapterService>();
@@ -75,6 +69,8 @@ namespace WebTruyen.API
             }
 
             app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
 
             app.UseRouting();
 

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Repository.User;
 using WebTruyen.Library.Data;
+using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ViewModel;
 
 namespace WebTruyen.API.Controllers
@@ -45,8 +46,9 @@ namespace WebTruyen.API.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> PutUser(Guid id, [FromForm]UserVM user)
+        public async Task<IActionResult> PutUser(Guid id, [FromForm]UserRequest user)
         {
+
             if (id != user.Id)
             {
                 return BadRequest();
@@ -63,7 +65,7 @@ namespace WebTruyen.API.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<ActionResult<UserVM>> PostUser([FromForm]UserVM user)
+        public async Task<ActionResult<UserVM>> PostUser([FromForm]UserRequest user)
         {
             await _user.PostUser(user);
 

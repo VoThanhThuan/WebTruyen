@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebTruyen.Library.Data;
 
 namespace WebTruyen.Library.Migrations
 {
     [DbContext(typeof(ComicDbContext))]
-    partial class ComicDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210727155823_wt2")]
+    partial class wt2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

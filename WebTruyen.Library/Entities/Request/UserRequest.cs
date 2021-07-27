@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
-namespace WebTruyen.Library.Entities.ViewModel
+namespace WebTruyen.Library.Entities.Request
 {
-    public class UserVM
+    public class UserRequest 
     {
         public User ToUser()
         {
@@ -17,7 +17,6 @@ namespace WebTruyen.Library.Entities.ViewModel
                 Id = Id,
                 Nickname = Nickname,
                 Dob = Dob,
-                Avatar = Avatar,
                 sex = sex,
                 Address = Address,
                 Fanpage = Fanpage,
@@ -33,7 +32,7 @@ namespace WebTruyen.Library.Entities.ViewModel
         [Display(Name = "Ngày sinh")]
         [DataType(DataType.Date)]
         public DateTime? Dob { get; set; }
-        public string Avatar { get; set; }
+        public IFormFile? Avatar { get; set; }
         public bool? sex { get; set; }
         public string Address { get; set; }
         public string Fanpage { get; set; }
