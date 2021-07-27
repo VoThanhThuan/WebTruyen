@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebTruyen.API.Repository.Comment;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.ViewModel;
 
@@ -14,32 +15,32 @@ namespace WebTruyen.API.Controllers
     [ApiController]
     public class CommentsController : ControllerBase
     {
-        private readonly ComicDbContext _context;
+        private readonly ICommentService _comment;
 
-        public CommentsController(ComicDbContext context)
+        public CommentsController(ICommentService context)
         {
-            _context = context;
+            _comment = context;
         }
 
         // GET: api/Comments
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CommentVM>>> GetComments()
         {
-            return await _context.Comments.Select(x => x.ToViewModel()).ToListAsync();
+            return Ok(await _comment.GetComments());
         }
 
         // GET: api/Comments/5
         [HttpGet("{id}")]
         public async Task<ActionResult<CommentVM>> GetComment(Guid id)
         {
-            var comment = await _context.Comments.FindAsync(id);
+            var comment = await _comment.GetComment(id);
 
             if (comment == null)
             {
                 return NotFound();
             }
 
-            return comment.ToViewModel();
+            return comment;
         }
 
         // PUT: api/Comments/5
@@ -52,23 +53,10 @@ namespace WebTruyen.API.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(comment.ToComment()).State = EntityState.Modified;
+            var result = await _comment.PutComment(id, comment);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CommentExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            if (!result)
+                return NotFound();
 
             return NoContent();
         }
@@ -78,8 +66,7 @@ namespace WebTruyen.API.Controllers
         [HttpPost]
         public async Task<ActionResult<CommentVM>> PostComment(CommentVM comment)
         {
-            _context.Comments.Add(comment.ToComment());
-            await _context.SaveChangesAsync();
+            await _comment.PostComment(comment);
 
             return CreatedAtAction("GetComment", new { id = comment.Id }, comment);
         }
@@ -88,21 +75,14 @@ namespace WebTruyen.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComment(Guid id)
         {
-            var comment = await _context.Comments.FindAsync(id);
-            if (comment == null)
+            var result = await _comment.DeleteComment(id);
+            if (!result)
             {
                 return NotFound();
             }
 
-            _context.Comments.Remove(comment);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
 
-        private bool CommentExists(Guid id)
-        {
-            return _context.Comments.Any(e => e.Id == id);
-        }
     }
 }

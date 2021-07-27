@@ -41,7 +41,7 @@ namespace WebTruyen.Library.Entities
         public virtual List<Chapter> Chapters { get; set; }
         public virtual List<TranslationOfUser> TranslationOfUsers { get; set; }
         public virtual List<Bookmark> Bookmarks { get; set; }
-        public virtual List<NewComicAnnouncement> NewComicAnnouncements { get; set; }
+        public virtual List<Announcement> NewComicAnnouncements { get; set; }
         public virtual List<HistoryRead> HistoryReads { get; set; }
 
     }

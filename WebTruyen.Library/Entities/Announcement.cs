@@ -6,11 +6,11 @@ using WebTruyen.Library.Entities.ViewModel;
 
 namespace WebTruyen.Library.Entities
 {
-    public class NewComicAnnouncement
+    public class Announcement
     {
-        public NewComicAnnouncementVM ToViewModel()
+        public AnnouncementVM ToViewModel()
         {
-            return new NewComicAnnouncementVM()
+            return new AnnouncementVM()
             {
                 Id = Id,
                 IdUser = IdUser,

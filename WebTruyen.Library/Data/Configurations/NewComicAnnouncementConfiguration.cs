@@ -8,9 +8,9 @@ using WebTruyen.Library.Entities;
 
 namespace WebTruyen.Library.Data.Configurations
 {
-    public class NewComicAnnouncementConfiguration : IEntityTypeConfiguration<NewComicAnnouncement>
+    public class NewComicAnnouncementConfiguration : IEntityTypeConfiguration<Announcement>
     {
-        public void Configure(EntityTypeBuilder<NewComicAnnouncement> builder)
+        public void Configure(EntityTypeBuilder<Announcement> builder)
         {
             builder.ToTable("NewComicAnnouncement");
             builder.HasKey(x => new { x.IdUser, x.IdChapter });

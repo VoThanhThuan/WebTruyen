@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.IO;
+using Microsoft.Extensions.Configuration;
 using WebTruyen.Library.Data.Configurations;
 using WebTruyen.Library.Entities;
 
@@ -13,6 +12,15 @@ namespace WebTruyen.Library.Data
     {
         public ComicDbContext(DbContextOptions<ComicDbContext> options) : base(options)
         { }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    if (optionsBuilder.IsConfigured) return;
+        //    var configuration = new ConfigurationBuilder()
+        //        .SetBasePath(Directory.GetCurrentDirectory())
+        //        .AddJsonFile("appsettings.json")
+        //        .Build();
+        //    optionsBuilder.UseSqlServer(configuration.GetConnectionString("ConnectComic"));
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -48,8 +56,8 @@ namespace WebTruyen.Library.Data
         public DbSet<TranslationOfUser> TranslationOfUsers { get; set; }
         public DbSet<Bookmark> Bookmarks { get; set; }
         public DbSet<Comment> Comments { get; set; }
-        public DbSet<NewComicAnnouncement> NewComicAnnouncements { get; set; }
+        public DbSet<Announcement> NewComicAnnouncements { get; set; }
         public DbSet<HistoryRead> HistoryReads { get; set; }
-        public DbSet<WebTruyen.Library.Entities.Report> Report { get; set; }
+        public DbSet<Report> Report { get; set; }
     }
 }

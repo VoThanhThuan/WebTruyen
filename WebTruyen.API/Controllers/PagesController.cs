@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebTruyen.API.Repository.Page;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
 using WebTruyen.Library.Entities.ViewModel;
@@ -15,32 +16,31 @@ namespace WebTruyen.API.Controllers
     [ApiController]
     public class PagesController : ControllerBase
     {
-        private readonly ComicDbContext _context;
+        private readonly IPageService _page;
 
-        public PagesController(ComicDbContext context)
+        public PagesController(IPageService context)
         {
-            _context = context;
+            _page = context;
         }
 
         // GET: api/Pages
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PageVM>>> GetPages()
         {
-            return await _context.Pages.Select(x => x.ToViewModel()).ToListAsync();
+            return Ok(_page.GetPages());
         }
 
         // GET: api/Pages/5
         [HttpGet("{id}")]
         public async Task<ActionResult<PageVM>> GetPage(Guid id)
         {
-            var page = await _context.Pages.FindAsync(id);
-
+            var page = await _page.GetPage(id);
             if (page == null)
             {
                 return NotFound();
             }
 
-            return page.ToViewModel();
+            return page;
         }
 
         // PUT: api/Pages/5
@@ -53,23 +53,9 @@ namespace WebTruyen.API.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(page.ToPage()).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PageExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            var result = await _page.PutPage(id, page);
+            if (!result)
+                return NotFound();
 
             return NoContent();
         }
@@ -79,8 +65,7 @@ namespace WebTruyen.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Page>> PostPage(PageVM page)
         {
-            _context.Pages.Add(page.ToPage());
-            await _context.SaveChangesAsync();
+            await _page.PostPage(page);
 
             return CreatedAtAction("GetPage", new { id = page.Id }, page);
         }
@@ -89,21 +74,13 @@ namespace WebTruyen.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePage(Guid id)
         {
-            var page = await _context.Pages.FindAsync(id);
-            if (page == null)
+            var page = await _page.DeletePage(id);
+            if (!page)
             {
                 return NotFound();
             }
-
-            _context.Pages.Remove(page);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
 
-        private bool PageExists(Guid id)
-        {
-            return _context.Pages.Any(e => e.Id == id);
-        }
     }
 }

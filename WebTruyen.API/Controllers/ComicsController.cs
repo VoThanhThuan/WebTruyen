@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebTruyen.API.Repository.Comic;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
 using WebTruyen.Library.Entities.ViewModel;
@@ -15,60 +16,49 @@ namespace WebTruyen.API.Controllers
     [ApiController]
     public class ComicsController : ControllerBase
     {
-        private readonly ComicDbContext _context;
+        private readonly IComicService _comic;
 
-        public ComicsController(ComicDbContext context)
+        public ComicsController(IComicService context)
         {
-            _context = context;
+            _comic = context;
         }
 
         // GET: api/Comics
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ComicVM>>> GetComics()
         {
-            return await _context.Comics.Select(x => x.ToViewModel()).ToListAsync();
+            return Ok(await _comic.GetComics());
         }
 
         // GET: api/Comics/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ComicVM>> GetComic(Guid id)
         {
-            var comic = await _context.Comics.FindAsync(id);
+            var comic = await _comic.GetComic(id);
 
             if (comic == null)
             {
                 return NotFound();
             }
 
-            return comic.ToViewModel();
+            return comic;
         }
 
         // PUT: api/Comics/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutComic(Guid id, ComicVM comic)
+        public async Task<IActionResult> PutComic(Guid id, ComicVM request)
         {
-            if (id != comic.Id)
+            if (id != request.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(comic.ToComic()).State = EntityState.Modified;
+            var result = await _comic.PutComic(id, request);
 
-            try
+            if (!result)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ComicExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return NoContent();
@@ -77,33 +67,26 @@ namespace WebTruyen.API.Controllers
         // POST: api/Comics
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Comic>> PostComic(Comic comic)
+        public async Task<ActionResult<ComicVM>> PostComic(ComicVM request)
         {
-            _context.Comics.Add(comic);
-            await _context.SaveChangesAsync();
+            await _comic.PostComic(request);
 
-            return CreatedAtAction("GetComic", new { id = comic.Id }, comic);
+            return CreatedAtAction("GetComic", new { id = request.Id }, request);
         }
 
         // DELETE: api/Comics/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComic(Guid id)
         {
-            var comic = await _context.Comics.FindAsync(id);
-            if (comic == null)
+            var comic = await _comic.DeleteComic(id);
+            if (comic == false)
             {
                 return NotFound();
             }
 
-            _context.Comics.Remove(comic);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
 
-        private bool ComicExists(Guid id)
-        {
-            return _context.Comics.Any(e => e.Id == id);
-        }
+
     }
 }

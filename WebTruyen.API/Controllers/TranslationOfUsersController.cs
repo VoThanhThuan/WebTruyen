@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebTruyen.API.Repository.TranslationOfUser;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.ViewModel;
 
@@ -14,32 +15,30 @@ namespace WebTruyen.API.Controllers
     [ApiController]
     public class TranslationOfUsersController : ControllerBase
     {
-        private readonly ComicDbContext _context;
+        private readonly ITranslationOfUserService _translation;
 
-        public TranslationOfUsersController(ComicDbContext context)
+        public TranslationOfUsersController(ITranslationOfUserService context)
         {
-            _context = context;
+            _translation = context;
         }
 
         // GET: api/TranslationOfUsers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TranslationOfUserVM>>> GetTranslationOfUsers()
         {
-            return await _context.TranslationOfUsers.Select(x => x.ToViewModel()).ToListAsync();
+            return Ok(await _translation.GetTranslationOfUsers());
         }
 
         // GET: api/TranslationOfUsers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TranslationOfUserVM>> GetTranslationOfUser(Guid id)
         {
-            var translationOfUser = await _context.TranslationOfUsers.FindAsync(id);
+            var translationOfUser = await _translation.GetTranslationOfUser(id);
 
             if (translationOfUser == null)
-            {
                 return NotFound();
-            }
 
-            return translationOfUser.ToViewModel();
+            return translationOfUser;
         }
 
         // PUT: api/TranslationOfUsers/5
@@ -52,23 +51,9 @@ namespace WebTruyen.API.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(translationOfUser.ToTranslationOfUser()).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TranslationOfUserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            var result = await _translation.PutTranslationOfUser(id, translationOfUser);
+            if (!result)
+                return NotFound();
 
             return NoContent();
         }
@@ -78,22 +63,9 @@ namespace WebTruyen.API.Controllers
         [HttpPost]
         public async Task<ActionResult<TranslationOfUserVM>> PostTranslationOfUser(TranslationOfUserVM translationOfUser)
         {
-            _context.TranslationOfUsers.Add(translationOfUser.ToTranslationOfUser());
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (TranslationOfUserExists(translationOfUser.IdUser))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            var result = await _translation.PostTranslationOfUser(translationOfUser);
+            if (!result)
+                return Conflict();
 
             return CreatedAtAction("GetTranslationOfUser", new { id = translationOfUser.IdUser }, translationOfUser);
         }
@@ -102,21 +74,13 @@ namespace WebTruyen.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTranslationOfUser(Guid id)
         {
-            var translationOfUser = await _context.TranslationOfUsers.FindAsync(id);
-            if (translationOfUser == null)
-            {
+            var result = await _translation.DeleteTranslationOfUser(id);
+            if (!result)
                 return NotFound();
-            }
-
-            _context.TranslationOfUsers.Remove(translationOfUser);
-            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool TranslationOfUserExists(Guid id)
-        {
-            return _context.TranslationOfUsers.Any(e => e.IdUser == id);
-        }
+
     }
 }

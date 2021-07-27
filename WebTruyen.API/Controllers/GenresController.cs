@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebTruyen.API.Repository.Genre;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
 using WebTruyen.Library.Entities.ViewModel;
@@ -15,32 +16,32 @@ namespace WebTruyen.API.Controllers
     [ApiController]
     public class GenresController : ControllerBase
     {
-        private readonly ComicDbContext _context;
+        private readonly IGenreService _genre;
 
-        public GenresController(ComicDbContext context)
+        public GenresController(IGenreService context)
         {
-            _context = context;
+            _genre = context;
         }
 
         // GET: api/Genres
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GenreVM>>> GetGenres()
         {
-            return await _context.Genres.Select(x => x.ToViewModel()).ToListAsync();
+            return Ok(await _genre.GetGenres());
         }
 
         // GET: api/Genres/5
         [HttpGet("{id}")]
         public async Task<ActionResult<GenreVM>> GetGenre(int id)
         {
-            var genre = await _context.Genres.FindAsync(id);
+            var result = await _genre.GetGenre(id);
 
-            if (genre == null)
+            if (result == null)
             {
                 return NotFound();
             }
 
-            return genre.ToViewModel();
+            return result;
         }
 
         // PUT: api/Genres/5
@@ -53,23 +54,10 @@ namespace WebTruyen.API.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(genre.ToGenre()).State = EntityState.Modified;
+            var result = await _genre.PutGenre(id, genre);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!GenreExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            if (!result)
+                return NotFound();
 
             return NoContent();
         }
@@ -79,8 +67,7 @@ namespace WebTruyen.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Genre>> PostGenre(GenreVM genre)
         {
-            _context.Genres.Add(genre.ToGenre());
-            await _context.SaveChangesAsync();
+            await _genre.PostGenre(genre);
 
             return CreatedAtAction("GetGenre", new { id = genre.Id }, genre);
         }
@@ -89,21 +76,15 @@ namespace WebTruyen.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGenre(int id)
         {
-            var genre = await _context.Genres.FindAsync(id);
-            if (genre == null)
+            var result = await _genre.DeleteGenre(id);
+            if (!result)
             {
                 return NotFound();
             }
 
-            _context.Genres.Remove(genre);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
 
-        private bool GenreExists(int id)
-        {
-            return _context.Genres.Any(e => e.Id == id);
-        }
+
     }
 }

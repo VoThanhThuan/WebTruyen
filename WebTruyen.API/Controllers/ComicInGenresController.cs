@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebTruyen.API.Repository.ComicInGenre;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.ViewModel;
 
@@ -14,32 +15,32 @@ namespace WebTruyen.API.Controllers
     [ApiController]
     public class ComicInGenresController : ControllerBase
     {
-        private readonly ComicDbContext _context;
+        private readonly IComicInGenreService _comicInGenre;
 
-        public ComicInGenresController(ComicDbContext context)
+        public ComicInGenresController(IComicInGenreService context)
         {
-            _context = context;
+            _comicInGenre = context;
         }
 
         // GET: api/ComicInGenres
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ComicInGenreVM>>> GetComicInGenres()
         {
-            return await _context.ComicInGenres.Select(x => x.ToViewModel()).ToListAsync();
+            return Ok(await _comicInGenre.GetComicInGenres());
         }
 
         // GET: api/ComicInGenres/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ComicInGenreVM>> GetComicInGenre(int id)
         {
-            var comicInGenre = await _context.ComicInGenres.FindAsync(id);
+            var comicInGenre = await _comicInGenre.GetComicInGenre(id);
 
             if (comicInGenre == null)
             {
                 return NotFound();
             }
 
-            return comicInGenre.ToViewModel();
+            return comicInGenre;
         }
 
         // PUT: api/ComicInGenres/5
@@ -52,24 +53,13 @@ namespace WebTruyen.API.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(comicInGenre.ToComicInGenre()).State = EntityState.Modified;
+            var result = await _comicInGenre.PutComicInGenre(id, comicInGenre);
 
-            try
+            if (!result)
             {
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ComicInGenreExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            
             return NoContent();
         }
 
@@ -78,21 +68,11 @@ namespace WebTruyen.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ComicInGenreVM>> PostComicInGenre(ComicInGenreVM comicInGenre)
         {
-            _context.ComicInGenres.Add(comicInGenre.ToComicInGenre());
-            try
+            var result = await _comicInGenre.PostComicInGenre(comicInGenre);
+            
+            if (!result)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (ComicInGenreExists(comicInGenre.IdGenre))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+                return Conflict();
             }
 
             return CreatedAtAction("GetComicInGenre", new { id = comicInGenre.IdGenre }, comicInGenre);
@@ -102,21 +82,15 @@ namespace WebTruyen.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComicInGenre(int id)
         {
-            var comicInGenre = await _context.ComicInGenres.FindAsync(id);
-            if (comicInGenre == null)
+            var comicInGenre = await _comicInGenre.DeleteComicInGenre(id);
+            if (!comicInGenre)
             {
                 return NotFound();
             }
 
-            _context.ComicInGenres.Remove(comicInGenre);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
 
-        private bool ComicInGenreExists(int id)
-        {
-            return _context.ComicInGenres.Any(e => e.IdGenre == id);
-        }
+       
     }
 }

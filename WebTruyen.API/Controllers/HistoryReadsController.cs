@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebTruyen.API.Repository.HistoryRead;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.ViewModel;
 
@@ -14,32 +15,32 @@ namespace WebTruyen.API.Controllers
     [ApiController]
     public class HistoryReadsController : ControllerBase
     {
-        private readonly ComicDbContext _context;
+        private readonly IHistoryReadService _historyRead;
 
-        public HistoryReadsController(ComicDbContext context)
+        public HistoryReadsController(IHistoryReadService context)
         {
-            _context = context;
+            _historyRead = context;
         }
 
         // GET: api/HistoryReads
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HistoryReadVM>>> GetHistoryReads()
         {
-            return await _context.HistoryReads.Select(x => x.ToViewModel()).ToListAsync();
+            return Ok(await _historyRead.GetHistoryReads());
         }
 
         // GET: api/HistoryReads/5
         [HttpGet("{id}")]
         public async Task<ActionResult<HistoryReadVM>> GetHistoryRead(Guid id)
         {
-            var historyRead = await _context.HistoryReads.FindAsync(id);
+            var historyRead = await _historyRead.GetHistoryRead(id);
 
             if (historyRead == null)
             {
                 return NotFound();
             }
 
-            return historyRead.ToViewModel();
+            return historyRead;
         }
 
         // PUT: api/HistoryReads/5
@@ -52,23 +53,10 @@ namespace WebTruyen.API.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(historyRead.ToHistoryRead()).State = EntityState.Modified;
+            var result = await _historyRead.PutHistoryRead(id, historyRead);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!HistoryReadExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            if (!result)
+                return NotFound();
 
             return NoContent();
         }
@@ -78,22 +66,9 @@ namespace WebTruyen.API.Controllers
         [HttpPost]
         public async Task<ActionResult<HistoryReadVM>> PostHistoryRead(HistoryReadVM historyRead)
         {
-            _context.HistoryReads.Add(historyRead.ToHistoryRead());
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (HistoryReadExists(historyRead.IdUser))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            var result = await _historyRead.PostHistoryRead(historyRead);
+            if (!result)
+                return Conflict();
 
             return CreatedAtAction("GetHistoryRead", new { id = historyRead.IdUser }, historyRead);
         }
@@ -102,21 +77,13 @@ namespace WebTruyen.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteHistoryRead(Guid id)
         {
-            var historyRead = await _context.HistoryReads.FindAsync(id);
-            if (historyRead == null)
+            var result = await _historyRead.DeleteHistoryRead(id);
+            if (!result)
             {
                 return NotFound();
             }
 
-            _context.HistoryReads.Remove(historyRead);
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool HistoryReadExists(Guid id)
-        {
-            return _context.HistoryReads.Any(e => e.IdUser == id);
         }
     }
 }

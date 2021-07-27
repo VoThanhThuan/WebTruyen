@@ -5,35 +5,32 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.ViewModel;
-using WebTruyen.Library.Enums;
 
-namespace WebTruyen.API.Repository.Bookmark
+namespace WebTruyen.API.Repository.HistoryRead
 {
-    public class BookmarkService : IBookmarkService
+    public class HistoryReadService : IHistoryReadService
     {
         private readonly ComicDbContext _context;
 
-        public BookmarkService(ComicDbContext context)
+        public HistoryReadService(ComicDbContext context)
         {
             _context = context;
         }
-
-        public async Task<IEnumerable<BookmarkVM>> GetBookmarks()
+        public async Task<IEnumerable<HistoryReadVM>> GetHistoryReads()
         {
-            return await _context.Bookmarks.Select(x => x.ToViewModel()).ToListAsync();
+            return await _context.HistoryReads.Select(x => x.ToViewModel()).ToListAsync();
         }
 
-        public async Task<BookmarkVM> GetBookmark(Guid id)
+        public async Task<HistoryReadVM> GetHistoryRead(Guid id)
         {
-            var bookmark = await _context.Bookmarks.FindAsync(id);
+            var historyRead = await _context.HistoryReads.FindAsync(id);
 
-            return bookmark?.ToViewModel();
+            return historyRead?.ToViewModel();
         }
 
-        public async Task<bool> PutBookmark(Guid id, BookmarkVM bookmark)
+        public async Task<bool> PutHistoryRead(Guid id, HistoryReadVM request)
         {
-
-            _context.Entry(bookmark.ToBookmark()).State = EntityState.Modified;
+            _context.Entry(request.ToHistoryRead()).State = EntityState.Modified;
 
             try
             {
@@ -41,7 +38,7 @@ namespace WebTruyen.API.Repository.Bookmark
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!BookmarkExists(id))
+                if (!HistoryReadExists(id))
                 {
                     return false;
                 }
@@ -54,16 +51,16 @@ namespace WebTruyen.API.Repository.Bookmark
             return true;
         }
 
-        public async Task<bool> PostBookmark(BookmarkVM bookmark)
+        public async Task<bool> PostHistoryRead(HistoryReadVM request)
         {
-            _context.Bookmarks.Add(bookmark.ToBookmark());
+            _context.HistoryReads.Add(request.ToHistoryRead());
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (BookmarkExists(bookmark.IdUser))
+                if (HistoryReadExists(request.IdUser))
                 {
                     return false;
                 }
@@ -76,23 +73,23 @@ namespace WebTruyen.API.Repository.Bookmark
             return true;
         }
 
-        public async Task<bool> DeleteBookmark(Guid id)
+        public async Task<bool> DeleteHistoryRead(Guid id)
         {
-            var bookmark = await _context.Bookmarks.FindAsync(id);
-            if (bookmark == null)
+            var historyRead = await _context.HistoryReads.FindAsync(id);
+            if (historyRead == null)
             {
                 return false;
             }
 
-            _context.Bookmarks.Remove(bookmark);
+            _context.HistoryReads.Remove(historyRead);
             await _context.SaveChangesAsync();
 
             return true;
         }
 
-        private bool BookmarkExists(Guid id)
+        private bool HistoryReadExists(Guid id)
         {
-            return _context.Bookmarks.Any(e => e.IdUser == id);
+            return _context.HistoryReads.Any(e => e.IdUser == id);
         }
     }
 }

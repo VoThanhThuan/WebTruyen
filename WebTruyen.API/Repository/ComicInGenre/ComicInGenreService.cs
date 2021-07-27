@@ -5,35 +5,33 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.ViewModel;
-using WebTruyen.Library.Enums;
 
-namespace WebTruyen.API.Repository.Bookmark
+namespace WebTruyen.API.Repository.ComicInGenre
 {
-    public class BookmarkService : IBookmarkService
+    public class ComicInGenreService : IComicInGenreService
     {
         private readonly ComicDbContext _context;
 
-        public BookmarkService(ComicDbContext context)
+        public ComicInGenreService(ComicDbContext context)
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<BookmarkVM>> GetBookmarks()
+        public async Task<IEnumerable<ComicInGenreVM>> GetComicInGenres()
         {
-            return await _context.Bookmarks.Select(x => x.ToViewModel()).ToListAsync();
+            return await _context.ComicInGenres.Select(x => x.ToViewModel()).ToListAsync();
         }
 
-        public async Task<BookmarkVM> GetBookmark(Guid id)
+        public async Task<ComicInGenreVM> GetComicInGenre(int id)
         {
-            var bookmark = await _context.Bookmarks.FindAsync(id);
+            var comicInGenre = await _context.ComicInGenres.FindAsync(id);
 
-            return bookmark?.ToViewModel();
+            return comicInGenre?.ToViewModel();
         }
 
-        public async Task<bool> PutBookmark(Guid id, BookmarkVM bookmark)
+        public async Task<bool> PutComicInGenre(int id, ComicInGenreVM request)
         {
-
-            _context.Entry(bookmark.ToBookmark()).State = EntityState.Modified;
+            _context.Entry(request.ToComicInGenre()).State = EntityState.Modified;
 
             try
             {
@@ -41,7 +39,7 @@ namespace WebTruyen.API.Repository.Bookmark
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!BookmarkExists(id))
+                if (!ComicInGenreExists(id))
                 {
                     return false;
                 }
@@ -54,16 +52,16 @@ namespace WebTruyen.API.Repository.Bookmark
             return true;
         }
 
-        public async Task<bool> PostBookmark(BookmarkVM bookmark)
+        public async Task<bool> PostComicInGenre(ComicInGenreVM request)
         {
-            _context.Bookmarks.Add(bookmark.ToBookmark());
+            _context.ComicInGenres.Add(request.ToComicInGenre());
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (BookmarkExists(bookmark.IdUser))
+                if (ComicInGenreExists(request.IdGenre))
                 {
                     return false;
                 }
@@ -76,23 +74,23 @@ namespace WebTruyen.API.Repository.Bookmark
             return true;
         }
 
-        public async Task<bool> DeleteBookmark(Guid id)
+        public async Task<bool> DeleteComicInGenre(int id)
         {
-            var bookmark = await _context.Bookmarks.FindAsync(id);
-            if (bookmark == null)
+            var comicInGenre = await _context.ComicInGenres.FindAsync(id);
+            if (comicInGenre == null)
             {
                 return false;
             }
 
-            _context.Bookmarks.Remove(bookmark);
+            _context.ComicInGenres.Remove(comicInGenre);
             await _context.SaveChangesAsync();
 
             return true;
         }
 
-        private bool BookmarkExists(Guid id)
+        private bool ComicInGenreExists(int id)
         {
-            return _context.Bookmarks.Any(e => e.IdUser == id);
+            return _context.ComicInGenres.Any(e => e.IdGenre == id);
         }
     }
 }

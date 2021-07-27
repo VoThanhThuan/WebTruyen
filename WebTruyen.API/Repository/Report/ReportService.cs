@@ -5,35 +5,32 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.ViewModel;
-using WebTruyen.Library.Enums;
 
-namespace WebTruyen.API.Repository.Bookmark
+namespace WebTruyen.API.Repository.Report
 {
-    public class BookmarkService : IBookmarkService
+    public class ReportService : IReportService
     {
         private readonly ComicDbContext _context;
 
-        public BookmarkService(ComicDbContext context)
+        public ReportService(ComicDbContext context)
         {
             _context = context;
         }
-
-        public async Task<IEnumerable<BookmarkVM>> GetBookmarks()
+        public async Task<IEnumerable<ReportVM>> GetReport()
         {
-            return await _context.Bookmarks.Select(x => x.ToViewModel()).ToListAsync();
+            return await _context.Report.Select(x => x.ToViewModel()).ToListAsync();
         }
 
-        public async Task<BookmarkVM> GetBookmark(Guid id)
+        public async Task<ReportVM> GetReport(Guid id)
         {
-            var bookmark = await _context.Bookmarks.FindAsync(id);
+            var report = await _context.Report.FindAsync(id);
 
-            return bookmark?.ToViewModel();
+            return report?.ToViewModel();
         }
 
-        public async Task<bool> PutBookmark(Guid id, BookmarkVM bookmark)
+        public async Task<bool> PutReport(Guid id, ReportVM request)
         {
-
-            _context.Entry(bookmark.ToBookmark()).State = EntityState.Modified;
+            _context.Entry(request.ToReport()).State = EntityState.Modified;
 
             try
             {
@@ -41,7 +38,7 @@ namespace WebTruyen.API.Repository.Bookmark
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!BookmarkExists(id))
+                if (!ReportExists(id))
                 {
                     return false;
                 }
@@ -54,16 +51,16 @@ namespace WebTruyen.API.Repository.Bookmark
             return true;
         }
 
-        public async Task<bool> PostBookmark(BookmarkVM bookmark)
+        public async Task<bool> PostReport(ReportVM request)
         {
-            _context.Bookmarks.Add(bookmark.ToBookmark());
+            _context.Report.Add(request.ToReport());
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (BookmarkExists(bookmark.IdUser))
+                if (ReportExists(request.IdUser))
                 {
                     return false;
                 }
@@ -76,23 +73,24 @@ namespace WebTruyen.API.Repository.Bookmark
             return true;
         }
 
-        public async Task<bool> DeleteBookmark(Guid id)
+        public async Task<bool> DeleteReport(Guid id)
         {
-            var bookmark = await _context.Bookmarks.FindAsync(id);
-            if (bookmark == null)
+            var report = await _context.Report.FindAsync(id);
+            if (report == null)
             {
                 return false;
             }
 
-            _context.Bookmarks.Remove(bookmark);
+            _context.Report.Remove(report);
             await _context.SaveChangesAsync();
 
             return true;
         }
 
-        private bool BookmarkExists(Guid id)
+        private bool ReportExists(Guid id)
         {
-            return _context.Bookmarks.Any(e => e.IdUser == id);
+            return _context.Report.Any(e => e.IdUser == id);
         }
+
     }
 }

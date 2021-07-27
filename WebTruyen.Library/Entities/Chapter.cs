@@ -30,7 +30,7 @@ namespace WebTruyen.Library.Entities
         public virtual Comic Comic { get; set; }
         public virtual List<Page> Pages { get; set; }
         public virtual List<Report> Reports { get; set; }
-        public virtual List<NewComicAnnouncement> NewComicAnnouncements { get; set; }
+        public virtual List<Announcement> NewComicAnnouncements { get; set; }
 
     }
 }

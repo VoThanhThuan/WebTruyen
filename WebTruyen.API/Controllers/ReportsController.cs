@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebTruyen.API.Repository.Report;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
 using WebTruyen.Library.Entities.ViewModel;
@@ -15,32 +16,32 @@ namespace WebTruyen.API.Controllers
     [ApiController]
     public class ReportsController : ControllerBase
     {
-        private readonly ComicDbContext _context;
+        private readonly IReportService _report;
 
-        public ReportsController(ComicDbContext context)
+        public ReportsController(IReportService context)
         {
-            _context = context;
+            _report = context;
         }
 
         // GET: api/Reports
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ReportVM>>> GetReport()
         {
-            return await _context.Report.Select(x => x.ToViewModel()).ToListAsync();
+            return Ok(await _report.GetReport());
         }
 
         // GET: api/Reports/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ReportVM>> GetReport(Guid id)
         {
-            var report = await _context.Report.FindAsync(id);
+            var report = await _report.GetReport(id);
 
             if (report == null)
             {
                 return NotFound();
             }
 
-            return report.ToViewModel();
+            return report;
         }
 
         // PUT: api/Reports/5
@@ -53,23 +54,10 @@ namespace WebTruyen.API.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(report.ToReport()).State = EntityState.Modified;
+            var result = await _report.PutReport(id, report);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ReportExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            if (!result)
+                return NotFound();
 
             return NoContent();
         }
@@ -79,22 +67,9 @@ namespace WebTruyen.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Report>> PostReport(ReportVM report)
         {
-            _context.Report.Add(report.ToReport());
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (ReportExists(report.IdUser))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            var result = await _report.PostReport(report);
+            if (!result)
+                return Conflict();
 
             return CreatedAtAction("GetReport", new { id = report.IdUser }, report);
         }
@@ -103,21 +78,11 @@ namespace WebTruyen.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReport(Guid id)
         {
-            var report = await _context.Report.FindAsync(id);
-            if (report == null)
-            {
+            var report = await _report.DeleteReport(id);
+            if (!report)
                 return NotFound();
-            }
-
-            _context.Report.Remove(report);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
 
-        private bool ReportExists(Guid id)
-        {
-            return _context.Report.Any(e => e.IdUser == id);
-        }
     }
 }

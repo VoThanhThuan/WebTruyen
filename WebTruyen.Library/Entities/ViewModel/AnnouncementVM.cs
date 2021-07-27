@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace WebTruyen.Library.Entities.ViewModel
 {
-    public class NewComicAnnouncementVM
+    public class AnnouncementVM
     {
-        public NewComicAnnouncement ToNewComicAnnouncement()
+        public Announcement ToNewComicAnnouncement()
         {
-            return new NewComicAnnouncement()
+            return new Announcement()
             {
                 Id = Id,
                 IdUser = IdUser,

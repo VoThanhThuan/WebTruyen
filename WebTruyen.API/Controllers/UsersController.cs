@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebTruyen.API.Repository.User;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.ViewModel;
 
@@ -14,32 +15,30 @@ namespace WebTruyen.API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly ComicDbContext _context;
+        private readonly IUserService _user;
 
-        public UsersController(ComicDbContext context)
+        public UsersController(IUserService context)
         {
-            _context = context;
+            _user = context;
         }
 
         // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserVM>>> GetUsers()
         {
-            return await _context.Users.Select(x => x.ToViewModel()).ToListAsync();
+            return Ok(await _user.GetUsers());
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<UserVM>> GetUser(Guid id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _user.GetUser(id);
 
             if (user == null)
-            {
                 return NotFound();
-            }
 
-            return user.ToViewModel();
+            return user;
         }
 
         // PUT: api/Users/5
@@ -53,23 +52,9 @@ namespace WebTruyen.API.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(user.ToUser()).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            var result = await _user.PutUser(id, user);
+            if (!result)
+                return NotFound();
 
             return NoContent();
         }
@@ -80,8 +65,7 @@ namespace WebTruyen.API.Controllers
         [Consumes("multipart/form-data")]
         public async Task<ActionResult<UserVM>> PostUser([FromForm]UserVM user)
         {
-            _context.Users.Add(user.ToUser());
-            await _context.SaveChangesAsync();
+            await _user.PostUser(user);
 
             return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
@@ -90,21 +74,13 @@ namespace WebTruyen.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
+            var result = await _user.DeleteUser(id);
+            if (!result)
                 return NotFound();
-            }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool UserExists(Guid id)
-        {
-            return _context.Users.Any(e => e.Id == id);
-        }
+
     }
 }

@@ -27,12 +27,7 @@ namespace WebTruyen.API.Repository.Chapter
         {
             var chapter = await _context.Chapters.FindAsync(id);
 
-            if (chapter == null)
-            {
-                return null;
-            }
-
-            return chapter.ToViewModel();
+            return chapter?.ToViewModel();
         }
 
         public async Task<bool> PutChapter(Guid id, ChapterVM chapter)
