@@ -39,13 +39,24 @@ namespace WebTruyen.API.Repository.User
 
         public async Task<bool> PutUser(Guid id, UserRequest request)
         {
-            var user = request.ToUser();
-            if(request.Avatar != null)
-                user.Avatar = await SaveFile(request.Avatar);
-            if(!string.IsNullOrEmpty(request.Password))
-                user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
 
-            _context.Entry(request.ToUser()).State = EntityState.Modified;
+            var user = await _context.Users.FindAsync(request.Id);
+            
+            user.Nickname = string.IsNullOrEmpty(RemoveSpaces(request.Nickname)) == true ? user.Nickname : request.Nickname;
+            user.Dob = request.Dob ?? user.Dob;
+            user.sex = request.sex ?? user.sex;
+            user.Address = string.IsNullOrEmpty(RemoveSpaces(request.Address)) == true ? user.Address : request.Address;
+            user.Fanpage = string.IsNullOrEmpty(RemoveSpaces(request.Fanpage)) == true ? user.Fanpage : request.Fanpage;
+            user.Email = string.IsNullOrEmpty(RemoveSpaces(request.Email)) == true ? user.Email : request.Email;
+            user.PhoneNumber = string.IsNullOrEmpty(RemoveSpaces(request.PhoneNumber)) == true ? user.PhoneNumber : request.PhoneNumber;
+            user.UserName = string.IsNullOrEmpty(RemoveSpaces(request.Username)) == true ? user.UserName : request.Username;
+
+            if (!string.IsNullOrEmpty(RemoveSpaces(request.Password)))
+                user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
+            if (request.Avatar != null)
+                user.Avatar = await SaveFile(request.Avatar);
+
+            //_context.Entry(request.ToUser()).State = EntityState.Modified;
 
             try
             {
@@ -72,18 +83,23 @@ namespace WebTruyen.API.Repository.User
             return true;
         }
 
-        public async Task<bool> DeleteUser(Guid id)
+        public async Task<int> DeleteUser(Guid id)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
-                return false;
+                return StatusCodes.Status404NotFound;
             }
+
+            var result = await DeleteFile(user.Avatar);
+            if (result != 200)
+                return StatusCodes.Status500InternalServerError;
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
 
-            return true;
+
+            return StatusCodes.Status200OK;
         }
 
         private bool UserExists(Guid id)
@@ -97,6 +113,18 @@ namespace WebTruyen.API.Repository.User
             var fileName = $@"avatar/{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
             await _storageService.SaveFileAsync(file.OpenReadStream(), fileName);
             return fileName;
+        }
+        private async Task<int> DeleteFile(string fileName)
+        {
+            return await _storageService.DeleteFileAsync(fileName);
+        }
+
+        private string RemoveSpaces(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+            while (text.Contains("  "))
+                text = text.Replace("  ", " ");
+            return text;
         }
     }
 }

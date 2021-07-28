@@ -67,6 +67,9 @@ namespace WebTruyen.API.Controllers
         [Consumes("multipart/form-data")]
         public async Task<ActionResult<UserVM>> PostUser([FromForm]UserRequest user)
         {
+            if (user.Password != user.ConfirmPassword)
+                return BadRequest();
+
             await _user.PostUser(user);
 
             return CreatedAtAction("GetUser", new { id = user.Id }, user);
@@ -77,10 +80,12 @@ namespace WebTruyen.API.Controllers
         public async Task<IActionResult> DeleteUser(Guid id)
         {
             var result = await _user.DeleteUser(id);
-            if (!result)
-                return NotFound();
-
-            return NoContent();
+            return result switch
+            {
+                StatusCodes.Status404NotFound => NotFound(),
+                StatusCodes.Status500InternalServerError => StatusCode(500),
+                _ => NoContent()
+            };
         }
 
 

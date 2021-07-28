@@ -26,17 +26,25 @@ namespace WebTruyen.API.Service
         public async Task SaveFileAsync(Stream mediaBinaryStream, string fileName)
         {
             var filePath = Path.Combine(_userContentFolder, fileName);
-            var output = new FileStream(filePath, FileMode.Create);
+            await using var output = new FileStream(filePath, FileMode.Create, FileAccess.Write);
             await mediaBinaryStream.CopyToAsync(output);
+            //output.Close();
         }
 
-        public async Task DeleteFileAsync(string fileName)
+        public async Task<int> DeleteFileAsync(string fileName)
         {
             var filePath = Path.Combine(_userContentFolder, fileName);
-            if (File.Exists(filePath))
+            if (!File.Exists(filePath)) return StatusCodes.Status200OK;
+            try
             {
                 await Task.Run(() => File.Delete(filePath));
             }
+            catch (Exception)
+            {
+                return StatusCodes.Status500InternalServerError;
+            }
+            return StatusCodes.Status200OK;
+
         }
     }
 }

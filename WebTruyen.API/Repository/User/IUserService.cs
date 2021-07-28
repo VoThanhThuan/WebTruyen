@@ -13,7 +13,7 @@ namespace WebTruyen.API.Repository.User
         public Task<UserVM> GetUser(Guid id);
         public Task<bool> PutUser(Guid id, UserRequest request);
         public Task<bool> PostUser(UserRequest request);
-        public Task<bool> DeleteUser(Guid id);
+        public Task<int> DeleteUser(Guid id);
 
     }
 }

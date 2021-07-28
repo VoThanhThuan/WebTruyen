@@ -38,6 +38,7 @@ namespace WebTruyen.API
             {
                 options.UseSqlServer(Configuration.GetConnectionString("ConnectComic"));
             });
+
             services.AddControllers();
             services.AddTransient<IStorageService, FileService>();
             services.AddTransient<IAnnouncementService, AnnouncementService>();
@@ -52,6 +53,7 @@ namespace WebTruyen.API
             services.AddTransient<IRoleService, RoleService>();
             services.AddTransient<ITranslationOfUserService, TranslationOfUserService>();
             services.AddTransient<IUserService, UserService>();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebTruyen.API", Version = "v1" });
