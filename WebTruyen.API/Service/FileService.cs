@@ -23,7 +23,7 @@ namespace WebTruyen.API.Service
             return $@"/{fileName}";
         }
 
-        public async Task SaveFileAsync(Stream mediaBinaryStream, string fileName)
+        private async Task SaveFileAsync(Stream mediaBinaryStream, string fileName)
         {
             var filePath = Path.Combine(_userContentFolder, fileName);
             await using var output = new FileStream(filePath, FileMode.Create, FileAccess.Write);
@@ -46,5 +46,15 @@ namespace WebTruyen.API.Service
             return StatusCodes.Status200OK;
 
         }
+
+        public async Task<string> SaveFile(IFormFile file, string path)
+        {
+            var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim().Value;
+            var fileName = $@"{path}{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
+            await SaveFileAsync(file.OpenReadStream(), fileName);
+            return fileName;
+        }
+
+
     }
 }

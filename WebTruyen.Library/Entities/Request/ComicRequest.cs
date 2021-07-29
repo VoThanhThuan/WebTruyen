@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using WebTruyen.Library.Enums;
 
-namespace WebTruyen.Library.Entities.ViewModel
+namespace WebTruyen.Library.Entities.Request
 {
-    public class ComicVM
+    public class ComicRequest
     {
         public Comic ToComic()
         {
@@ -17,8 +21,7 @@ namespace WebTruyen.Library.Entities.ViewModel
                 Author = Author,
                 Status = Status,
                 Views = Views,
-                Description = Description,
-                Thumbnail = Thumbnail
+                Description = Description
             };
         }
         [Key]
@@ -30,7 +33,6 @@ namespace WebTruyen.Library.Entities.ViewModel
         public Status? Status { get; set; } = 0;
         public int? Views { get; set; } = 0;
         public string Description { get; set; }
-        public string Thumbnail { get; set; }
-
+        public IFormFile Thumbnail { get; set; }
     }
 }

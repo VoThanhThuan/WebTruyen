@@ -39,19 +39,19 @@ namespace WebTruyen.API.Repository.User
 
         public async Task<bool> PutUser(Guid id, UserRequest request)
         {
-
+            var text = new TextService();
             var user = await _context.Users.FindAsync(request.Id);
             
-            user.Nickname = string.IsNullOrEmpty(RemoveSpaces(request.Nickname)) == true ? user.Nickname : request.Nickname;
+            user.Nickname = string.IsNullOrEmpty(text.RemoveSpaces(request.Nickname)) == true ? user.Nickname : request.Nickname;
             user.Dob = request.Dob ?? user.Dob;
             user.sex = request.sex ?? user.sex;
-            user.Address = string.IsNullOrEmpty(RemoveSpaces(request.Address)) == true ? user.Address : request.Address;
-            user.Fanpage = string.IsNullOrEmpty(RemoveSpaces(request.Fanpage)) == true ? user.Fanpage : request.Fanpage;
-            user.Email = string.IsNullOrEmpty(RemoveSpaces(request.Email)) == true ? user.Email : request.Email;
-            user.PhoneNumber = string.IsNullOrEmpty(RemoveSpaces(request.PhoneNumber)) == true ? user.PhoneNumber : request.PhoneNumber;
-            user.UserName = string.IsNullOrEmpty(RemoveSpaces(request.Username)) == true ? user.UserName : request.Username;
+            user.Address = string.IsNullOrEmpty(text.RemoveSpaces(request.Address)) == true ? user.Address : request.Address;
+            user.Fanpage = string.IsNullOrEmpty(text.RemoveSpaces(request.Fanpage)) == true ? user.Fanpage : request.Fanpage;
+            user.Email = string.IsNullOrEmpty(text.RemoveSpaces(request.Email)) == true ? user.Email : request.Email;
+            user.PhoneNumber = string.IsNullOrEmpty(text.RemoveSpaces(request.PhoneNumber)) == true ? user.PhoneNumber : request.PhoneNumber;
+            user.UserName = string.IsNullOrEmpty(text.RemoveSpaces(request.Username)) == true ? user.UserName : request.Username;
 
-            if (!string.IsNullOrEmpty(RemoveSpaces(request.Password)))
+            if (!string.IsNullOrEmpty(text.RemoveSpaces(request.Password)))
                 user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
             if (request.Avatar != null)
                 user.Avatar = await SaveFile(request.Avatar);
@@ -109,22 +109,11 @@ namespace WebTruyen.API.Repository.User
 
         private async Task<string> SaveFile(IFormFile file)
         {
-            var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim().Value;
-            var fileName = $@"avatar/{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
-            await _storageService.SaveFileAsync(file.OpenReadStream(), fileName);
-            return fileName;
+            return  await _storageService.SaveFile(file, @"avatar/");
         }
         private async Task<int> DeleteFile(string fileName)
         {
             return await _storageService.DeleteFileAsync(fileName);
-        }
-
-        private string RemoveSpaces(string text)
-        {
-            if (string.IsNullOrEmpty(text)) return text;
-            while (text.Contains("  "))
-                text = text.Replace("  ", " ");
-            return text;
         }
     }
 }

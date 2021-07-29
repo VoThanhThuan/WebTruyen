@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Repository.Comic;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
+using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ViewModel;
 
 namespace WebTruyen.API.Controllers
@@ -47,7 +48,7 @@ namespace WebTruyen.API.Controllers
         // PUT: api/Comics/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutComic(Guid id, ComicVM request)
+        public async Task<IActionResult> PutComic(Guid id, [FromForm] ComicRequest request)
         {
             if (id != request.Id)
             {
@@ -67,7 +68,7 @@ namespace WebTruyen.API.Controllers
         // POST: api/Comics
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ComicVM>> PostComic(ComicVM request)
+        public async Task<ActionResult<ComicVM>> PostComic([FromForm] ComicRequest request)
         {
             await _comic.PostComic(request);
 

@@ -7,7 +7,7 @@ namespace WebTruyen.Library.Enums
 {
     public enum Status
     {
-        InProcess,
+        InProgress,
         IsFinish,
         Drop
     }
