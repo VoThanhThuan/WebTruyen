@@ -8,7 +8,6 @@ using Microsoft.OpenApi.Models;
 using WebTruyen.API.Repository.Announcement;
 using WebTruyen.API.Repository.Bookmark;
 using WebTruyen.API.Repository.Chapter;
-using WebTruyen.API.Repository.Comic;
 using WebTruyen.API.Repository.ComicInGenre;
 using WebTruyen.API.Repository.Comment;
 using WebTruyen.API.Repository.Genre;
@@ -54,7 +53,6 @@ namespace WebTruyen.API
             services.AddTransient<IRoleService, RoleService>();
             services.AddTransient<ITranslationOfUserService, TranslationOfUserService>();
             services.AddTransient<IUserService, UserService>();
-            services.AddTransient<IComicService, ComicService>();
 
             services.AddSwaggerGen(c =>
             {

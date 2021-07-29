@@ -31,8 +31,8 @@ namespace WebTruyen.Library.Entities
         public string Name { get; set; }
         public string AnotherNameOfComic { get; set; }
         public string Author { get; set; }
-        public Status? Status { get; set; } = 0;
-        public int? Views { get; set; } = 0;
+        public Status Status { get; set; }
+        public int Views { get; set; } = 0;
         public string Description { get; set; }
         public string Thumbnail { get; set; }
 

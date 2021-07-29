@@ -11,7 +11,7 @@ namespace WebTruyen.API.Service
     {
         public string GetFileUrl(string fileName);
 
-        public Task<string> SaveFile(IFormFile file, string path);
+        public Task SaveFileAsync(Stream mediaBinaryStream, string fileName);
 
         public Task<int> DeleteFileAsync(string fileName);
     }

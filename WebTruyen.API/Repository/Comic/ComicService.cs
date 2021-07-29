@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using WebTruyen.API.Service;
 using WebTruyen.Library.Data;
-using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ViewModel;
 
 namespace WebTruyen.API.Repository.Comic
@@ -14,12 +11,10 @@ namespace WebTruyen.API.Repository.Comic
     public class ComicService : IComicService
     {
         private readonly ComicDbContext _context;
-        private readonly IStorageService _storageService;
 
-        public ComicService(ComicDbContext context, IStorageService storageService)
+        public ComicService(ComicDbContext context)
         {
             _context = context;
-            _storageService = storageService;
         }
         public async Task<IEnumerable<ComicVM>> GetComics()
         {
@@ -33,33 +28,10 @@ namespace WebTruyen.API.Repository.Comic
             return comic?.ToViewModel();
         }
 
-        public async Task<bool> PutComic(Guid id, ComicRequest request)
+        public async Task<bool> PutComic(Guid id, ComicVM request)
         {
-            var text = new TextService();
-            var comic = await _context.Comics.FindAsync(request.Id);
-            if (comic == null)
-                return false;
-            comic.Name = string.IsNullOrEmpty(text.RemoveSpaces(request.Name)) == true ? comic.Name : request.Name;
-            comic.AnotherNameOfComic = string.IsNullOrEmpty(text.RemoveSpaces(request.AnotherNameOfComic)) == true ? comic.AnotherNameOfComic : request.AnotherNameOfComic;
-            comic.Author = string.IsNullOrEmpty(text.RemoveSpaces(request.Author)) == true ? comic.Author : request.Author;
-            comic.Status = request.Status??comic.Status;
-            comic.Views = request.Views ?? comic.Views;
-            comic.Description = string.IsNullOrEmpty(text.RemoveSpaces(request.Description)) == true ? comic.Description : request.Description;
+            _context.Entry(request.ToComic()).State = EntityState.Modified;
 
-            if (request.Thumbnail != null)
-            {
-                if(comic.Thumbnail != null)
-                    await _storageService.DeleteFileAsync(comic.Thumbnail);
-                comic.Thumbnail = await SaveFile(request.Thumbnail);
-
-            }
-            /*
-                Name = Name,
-                AnotherNameOfComic = AnotherNameOfComic,
-                Author = Author,
-                Status = Status,
-                Views = Views,
-                Description = Description*/
             try
             {
                 await _context.SaveChangesAsync();
@@ -79,15 +51,12 @@ namespace WebTruyen.API.Repository.Comic
             return true;
         }
 
-        public async Task<bool> PostComic(ComicRequest request)
+        public async Task<bool> PostComic(ComicVM request)
         {
-            var comic = request.ToComic();
-            comic.Thumbnail = await SaveFile(request.Thumbnail);
-            _context.Comics.Add(comic);
+            _context.Comics.Add(request.ToComic());
             await _context.SaveChangesAsync();
 
             return true;
-
         }
 
         public async Task<bool> DeleteComic(Guid id)
@@ -107,15 +76,6 @@ namespace WebTruyen.API.Repository.Comic
         private bool ComicExists(Guid id)
         {
             return _context.Comics.Any(e => e.Id == id);
-        }
-
-        private async Task<string> SaveFile(IFormFile file)
-        {
-            return await _storageService.SaveFile(file, @"comic/");
-        }
-        private async Task<int> DeleteFile(string fileName)
-        {
-            return await _storageService.DeleteFileAsync(fileName);
         }
     }
 }
