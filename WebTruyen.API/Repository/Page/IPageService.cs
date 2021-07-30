@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ViewModel;
 
 namespace WebTruyen.API.Repository.Page
@@ -10,8 +11,8 @@ namespace WebTruyen.API.Repository.Page
     {
         public Task<IEnumerable<PageVM>> GetPages();
         public Task<PageVM> GetPage(Guid id);
-        public Task<bool> PutPage(Guid id, PageVM request);
-        public Task<bool> PostPage(PageVM request);
+        public Task<bool> PutPage(Guid id, PageRequest request);
+        public Task<bool> PostPage(Guid idChapter, PageRequest request);
         public Task<bool> DeletePage(Guid id);
 
     }

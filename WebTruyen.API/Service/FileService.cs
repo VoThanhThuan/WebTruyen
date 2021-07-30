@@ -23,12 +23,19 @@ namespace WebTruyen.API.Service
             return $@"/{fileName}";
         }
 
+
         private async Task SaveFileAsync(Stream mediaBinaryStream, string fileName)
         {
             var filePath = Path.Combine(_userContentFolder, fileName);
             await using var output = new FileStream(filePath, FileMode.Create, FileAccess.Write);
             await mediaBinaryStream.CopyToAsync(output);
             //output.Close();
+        }
+
+        public DirectoryInfo CreateDirectory(string path)
+        {
+            var newPath = Path.Combine(_userContentFolder, path);
+            return Directory.CreateDirectory(newPath);
         }
 
         public async Task<int> DeleteFileAsync(string fileName)
@@ -50,7 +57,7 @@ namespace WebTruyen.API.Service
         public async Task<string> SaveFile(IFormFile file, string path)
         {
             var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim().Value;
-            var fileName = $@"{path}{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
+            var fileName = $@"{path}/{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
             await SaveFileAsync(file.OpenReadStream(), fileName);
             return fileName;
         }

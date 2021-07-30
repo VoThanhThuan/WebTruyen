@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Repository.Page;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
+using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ViewModel;
 
 namespace WebTruyen.API.Controllers
@@ -46,14 +47,13 @@ namespace WebTruyen.API.Controllers
         // PUT: api/Pages/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPage(Guid id, PageVM page)
+        public async Task<IActionResult> PutPage(Guid idChapter, [FromForm]PageRequest requests)
         {
-            if (id != page.Id)
-            {
+            if (idChapter != requests.Id)
                 return BadRequest();
-            }
 
-            var result = await _page.PutPage(id, page);
+
+            var result = await _page.PutPage(idChapter, requests);
             if (!result)
                 return NotFound();
 
@@ -63,11 +63,14 @@ namespace WebTruyen.API.Controllers
         // POST: api/Pages
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Page>> PostPage(PageVM page)
+        public async Task<ActionResult<PageRequest>> PostPage(Guid idChapter, [FromForm] PageRequest requests)
         {
-            await _page.PostPage(page);
+            if (idChapter != requests.Id)
+                return BadRequest();
 
-            return CreatedAtAction("GetPage", new { id = page.Id }, page);
+            await _page.PostPage(idChapter, requests);
+
+            return CreatedAtAction("GetPage", new { id = requests.Id }, requests);
         }
 
         // DELETE: api/Pages/5

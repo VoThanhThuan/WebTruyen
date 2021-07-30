@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebTruyen.API.Service;
 using WebTruyen.Library.Data;
+using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ViewModel;
 
 namespace WebTruyen.API.Repository.Page
@@ -11,10 +15,11 @@ namespace WebTruyen.API.Repository.Page
     public class PageService : IPageService
     {
         private readonly ComicDbContext _context;
-
-        public PageService(ComicDbContext context)
+        private readonly IStorageService _storage;
+        public PageService(ComicDbContext context, IStorageService storage)
         {
             _context = context;
+            _storage = storage;
         }
 
         public async Task<IEnumerable<PageVM>> GetPages()
@@ -29,32 +34,62 @@ namespace WebTruyen.API.Repository.Page
             return page?.ToViewModel();
         }
 
-        public async Task<bool> PutPage(Guid id, PageVM request)
+        public async Task<List<PageVM>> GetPageOfChapter(Guid idChapter)
         {
-            _context.Entry(request.ToPage()).State = EntityState.Modified;
+            var page = await _context.Pages
+                .Where(x => x.IdChapter == idChapter)
+                .Select(x => x.ToViewModel())
+                .ToListAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PageExists(id))
-                {
-                    return false;
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            return page;
+        }
+
+
+        public async Task<bool> PutPage(Guid id, PageRequest request)
+        {
+            //_context.Entry(request.ToPage()).State = EntityState.Modified;
+
+            //try
+            //{
+            //    await _context.SaveChangesAsync();
+            //}
+            //catch (DbUpdateConcurrencyException)
+            //{
+            //    if (!PageExists(id))
+            //    {
+            //        return false;
+            //    }
+            //    else
+            //    {
+            //        throw;
+            //    }
+            //}
 
             return true;
         }
 
-        public async Task<bool> PostPage(PageVM request)
+        public async Task<bool> PostPage(Guid idChapter, PageRequest request)
         {
-            _context.Pages.Add(request.ToPage());
+            var chapter = await _context.Chapters.FindAsync(idChapter);
+            //Tạo folder cho chapter
+            Directory.CreateDirectory($"chapter{chapter.Ordinal}");
+            //lấy đường dẫn
+            var path = $@"comic/{chapter.Comic.NameAlias}/chapter{chapter.Ordinal}";
+
+
+
+            var pages = request.Image.Select(t => new Library.Entities.Page()
+                {
+                    Id = Guid.NewGuid(),
+                    Image = _storage.SaveFile(t, path).Result,
+                    IsLink = request.IsLink,
+                    SortOrder = request.SortOrder,
+                    IdChapter = request.IdChapter
+                })
+                .ToArray();
+
+            _context.Pages.AddRange(pages);
+
             await _context.SaveChangesAsync();
 
             return true;
@@ -78,5 +113,6 @@ namespace WebTruyen.API.Repository.Page
         {
             return _context.Pages.Any(e => e.Id == id);
         }
+
     }
 }

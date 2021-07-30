@@ -10,6 +10,8 @@ namespace WebTruyen.Library.Entities.ViewModel
             return new Chapter()
             {
                 Id = Id,
+                Ordinal = Ordinal,
+                Name = Name,
                 DateTimeUp = DateTimeUp,
                 Views = Views
             };
@@ -17,7 +19,8 @@ namespace WebTruyen.Library.Entities.ViewModel
 
         [Key]
         public Guid Id { get; set; }
-
+        public int Ordinal { get; set; } = 1;
+        public string Name { get; set; }
         public DateTime DateTimeUp { get; set; } = DateTime.Now;
         public int Views { get; set; } = 0;
 

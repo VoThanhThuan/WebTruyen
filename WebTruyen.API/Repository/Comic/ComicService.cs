@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -43,23 +44,16 @@ namespace WebTruyen.API.Repository.Comic
             comic.AnotherNameOfComic = string.IsNullOrEmpty(text.RemoveSpaces(request.AnotherNameOfComic)) == true ? comic.AnotherNameOfComic : request.AnotherNameOfComic;
             comic.Author = string.IsNullOrEmpty(text.RemoveSpaces(request.Author)) == true ? comic.Author : request.Author;
             comic.Status = request.Status??comic.Status;
-            comic.Views = request.Views ?? comic.Views;
             comic.Description = string.IsNullOrEmpty(text.RemoveSpaces(request.Description)) == true ? comic.Description : request.Description;
-
+            
+            var path = $"comic/{comic.NameAlias}";
             if (request.Thumbnail != null)
             {
                 if(comic.Thumbnail != null)
                     await _storageService.DeleteFileAsync(comic.Thumbnail);
-                comic.Thumbnail = await SaveFile(request.Thumbnail);
+                comic.Thumbnail = await _storageService.SaveFile(request.Thumbnail, path);
 
             }
-            /*
-                Name = Name,
-                AnotherNameOfComic = AnotherNameOfComic,
-                Author = Author,
-                Status = Status,
-                Views = Views,
-                Description = Description*/
             try
             {
                 await _context.SaveChangesAsync();
@@ -82,7 +76,13 @@ namespace WebTruyen.API.Repository.Comic
         public async Task<bool> PostComic(ComicRequest request)
         {
             var comic = request.ToComic();
-            comic.Thumbnail = await SaveFile(request.Thumbnail);
+            //Lưu name alias có dạnh như [ a-b-c ]
+            comic.NameAlias = new TextService().ConvertToUnSign(request.Name).Replace(" ", "-");
+            var path = $@"comic\{comic.NameAlias}";
+            //Tạo thư mục truyện mới
+            _storageService.CreateDirectory(path);
+            //Lưu hình ảnh
+            comic.Thumbnail = await _storageService.SaveFile(request.Thumbnail, path);
             _context.Comics.Add(comic);
             await _context.SaveChangesAsync();
 
@@ -109,10 +109,6 @@ namespace WebTruyen.API.Repository.Comic
             return _context.Comics.Any(e => e.Id == id);
         }
 
-        private async Task<string> SaveFile(IFormFile file)
-        {
-            return await _storageService.SaveFile(file, @"comic/");
-        }
         private async Task<int> DeleteFile(string fileName)
         {
             return await _storageService.DeleteFileAsync(fileName);

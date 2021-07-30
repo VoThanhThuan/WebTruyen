@@ -20,7 +20,6 @@ namespace WebTruyen.Library.Entities.Request
                 AnotherNameOfComic = AnotherNameOfComic,
                 Author = Author,
                 Status = Status,
-                Views = Views,
                 Description = Description
             };
         }
@@ -31,7 +30,7 @@ namespace WebTruyen.Library.Entities.Request
         public string AnotherNameOfComic { get; set; }
         public string Author { get; set; }
         public Status? Status { get; set; } = 0;
-        public int? Views { get; set; } = 0;
+
         public string Description { get; set; }
         public IFormFile Thumbnail { get; set; }
     }

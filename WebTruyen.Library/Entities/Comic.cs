@@ -16,6 +16,7 @@ namespace WebTruyen.Library.Entities
             {
                 Id = Id,
                 Name = Name,
+                NameAlias = NameAlias,
                 AnotherNameOfComic = AnotherNameOfComic,
                 Author = Author,
                 Status = Status,
@@ -29,6 +30,8 @@ namespace WebTruyen.Library.Entities
         public Guid Id { get; set; }
         [Required]
         public string Name { get; set; }
+
+        public string NameAlias { get; set; }
         public string AnotherNameOfComic { get; set; }
         public string Author { get; set; }
         public Status? Status { get; set; } = 0;

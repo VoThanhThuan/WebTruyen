@@ -10,9 +10,8 @@ namespace WebTruyen.API.Service
     public interface IStorageService
     {
         public string GetFileUrl(string fileName);
-
         public Task<string> SaveFile(IFormFile file, string path);
-
+        public DirectoryInfo CreateDirectory(string path);
         public Task<int> DeleteFileAsync(string fileName);
     }
 }
