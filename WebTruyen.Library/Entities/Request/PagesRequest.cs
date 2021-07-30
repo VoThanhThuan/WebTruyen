@@ -13,7 +13,7 @@ namespace WebTruyen.Library.Entities.Request
         public Guid Id { get; set; }
         public int Ordinal { get; set; } = 1;
         public List<IFormFile> Image { get; set; }
-        public bool IsLink { get; set; } = false;
+        public string Link { get; set; }
         public int SortOrder { get; set; }
         public Guid IdChapter { get; set; }
     }

@@ -76,13 +76,18 @@ namespace WebTruyen.API.Repository.Comic
         public async Task<bool> PostComic(ComicRequest request)
         {
             var comic = request.ToComic();
+
             //Lưu name alias có dạnh như [ a-b-c ]
             comic.NameAlias = new TextService().ConvertToUnSign(request.Name).Replace(" ", "-");
             var path = $@"comic\{comic.NameAlias}";
             //Tạo thư mục truyện mới
-            _storageService.CreateDirectory(path);
+            var folder = _storageService.CreateDirectory(path);
             //Lưu hình ảnh
+            if (!folder.Exists)
+                return false;
+
             comic.Thumbnail = await _storageService.SaveFile(request.Thumbnail, path);
+
             _context.Comics.Add(comic);
             await _context.SaveChangesAsync();
 

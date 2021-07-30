@@ -15,7 +15,6 @@ namespace WebTruyen.Library.Entities
             {
                 Id = Id,
                 Image = Image,
-                IsLink = IsLink,
                 SortOrder = SortOrder,
                 IdChapter = IdChapter
             };
@@ -24,7 +23,6 @@ namespace WebTruyen.Library.Entities
         [Key]
         public Guid Id { get; set; }
         public string Image { get; set; }
-        public bool IsLink { get; set; } = false;
         public int SortOrder { get; set; }
 
         public Guid IdChapter { get; set; }

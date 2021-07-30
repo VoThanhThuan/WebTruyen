@@ -81,8 +81,7 @@ namespace WebTruyen.API.Repository.Page
             var pages = request.Image.Select(t => new Library.Entities.Page()
                 {
                     Id = Guid.NewGuid(),
-                    Image = _storage.SaveFile(t, path).Result,
-                    IsLink = request.IsLink,
+                    Image = string.IsNullOrEmpty(request.Link) ? _storage.SaveFile(t, path).Result : request.Link,
                     SortOrder = request.SortOrder,
                     IdChapter = request.IdChapter
                 })
