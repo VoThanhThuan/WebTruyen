@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,10 +20,22 @@ namespace WebTruyen.API.Controllers
     public class ComicsController : ControllerBase
     {
         private readonly IComicService _comic;
-
-        public ComicsController(IComicService context)
+        private readonly IWebHostEnvironment _env;
+        public ComicsController(IComicService context, IWebHostEnvironment env)
         {
             _comic = context;
+            _env = env;
+        }
+
+        // GET: api/Comics
+        [HttpGet]
+        [Route("image/{name}")]
+        public IActionResult GetImage(string name)
+        {
+            var filePath = Path.Combine(
+                _env.ContentRootPath, "MyStaticFiles", name);
+
+            return PhysicalFile(filePath, "image/jpeg");
         }
 
         // GET: api/Comics
