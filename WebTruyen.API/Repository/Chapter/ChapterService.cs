@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.Library.Data;
+using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ViewModel;
 using WebTruyen.Library.Enums;
 
@@ -26,14 +27,22 @@ namespace WebTruyen.API.Repository.Chapter
         public async Task<ChapterVM> GetChapter(Guid id)
         {
             var chapter = await _context.Chapters.FindAsync(id);
-
+            chapter.Views += 1;
+            _context.Entry(chapter).State = EntityState.Modified;
             return chapter?.ToViewModel();
         }
 
-        public async Task<bool> PutChapter(Guid id, ChapterVM chapter)
+        public async Task<bool> PutChapter(Guid id, ChapterRequest request)
         {
 
-            _context.Entry(chapter.ToChapter()).State = EntityState.Modified;
+            var chapter = await _context.Chapters.FindAsync(id);
+
+            chapter.Ordinal = request.Ordinal ?? chapter.Ordinal;
+            chapter.Name = string.IsNullOrEmpty(request.Name) ? chapter.Name : request.Name;
+            chapter.DateTimeUp = request.DateTimeUp ?? chapter.DateTimeUp;
+            chapter.Views = request.Views ?? chapter.Views;
+
+            _context.Entry(chapter).State = EntityState.Modified;
 
             try
             {
@@ -54,12 +63,26 @@ namespace WebTruyen.API.Repository.Chapter
             return true;
         }
 
-        public async Task<bool> PostChapter(ChapterVM chapter)
+        public async Task<ChapterVM> PostChapter(ChapterRequest request)
         {
+            var comic = await _context.Comics.FindAsync(request.IdComic);
+            if (comic is null)
+                return null;
+
+            var chapter = new ChapterVM()
+            {
+                Id = Guid.NewGuid(),
+                Ordinal = request.Ordinal??1,
+                Name = request.Name,
+                DateTimeUp = DateTime.Now,
+                Views = 0,
+                IdComic = request.IdComic
+            };
+
             _context.Chapters.Add(chapter.ToChapter());
             await _context.SaveChangesAsync();
 
-            return true;
+            return chapter;
         }
 
         public async Task<bool> DeleteChapter(Guid id)

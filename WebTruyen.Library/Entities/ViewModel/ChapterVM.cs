@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace WebTruyen.Library.Entities.ViewModel
 {
@@ -13,17 +14,18 @@ namespace WebTruyen.Library.Entities.ViewModel
                 Ordinal = Ordinal,
                 Name = Name,
                 DateTimeUp = DateTimeUp,
-                Views = Views
+                Views = Views,
+                IdComic = IdComic
             };
         }
 
-        [Key]
         public Guid Id { get; set; }
-        public int Ordinal { get; set; } = 1;
+        public float Ordinal { get; set; } = 1.0f;
         public string Name { get; set; }
         public DateTime DateTimeUp { get; set; } = DateTime.Now;
         public int Views { get; set; } = 0;
 
+        public Guid IdComic { get; set; }
 
     }
 }

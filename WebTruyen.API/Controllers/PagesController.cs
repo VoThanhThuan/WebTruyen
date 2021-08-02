@@ -28,7 +28,7 @@ namespace WebTruyen.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PageVM>>> GetPages()
         {
-            return Ok(_page.GetPages());
+            return Ok(await _page.GetPages());
         }
 
         // GET: api/Pages/5

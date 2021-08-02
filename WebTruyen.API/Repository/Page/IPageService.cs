@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +13,8 @@ namespace WebTruyen.API.Repository.Page
         public Task<IEnumerable<PageVM>> GetPages();
         public Task<PageVM> GetPage(Guid id);
         public Task<bool> PutPage(Guid id, PageRequest request);
+        public Task<bool> PostPages(Guid idChapter, List<string> request);
+        public Task<bool> PostPages(Guid idChapter, List<IFormFile> request);
         public Task<bool> PostPage(Guid idChapter, PageRequest request);
         public Task<bool> DeletePage(Guid id);
 

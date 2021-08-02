@@ -17,19 +17,21 @@ namespace WebTruyen.Library.Entities
                 Ordinal = Ordinal,
                 Name = Name,
                 DateTimeUp = DateTimeUp,
-                Views = Views
+                Views = Views,
+                IdComic = IdComic
             };
         }
 
         [Key]
         public Guid Id { get; set; }
-        public int Ordinal { get; set; } = 1;
+        public float Ordinal { get; set; } = 1.0f;
         public string Name { get; set; }
         public DateTime DateTimeUp { get; set; } = DateTime.Now;
         public int Views { get; set; } = 0;
+        public bool IsLock { get; set; } = false;
+        public Guid IdComic { get; set; }
 
         //Khóa ngoại
-        public Guid IdComic { get; set; }
         public virtual Comic Comic { get; set; }
         public virtual List<Page> Pages { get; set; }
         public virtual List<Report> Reports { get; set; }

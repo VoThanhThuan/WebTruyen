@@ -1,12 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using WebTruyen.API.Repository.Chapter;
+using WebTruyen.API.Repository.Page;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
+using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ViewModel;
 
 namespace WebTruyen.API.Controllers
@@ -16,10 +20,12 @@ namespace WebTruyen.API.Controllers
     public class ChaptersController : ControllerBase
     {
         private readonly IChapterService _chapter;
+        private readonly IPageService _page;
 
-        public ChaptersController(IChapterService context)
+        public ChaptersController(IChapterService chapter, IPageService page)
         {
-            _chapter = context;
+            _chapter = chapter;
+            _page = page;
         }
 
         // GET: api/Chapters
@@ -46,7 +52,7 @@ namespace WebTruyen.API.Controllers
         // PUT: api/Chapters/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutChapter(Guid id, ChapterVM chapter)
+        public async Task<IActionResult> PutChapter(Guid id, ChapterRequest chapter)
         {
             if (id != chapter.Id)
             {
@@ -66,11 +72,18 @@ namespace WebTruyen.API.Controllers
         // POST: api/Chapters
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ChapterVM>> PostChapter(ChapterVM chapter)
+        public async Task<ActionResult<ChapterVM>> PostChapter([FromForm]ChapterRequest chapter, [FromForm]List<IFormFile> pages)
         {
-            await _chapter.PostChapter(chapter);
+            if (pages.Count < 1)
+                return BadRequest("Không có hình ảnh");
 
-            return CreatedAtAction("GetChapter", new { id = chapter.Id }, chapter);
+            var result = await _chapter.PostChapter(chapter);
+            if (result is null)
+                return BadRequest("Tạo chapter mới thất bại");
+
+            await _page.PostPages(result.Id, pages);
+
+            return CreatedAtAction("GetChapter", new { id = result.Id }, chapter);
         }
 
         // DELETE: api/Chapters/5
