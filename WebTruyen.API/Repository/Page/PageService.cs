@@ -67,10 +67,8 @@ namespace WebTruyen.API.Repository.Page
                 {
                     return false;
                 }
-                else
-                {
-                    throw;
-                }
+
+                throw;
             }
 
             return true;
