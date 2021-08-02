@@ -49,34 +49,45 @@ namespace WebTruyen.API.Repository.Page
 
         public async Task<bool> PutPage(Guid id, PageRequest request)
         {
-            //_context.Entry(request.ToPage()).State = EntityState.Modified;
 
-            //try
-            //{
-            //    await _context.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    if (!PageExists(id))
-            //    {
-            //        return false;
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
+            var page = await _context.Pages.FindAsync(id);
+            var path = Path.GetDirectoryName(page.Image);
+
+            page.Image = request.Image == null ? page.Image : await _storage.SaveFile(request.Image, path);
+            page.SortOrder = request.SortOrder;
+            page.IdChapter = request.IdChapter;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PageExists(id))
+                {
+                    return false;
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             return true;
         }
 
         public async Task<bool> PostPages(Guid idChapter, List<string> images)
         {
-            var chapter = await _context.Chapters.FindAsync(idChapter);
-            //Tạo folder cho chapter
-            Directory.CreateDirectory($"chapter{chapter.Ordinal}");
+            var chapAndComic = (from chap in _context.Chapters
+                where chap.Id == idChapter
+                join com in _context.Comics
+                    on chap.IdComic equals com.Id
+                select new { chap, com }).First();
+
             //lấy đường dẫn
-            var path = $@"comic/{chapter.Comic.NameAlias}/chapter{chapter.Ordinal}";
+            var path = $@"comic/{chapAndComic.com.NameAlias}/chapter{chapAndComic.chap.Ordinal}";
+            //Tạo folder cho chapter
+            _storage.CreateDirectory(path);
 
             var pages = images.Select((t, i) => new Library.Entities.Page()
             {
@@ -123,11 +134,16 @@ namespace WebTruyen.API.Repository.Page
 
         public async Task<bool> PostPage(Guid idChapter, PageRequest request)
         {
-            var chapter = await _context.Chapters.FindAsync(idChapter);
-            //Tạo folder cho chapter
-            Directory.CreateDirectory($"chapter{chapter.Ordinal}");
+            var chapAndComic = (from chap in _context.Chapters
+                where chap.Id == idChapter
+                join com in _context.Comics
+                    on chap.IdComic equals com.Id
+                select new { chap, com }).First();
+
             //lấy đường dẫn
-            var path = $@"comic/{chapter.Comic.NameAlias}/chapter{chapter.Ordinal}";
+            var path = $@"comic/{chapAndComic.com.NameAlias}/chapter{chapAndComic.chap.Ordinal}";
+            //Tạo folder cho chapter
+            _storage.CreateDirectory(path);
 
             var page = new Library.Entities.Page()
             {
