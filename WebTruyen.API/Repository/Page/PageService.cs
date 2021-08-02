@@ -114,6 +114,7 @@ namespace WebTruyen.API.Repository.Page
             var path = $@"comic/{chapAndComic.com.NameAlias}/chapter{chapAndComic.chap.Ordinal}";
             //Tạo folder cho chapter
             _storage.CreateDirectory(path);
+            images = images.OrderBy(x => x.FileName).ToList();
 
             var pages = images.Select((t, i) => new Library.Entities.Page()
             {
