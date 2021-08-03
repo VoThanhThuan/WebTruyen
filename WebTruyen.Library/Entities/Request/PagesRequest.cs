@@ -10,10 +10,10 @@ namespace WebTruyen.Library.Entities.Request
 {
     public class PageRequest
     {
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
         public IFormFile Image { get; set; }
         public string Link { get; set; }
-        public int SortOrder { get; set; }
+        public int? SortOrder { get; set; } = 0;
         public Guid IdChapter { get; set; }
     }
 }

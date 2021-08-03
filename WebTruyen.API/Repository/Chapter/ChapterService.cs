@@ -89,11 +89,11 @@ namespace WebTruyen.API.Repository.Chapter
 
         public async Task<bool> DeleteChapter(Guid id)
         {
-            //xóa ds image
-            var listimage = _context.Pages.Where(x => x.IdChapter == id);
-            if(listimage != null)
+            //xóa danh sách image =========================================================================================
+            var listImage = _context.Pages.Where(x => x.IdChapter == id);
+            if(!listImage.Any())
             {
-                foreach (var item in listimage)
+                foreach (var item in listImage)
                 {
                     await _storage.DeleteFileAsync(item.Image);
                     _context.Pages.Remove(item);
@@ -101,21 +101,21 @@ namespace WebTruyen.API.Repository.Chapter
                 }
                 await _context.SaveChangesAsync();
             }
-            //xóa report
+            //xóa report =========================================================================================
             var report = _context.Report.Where(x => x.IdChapter == id);
-            if(report.Count() == 0)
+            if(!report.Any())
             {
                 _context.Report.RemoveRange(report);
                 await _context.SaveChangesAsync();
             }
-            //xóa thông báo
+            //xóa thông báo =========================================================================================
             var announcement = _context.NewComicAnnouncements.Where(x => x.IdChapter == id);
-            if(announcement.Count() == 0)
+            if(!announcement.Any())
             {
                 _context.NewComicAnnouncements.RemoveRange(announcement);
                 await _context.SaveChangesAsync();
             }
-
+            //Xóa chapter =========================================================================================
             var chapter = await _context.Chapters.FindAsync(id);
             if (chapter == null)
             {

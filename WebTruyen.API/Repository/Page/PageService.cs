@@ -26,7 +26,7 @@ namespace WebTruyen.API.Repository.Page
 
         public async Task<IEnumerable<PageVM>> GetPages()
         {
-            return await _context.Pages.Select(x => x.ToViewModel()).ToListAsync();
+            return await _context.Pages.Select(x => x.ToViewModel()).OrderBy(x => x.SortOrder).ToListAsync();
         }
 
         public async Task<PageVM> GetPage(Guid id)
@@ -53,8 +53,13 @@ namespace WebTruyen.API.Repository.Page
             var page = await _context.Pages.FindAsync(id);
             var path = Path.GetDirectoryName(page.Image);
 
+            var lastOrder = _context.Pages
+                .Where(x => x.Id == request.IdChapter)
+                .OrderBy(x => x.SortOrder)
+                .Last().SortOrder;
+
             page.Image = request.Image == null ? page.Image : await _storage.SaveFile(request.Image, path);
-            page.SortOrder = request.SortOrder;
+            page.SortOrder = request.SortOrder ?? lastOrder + 1;
             page.IdChapter = request.IdChapter;
 
             try
@@ -64,10 +69,7 @@ namespace WebTruyen.API.Repository.Page
             catch (DbUpdateConcurrencyException)
             {
                 if (!PageExists(id))
-                {
                     return false;
-                }
-
                 throw;
             }
 
@@ -77,10 +79,10 @@ namespace WebTruyen.API.Repository.Page
         public async Task<bool> PostPages(Guid idChapter, List<string> images)
         {
             var chapAndComic = (from chap in _context.Chapters
-                where chap.Id == idChapter
-                join com in _context.Comics
-                    on chap.IdComic equals com.Id
-                select new { chap, com }).First();
+                                where chap.Id == idChapter
+                                join com in _context.Comics
+                                    on chap.IdComic equals com.Id
+                                select new { chap, com }).First();
 
             //lấy đường dẫn
             var path = $@"comic/{chapAndComic.com.NameAlias}/chapter{chapAndComic.chap.Ordinal}";
@@ -118,9 +120,9 @@ namespace WebTruyen.API.Repository.Page
 
             var pages = images.Select((t, i) => new Library.Entities.Page()
             {
-                Id = Guid.NewGuid(), 
-                Image = _storage.SaveFile(t, path).Result, 
-                SortOrder = i, 
+                Id = Guid.NewGuid(),
+                Image = _storage.SaveFile(t, path).Result,
+                SortOrder = i,
                 IdChapter = idChapter
             }).ToList();
 
@@ -131,24 +133,26 @@ namespace WebTruyen.API.Repository.Page
             return true;
         }
 
-        public async Task<bool> PostPage(Guid idChapter, PageRequest request)
+        public async Task<PageVM> PostPage(Guid idChapter, PageRequest request)
         {
             var chapAndComic = (from chap in _context.Chapters
-                where chap.Id == idChapter
-                join com in _context.Comics
-                    on chap.IdComic equals com.Id
-                select new { chap, com }).First();
+                                where chap.Id == idChapter
+                                join com in _context.Comics
+                                    on chap.IdComic equals com.Id
+                                select new { chap, com }).First();
 
             //lấy đường dẫn
             var path = $@"comic/{chapAndComic.com.NameAlias}/chapter{chapAndComic.chap.Ordinal}";
             //Tạo folder cho chapter
             _storage.CreateDirectory(path);
 
+            var lastOrder = _context.Pages.Where(x => x.IdChapter == idChapter).OrderBy(x => x.SortOrder).Last().SortOrder;
+
             var page = new Library.Entities.Page()
             {
-                Id = Guid.NewGuid(),
+                Id = request.Id ?? Guid.NewGuid(),
                 Image = string.IsNullOrEmpty(request.Link) ? _storage.SaveFile(request.Image, path).Result : request.Link,
-                SortOrder = request.SortOrder,
+                SortOrder = request.SortOrder ?? lastOrder + 1,
                 IdChapter = request.IdChapter
             };
 
@@ -156,7 +160,7 @@ namespace WebTruyen.API.Repository.Page
 
             await _context.SaveChangesAsync();
 
-            return true;
+            return page.ToViewModel();
         }
 
         public async Task<bool> DeletePage(Guid id)

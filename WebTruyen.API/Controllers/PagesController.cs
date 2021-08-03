@@ -65,12 +65,12 @@ namespace WebTruyen.API.Controllers
         [HttpPost]
         public async Task<ActionResult<PageRequest>> PostPage(Guid idChapter, [FromForm] PageRequest requests)
         {
-            if (idChapter != requests.Id)
+            if (idChapter != requests.IdChapter)
                 return BadRequest();
 
-            await _page.PostPage(idChapter, requests);
+            var result = await _page.PostPage(idChapter, requests);
 
-            return CreatedAtAction("GetPage", new { id = requests.Id }, requests);
+            return CreatedAtAction("GetPage", new { id = result.Id }, requests);
         }
 
         // DELETE: api/Pages/5
