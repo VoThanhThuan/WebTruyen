@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using WebTruyen.API.Service;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ViewModel;
@@ -13,12 +14,13 @@ namespace WebTruyen.API.Repository.Chapter
     public class ChapterService : IChapterService
     {
         private readonly ComicDbContext _context;
+        private readonly IStorageService _storage;
 
-        public ChapterService(ComicDbContext context)
+        public ChapterService(ComicDbContext context, IStorageService storageService)
         {
             _context = context;
+            _storage = storageService;
         }
-
         public async Task<IEnumerable<ChapterVM>> GetChapters()
         {
             return await _context.Chapters.Select(x => x.ToViewModel()).ToListAsync();
@@ -87,6 +89,33 @@ namespace WebTruyen.API.Repository.Chapter
 
         public async Task<bool> DeleteChapter(Guid id)
         {
+            //xóa ds image
+            var listimage = _context.Pages.Where(x => x.IdChapter == id);
+            if(listimage != null)
+            {
+                foreach (var item in listimage)
+                {
+                    await _storage.DeleteFileAsync(item.Image);
+                    _context.Pages.Remove(item);
+
+                }
+                await _context.SaveChangesAsync();
+            }
+            //xóa report
+            var report = _context.Report.Where(x => x.IdChapter == id);
+            if(report.Count() == 0)
+            {
+                _context.Report.RemoveRange(report);
+                await _context.SaveChangesAsync();
+            }
+            //xóa thông báo
+            var announcement = _context.NewComicAnnouncements.Where(x => x.IdChapter == id);
+            if(announcement.Count() == 0)
+            {
+                _context.NewComicAnnouncements.RemoveRange(announcement);
+                await _context.SaveChangesAsync();
+            }
+
             var chapter = await _context.Chapters.FindAsync(id);
             if (chapter == null)
             {

@@ -162,11 +162,12 @@ namespace WebTruyen.API.Repository.Page
         public async Task<bool> DeletePage(Guid id)
         {
             var page = await _context.Pages.FindAsync(id);
+
             if (page == null)
             {
                 return false;
             }
-
+            await _storage.DeleteFileAsync(page.Image);
             _context.Pages.Remove(page);
             await _context.SaveChangesAsync();
 
