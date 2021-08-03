@@ -26,7 +26,7 @@ namespace WebTruyen.API.Repository.Page
 
         public async Task<IEnumerable<PageVM>> GetPages()
         {
-            return await _context.Pages.Select(x => x.ToViewModel()).OrderBy(x => x.SortOrder).ToListAsync();
+            return await _context.Pages.OrderBy(x => x.SortOrder).Select(x => x.ToViewModel()).ToListAsync();
         }
 
         public async Task<PageVM> GetPage(Guid id)
@@ -34,6 +34,17 @@ namespace WebTruyen.API.Repository.Page
             var page = await _context.Pages.FindAsync(id);
 
             return page?.ToViewModel();
+        }
+
+        public async Task<IEnumerable<PageVM>> GetPagesWithChapter(Guid idChapter)
+        {
+            var pages = await _context.Pages
+                .Where(x => x.IdChapter == idChapter)
+                .OrderBy(x => x.SortOrder)
+                .Select(x => x.ToViewModel())
+                .ToListAsync();
+
+            return pages;
         }
 
         public async Task<List<PageVM>> GetPageOfChapter(Guid idChapter)
