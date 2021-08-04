@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using WebTruyen.API.Service;
 using WebTruyen.Library.Data;
@@ -19,11 +24,20 @@ namespace WebTruyen.API.Repository.User
         private readonly ComicDbContext _context;
         private readonly IStorageService _storageService;
         private readonly IPasswordHasher<Library.Entities.User> _passwordHasher = new PasswordHasher<Library.Entities.User>();
-
-        public UserService(ComicDbContext context, IStorageService storageService)
+        private readonly UserManager<Library.Entities.User> _userManager; //Thư viện quản lý user
+        private readonly SignInManager<Library.Entities.User> _signInManager; //Thư viên đăng nhập
+        private readonly IConfiguration _config; //lấy config từ appsetting.config
+        public UserService(ComicDbContext context, 
+            IStorageService storageService, 
+            SignInManager<Library.Entities.User> signInManager, 
+            UserManager<Library.Entities.User> userManager, 
+            IConfiguration config)
         {
             _context = context;
             _storageService = storageService;
+            _signInManager = signInManager;
+            _userManager = userManager;
+            _config = config;
         }
         public async Task<IEnumerable<UserVM>> GetUsers()
         {
@@ -114,6 +128,39 @@ namespace WebTruyen.API.Repository.User
         private async Task<int> DeleteFile(string fileName)
         {
             return await _storageService.DeleteFileAsync(fileName);
+        }
+
+        public async Task<string> Authenticate(LoginRequest request)
+        {
+            var user = await _userManager.FindByNameAsync(request.Username);
+            if (user == null) return null;
+
+            var result = await _signInManager.PasswordSignInAsync(user, request.Password, request.RememberMe, true);
+            if (!result.Succeeded)
+            {
+                return null;
+            }
+
+            var roles = await _userManager.GetRolesAsync(user); //lấy quyền người dùng
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.GivenName, user.Nickname),
+                new Claim(ClaimTypes.Role, string.Join(";", roles)),
+                new Claim(ClaimTypes.Name, user.UserName)
+            };
+            //<>Mã hóa SymmetricS
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            //<> Tạo Token
+            var token = new JwtSecurityToken(_config["Tokens:Issuer"],
+                _config["Tokens:Issuer"],
+                claims,
+                expires: DateTime.Now.AddHours(1),
+                signingCredentials: creds);
+            //</>
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

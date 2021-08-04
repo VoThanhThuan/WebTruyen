@@ -42,8 +42,12 @@ namespace WebTruyen.Library.Data
             modelBuilder.ApplyConfiguration(new ReportConfiguration());
 
             modelBuilder.ApplyConfiguration(new TranslationOfUserConfiguration());
-
+            modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("AppUserClaim");
             modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("AppUserRole").HasKey(x => new { x.UserId, x.RoleId });
+            modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("AppUserLogin").HasKey(x => x.UserId);
+
+            modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("AppRoleClaim");
+            modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("AppUserToken").HasKey(x => x.UserId);
         }
 
         public DbSet<Comic> Comics { get; set; }
