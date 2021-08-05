@@ -65,9 +65,9 @@ namespace WebTruyen.API
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IComicService, ComicService>();
 
-            services.AddTransient<UserManager<User>, UserManager<User>>();
-            services.AddTransient<SignInManager<User>, SignInManager<User>>();
-            services.AddTransient<RoleManager<Role>, RoleManager<Role>>();
+            //services.AddTransient<UserManager<User>, UserManager<User>>();
+            //services.AddTransient<SignInManager<User>, SignInManager<User>>();
+            //services.AddTransient<RoleManager<Role>, RoleManager<Role>>();
 
 
             services.AddSwaggerGen(c =>
