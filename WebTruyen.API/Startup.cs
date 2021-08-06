@@ -45,6 +45,7 @@ namespace WebTruyen.API
                 options.UseSqlServer(Configuration.GetConnectionString("ConnectComic"));
             });
 
+
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<ComicDbContext>()
                 .AddDefaultTokenProviders();
@@ -129,7 +130,17 @@ namespace WebTruyen.API
                         IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes)
                     };
                 });
-
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder =>
+                    {
+                        builder.SetIsOriginAllowed((host) => true);
+                        builder.AllowAnyMethod();
+                        builder.AllowAnyHeader();
+                        builder.AllowCredentials();
+                    });
+            });
 
         }
 
@@ -151,6 +162,7 @@ namespace WebTruyen.API
             app.UseAuthentication();
 
             app.UseRouting();
+            app.UseCors("CorsPolicy");
 
             app.UseAuthorization();
 

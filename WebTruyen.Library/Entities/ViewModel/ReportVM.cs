@@ -17,7 +17,7 @@ namespace WebTruyen.Library.Entities.ViewModel
             };
         }
 
-        public string Content { get; set; }
+        public string Content { get; set; } = "";
         public Guid IdChapter { get; set; }
         public Guid IdUser { get; set; }
 

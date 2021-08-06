@@ -59,6 +59,20 @@ namespace WebTruyen.API.Controllers
             return comic;
         }
 
+        // GET: api/Comics/detail?nameAlias=Vo-Thanh-Thuan
+        [HttpGet("detail")]
+        public async Task<ActionResult<ComicVM>> GetComic([FromQuery]string nameAlias)
+        {
+            var comic = await _comic.GetComic(nameAlias);
+
+            if (comic == null)
+            {
+                return NotFound();
+            }
+
+            return comic;
+        }
+
         // PUT: api/Comics/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

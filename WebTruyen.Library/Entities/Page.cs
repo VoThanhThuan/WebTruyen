@@ -22,8 +22,8 @@ namespace WebTruyen.Library.Entities
 
         [Key]
         public Guid Id { get; set; }
-        public string Image { get; set; }
-        public int SortOrder { get; set; }
+        public string Image { get; set; } = "";
+        public int SortOrder { get; set; } = 0;
 
         public Guid IdChapter { get; set; }
         public virtual Chapter Chapter { get; set; }

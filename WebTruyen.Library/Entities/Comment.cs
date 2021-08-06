@@ -25,7 +25,7 @@ namespace WebTruyen.Library.Entities
         [Key]
         public Guid Id { get; set; }
         public DateTime DateTimeUp { get; set; } = DateTime.Now;
-        public string Chapter { get; set; }
+        public string Chapter { get; set; } = "";
 
         public Guid IdComic { get; set; }
         public Guid IdUser { get; set; }

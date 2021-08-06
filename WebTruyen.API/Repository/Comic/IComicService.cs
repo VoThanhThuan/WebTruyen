@@ -11,6 +11,7 @@ namespace WebTruyen.API.Repository.Comic
     {
         public Task<IEnumerable<ComicVM>> GetComics();
         public Task<ComicVM> GetComic(Guid id);
+        public Task<ComicVM> GetComic(string nameAlias);
         public Task<bool> PutComic(Guid id, ComicRequest request);
         public Task<bool> PostComic(ComicRequest request);
         public Task<bool> DeleteComic(Guid id);

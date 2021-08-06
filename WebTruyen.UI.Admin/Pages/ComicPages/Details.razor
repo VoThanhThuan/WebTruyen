@@ -1,0 +1,110 @@
+﻿@page "/comic/detail/{nameAlias}"
+@using WebTruyen.UI.Admin.Service.ComicService
+@using WebTruyen.Library.Entities.ViewModel
+@using WebTruyen.UI.Admin.Components;
+
+@if (_comic == null)
+{
+    <Loading></Loading>
+}
+else
+{
+    <div class="d-flex justify-content-start">
+        <div class="card" style="width: 18rem;">
+            <img src="@_comic.Thumbnail" class="card-img-top" alt="@_comic.NameAlias">
+            <div class="card-body">
+                <h5 class="card-title">@_comic.Name</h5>
+                <p class="card-text">@_comic.Description</p>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Tác Giả:@_comic.Author</li>
+                <li class="list-group-item">Tình Trạng:@_comic.Status</li>
+                <li class="list-group-item">Lượt Xem:@_comic.Views</li>
+            </ul>
+            <div class="card-body">
+                <button type="button" class="btn btn-primary" @onclick=OpenUpdate>@_element.TextButtonUpdate</button>
+                <a href="#" class="card-link">Xóa</a>
+            </div>
+        </div>
+        @if (_element.IsShow)
+        {
+            <div class="d-flex flex-row m-5">
+                <EditForm Model="@_comic" OnSubmit="@Update">
+                    <span>Hình</span>
+                    <InputFile class="form-control" OnChange="PreviewImage"></InputFile>
+                    <span>Tên</span>
+                    <InputText class="form-control" @bind-Value="_comic.Name"></InputText>
+                    <span>Tên Khác</span>
+                    <InputText class="form-control" @bind-Value="_comic.AnotherNameOfComic"></InputText>
+                    <span>Tác Giả</span>
+                    <InputText class="form-control" @bind-Value="_comic.Author"></InputText>
+                    <span>Mô Tả</span>
+                    <InputText class="form-control" @bind-Value="_comic.Description"></InputText>
+                    <span>Tình Trạng</span>
+                    <InputSelect class="form-control" @bind-Value="_comic.Status">
+                        <option value="0">Đang Tiến Hành</option>
+                        <option value="1">Đã Hoàn Thành</option>
+                        <option value="2">Đã Hủy</option>
+                    </InputSelect>
+                    <input type="submit" class="btn btn-primary mt-5" value="Save"/>
+                </EditForm>
+            </div>
+        }
+
+
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string nameAlias { get; set; }
+
+    [Inject] private IComicApiClient _ComicApi { get; set; }
+
+    private ComicVM _comic = new ComicVM();
+
+    private ViewElement _element = new ViewElement();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _comic = await _ComicApi.GetComic(nameAlias);
+        _comic.Name ??= "";
+        _comic.NameAlias ??= "";
+        _comic.AnotherNameOfComic ??= "";
+        _comic.Author ??= "";
+        _comic.Description ??= "";
+    }
+
+    private void Update()
+    {
+        Console.WriteLine(_comic.Name);
+    }
+
+    private void OpenUpdate()
+    {
+        _element.IsShow = !_element.IsShow;
+        _element.TextButtonUpdate = _element.IsShow ? "Hủy" : "Cập Nhật";
+    }
+
+    private async void PreviewImage(InputFileChangeEventArgs e)
+    {
+        var format = e.File.ContentType; //lấy định dạng file
+
+        var buffer = new byte[e.File.Size];//Khởi tạo vùng nhớ
+
+        await e.File.OpenReadStream().ReadAsync(buffer);//Đọc dữ liệu vào vùng nhớ
+        var imageDataUrl = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+
+        _comic.Thumbnail = imageDataUrl;
+        //Cập nhât UI
+        StateHasChanged();
+    }
+
+    protected class ViewElement
+    {
+        public bool IsShow = false;
+        public string TextButtonUpdate = "Cập Nhật";
+    }
+
+}

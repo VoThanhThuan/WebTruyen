@@ -27,12 +27,12 @@ namespace WebTruyen.Library.Entities
             };
         }
 
-        public string Nickname { get; set; }
+        public string Nickname { get; set; } = "";
         public DateTime? Dob { get; set; }
-        public string Avatar { get; set; }
+        public string Avatar { get; set; } = "";
         public bool? sex { get; set; }
-        public string Address { get; set; }
-        public string Fanpage { get; set; }
+        public string Address { get; set; } = "";
+        public string Fanpage { get; set; } = "";
         //Khóa ngoại
         public virtual List<Report> Reports { get; set; }
         public virtual List<TranslationOfUser> TranslationOfUsers { get; set; }

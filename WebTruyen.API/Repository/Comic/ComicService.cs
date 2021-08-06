@@ -34,6 +34,13 @@ namespace WebTruyen.API.Repository.Comic
             return comic?.ToViewModel();
         }
 
+        public async Task<ComicVM> GetComic(string nameAlias)
+        {
+            var comic = await _context.Comics.FirstOrDefaultAsync(x => x.NameAlias == nameAlias);
+
+            return comic?.ToViewModel();
+        }
+
         public async Task<bool> PutComic(Guid id, ComicRequest request)
         {
             var text = new TextService();
@@ -79,7 +86,7 @@ namespace WebTruyen.API.Repository.Comic
 
             //Lưu name alias có dạnh như [ a-b-c ]
             comic.NameAlias = new TextService().ConvertToUnSign(request.Name).Replace(" ", "-");
-            var path = $@"comic\{comic.NameAlias}";
+            var path = $@"comic/{comic.NameAlias}";
             //Tạo thư mục truyện mới
             var folder = _storageService.CreateDirectory(path);
             //Lưu hình ảnh

@@ -25,14 +25,14 @@ namespace WebTruyen.Library.Entities.ViewModel
         [Key]
         public Guid Id { get; set; }
         [Required]
-        public string Name { get; set; }
-        public string NameAlias { get; set; }
-        public string AnotherNameOfComic { get; set; }
-        public string Author { get; set; }
+        public string Name { get; set; } = "";
+        public string NameAlias { get; set; } = "";
+        public string AnotherNameOfComic { get; set; } = "";
+        public string Author { get; set; } = "";
         public Status? Status { get; set; } = 0;
         public int? Views { get; set; } = 0;
-        public string Description { get; set; }
-        public string Thumbnail { get; set; }
+        public string Description { get; set; } = "";
+        public string Thumbnail { get; set; } = "";
 
     }
 }

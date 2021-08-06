@@ -17,7 +17,7 @@ namespace WebTruyen.Library.Entities
                 IdUser = IdUser
             };
         }
-        public string Content { get; set; }
+        public string Content { get; set; } = "";
         public Guid IdChapter { get; set; }
         public Guid IdUser { get; set; }
         public virtual Chapter Chapter { get; set; }

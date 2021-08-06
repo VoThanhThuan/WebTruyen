@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.31321.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebTruyen.API", "WebTruyen.API\WebTruyen.API.csproj", "{E8706851-AD2B-4CAD-B876-0D72670DBCCB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebTruyen.Library", "WebTruyen.Library\WebTruyen.Library.csproj", "{6FEA9519-844F-4A67-A804-2FAA784809D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebTruyen.Library", "WebTruyen.Library\WebTruyen.Library.csproj", "{6FEA9519-844F-4A67-A804-2FAA784809D6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebTruyen.UI.Admin", "WebTruyen.UI.Admin\WebTruyen.UI.Admin.csproj", "{CCEE57F7-313C-4E9C-9D71-28E09235D3E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{6FEA9519-844F-4A67-A804-2FAA784809D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FEA9519-844F-4A67-A804-2FAA784809D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FEA9519-844F-4A67-A804-2FAA784809D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCEE57F7-313C-4E9C-9D71-28E09235D3E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCEE57F7-313C-4E9C-9D71-28E09235D3E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCEE57F7-313C-4E9C-9D71-28E09235D3E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCEE57F7-313C-4E9C-9D71-28E09235D3E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
