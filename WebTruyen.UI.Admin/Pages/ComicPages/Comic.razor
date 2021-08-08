@@ -1,7 +1,6 @@
 ﻿@page "/comic"
 @using WebTruyen.UI.Admin.Components;
 
-
 @if (_comics == null)
 {
     <Loading></Loading>
@@ -37,7 +36,9 @@ else
                         <td>@comic.Status</td>
                         <td>@comic.Views</td>
                         <td>@comic.Description</td>
-                        <td><a href="comic/detail/@comic.NameAlias">Detail</a></td>
+                        <td>
+                                <a href="comic/detail/@comic.NameAlias" class="badge bg-info text-decoration-none text-dark"><i class="far fa-info-circle"></i> Chi Tiết</a>
+                        </td>
                     </tr>
                 }
             }

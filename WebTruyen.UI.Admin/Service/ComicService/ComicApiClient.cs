@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.UI.Admin.RequestClient;
 
 namespace WebTruyen.UI.Admin.Service.ComicService
 {
@@ -45,17 +47,38 @@ namespace WebTruyen.UI.Admin.Service.ComicService
             return result;
         }
 
-        public Task<bool> PutComic(Guid id, ComicRequest request)
+        public Task<int> PutComic(Guid id, ComicRequest request)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> PostComic(ComicRequest request)
+        public async Task<int> PostComic(ComicRequestClient request)
         {
-            throw new NotImplementedException();
+            var requestContent = new MultipartFormDataContent();
+
+            if (request.Thumbnail != null)
+            {
+                byte[] data;
+                using (var br = new BinaryReader(request.Thumbnail.OpenReadStream()))
+                {
+                    data = br.ReadBytes((int)request.Thumbnail.OpenReadStream().Length);
+                }
+
+                var bytes = new ByteArrayContent(data);
+                requestContent.Add(bytes, "thumbnailImage", request.Thumbnail.Name);
+            }
+            requestContent.Add(new StringContent(request.Name), "Name");
+            requestContent.Add(new StringContent(request.NameAlias), "NameAlias");
+            requestContent.Add(new StringContent(request.AnotherNameOfComic), "AnotherNameOfComic");
+            requestContent.Add(new StringContent(request.Author), "Author");
+            requestContent.Add(new StringContent(request.Status.ToString() ?? string.Empty), "Status");
+            requestContent.Add(new StringContent(request.Description), "Description");
+
+            var response = await _http.PostAsync($"/api/Comics/", requestContent);
+            return (int)response.StatusCode;
         }
 
-        public Task<bool> DeleteComic(Guid id)
+        public Task<int> DeleteComic(Guid id)
         {
             throw new NotImplementedException();
         }

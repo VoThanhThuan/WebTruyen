@@ -8,8 +8,4 @@
     <ProjectReference Include="..\WebTruyen.Library\WebTruyen.Library.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\fonts\" />
-  </ItemGroup>
-
 </Project>
