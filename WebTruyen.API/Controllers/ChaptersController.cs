@@ -35,6 +35,12 @@ namespace WebTruyen.API.Controllers
             return Ok(await _chapter.GetChapters());
         }
 
+        // GET: api/Chapters/comic?idComic=xxx-xxx-xxx-xxx
+        [HttpGet("comic")]
+        public async Task<ActionResult<IEnumerable<ChapterVM>>> GetChaptersInComic([FromQuery]Guid idComic)
+        {
+            return Ok(await _chapter.GetChaptersInComic(idComic));
+        }
         // GET: api/Chapters/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ChapterVM>> GetChapter(Guid id)

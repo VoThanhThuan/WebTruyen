@@ -4,7 +4,7 @@
     "WebTruyen.API": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
-      "launchBrowser": false,
+      "launchBrowser": true,
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:5001",
       "environmentVariables": {

@@ -33,9 +33,9 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Pages/chapter?idChapter=69
         [HttpGet("chapter")]
-        public async Task<ActionResult<IEnumerable<PageVM>>> GetPagesWithChapter([FromQuery]Guid idChapter)
+        public async Task<ActionResult<IEnumerable<PageVM>>> GetPagesInChapter([FromQuery]Guid idChapter)
         {
-            return Ok(await _page.GetPagesWithChapter(idChapter));
+            return Ok(await _page.GetPagesInChapter(idChapter));
         }
 
         // GET: api/Pages/5

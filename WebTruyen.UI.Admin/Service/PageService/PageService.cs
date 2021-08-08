@@ -29,9 +29,12 @@ namespace WebTruyen.UI.Admin.Service.PageService
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<PageVM>> GetPagesWithChapter(Guid idChapter)
+        public async Task<IEnumerable<PageVM>> GetPagesInChapter(Guid idChapter)
         {
-            return _http.GetFromJsonAsync<IEnumerable<PageVM>>($"api/Pages/chapter?idChapter={idChapter}");
+            var result = await _http.GetFromJsonAsync<IEnumerable<PageVM>>($"api/Pages/chapter?idChapter={idChapter}");
+            var chapters = result?.Select(x => { x.Image = $"{_http.BaseAddress}{x.Image}"; return x; }).ToList();
+
+            return chapters;
         }
 
         public Task<bool> PutPage(Guid id, PageRequest request)

@@ -12,7 +12,7 @@ namespace WebTruyen.API.Repository.Page
     {
         public Task<IEnumerable<PageVM>> GetPages();
         public Task<PageVM> GetPage(Guid id);
-        public Task<IEnumerable<PageVM>> GetPagesWithChapter(Guid idChapter);
+        public Task<IEnumerable<PageVM>> GetPagesInChapter(Guid idChapter);
 
         public Task<bool> PutPage(Guid id, PageRequest request);
         public Task<bool> PostPages(Guid idChapter, List<string> request);

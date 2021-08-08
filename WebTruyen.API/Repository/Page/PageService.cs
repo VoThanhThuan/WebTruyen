@@ -36,7 +36,7 @@ namespace WebTruyen.API.Repository.Page
             return page?.ToViewModel();
         }
 
-        public async Task<IEnumerable<PageVM>> GetPagesWithChapter(Guid idChapter)
+        public async Task<IEnumerable<PageVM>> GetPagesInChapter(Guid idChapter)
         {
             var pages = await _context.Pages
                 .Where(x => x.IdChapter == idChapter)

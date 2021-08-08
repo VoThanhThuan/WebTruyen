@@ -34,6 +34,15 @@ namespace WebTruyen.API.Repository.Chapter
             return chapter?.ToViewModel();
         }
 
+        public async Task<List<ChapterVM>> GetChaptersInComic(Guid idComic)
+        {
+            var chapter = await _context.Chapters
+                .Where(x => x.IdComic == idComic)
+                .Select(x => x.ToViewModel())
+                .ToListAsync();
+            return chapter;
+        }
+
         public async Task<bool> PutChapter(Guid id, ChapterRequest request)
         {
 

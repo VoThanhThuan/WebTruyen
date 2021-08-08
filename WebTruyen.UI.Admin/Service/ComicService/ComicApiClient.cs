@@ -47,26 +47,23 @@ namespace WebTruyen.UI.Admin.Service.ComicService
             return result;
         }
 
-        public Task<int> PutComic(Guid id, ComicRequest request)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<int> PostComic(ComicRequestClient request)
+        public async Task<int> PutComic(Guid id, ComicRequestClient request)
         {
             var requestContent = new MultipartFormDataContent();
 
             if (request.Thumbnail != null)
             {
-                byte[] data;
-                using (var br = new BinaryReader(request.Thumbnail.OpenReadStream()))
+                var data = new byte[request.Thumbnail.Size];
+                await using (var br = request.Thumbnail.OpenReadStream())
                 {
-                    data = br.ReadBytes((int)request.Thumbnail.OpenReadStream().Length);
+                    await br.ReadAsync(data);
                 }
 
                 var bytes = new ByteArrayContent(data);
-                requestContent.Add(bytes, "thumbnailImage", request.Thumbnail.Name);
+                requestContent.Add(bytes, "Thumbnail", request.Thumbnail.Name);
             }
+
+            requestContent.Add(new StringContent(request.Id.ToString()), "id");
             requestContent.Add(new StringContent(request.Name), "Name");
             requestContent.Add(new StringContent(request.NameAlias), "NameAlias");
             requestContent.Add(new StringContent(request.AnotherNameOfComic), "AnotherNameOfComic");
@@ -74,8 +71,13 @@ namespace WebTruyen.UI.Admin.Service.ComicService
             requestContent.Add(new StringContent(request.Status.ToString() ?? string.Empty), "Status");
             requestContent.Add(new StringContent(request.Description), "Description");
 
-            var response = await _http.PostAsync($"/api/Comics/", requestContent);
+            var response = await _http.PutAsync($"/api/Comics/{id}", requestContent);
             return (int)response.StatusCode;
+        }
+
+        public async Task<int> PostComic(ComicRequestClient request)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<int> DeleteComic(Guid id)
