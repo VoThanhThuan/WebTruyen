@@ -1,0 +1,48 @@
+﻿@page "/comic"
+
+
+@if (_comics == null)
+{
+    <div>Loading...</div>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Id</th>
+            <th scope="col">Hình Ảnh</th>
+            <th scope="col">Tên</th>
+            <th scope="col">Tên Khác</th>
+            <th scope="col">NameAlias</th>
+            <th scope="col">Tác Giả</th>
+            <th scope="col">Tình Trạng</th>
+            <th scope="col">Lượt Xem</th>
+            <th scope="col">Mô Tả</th>
+        </tr>
+        </thead>
+        <tbody>
+    
+        @{
+            var index = 0;
+            foreach (var comic in _comics)
+            {
+                <tr>
+                    <th scope="row">@(index++)</th>
+                    <td>@comic.Id</td>
+                    <td><img src="@(comic.Thumbnail)" alt="@comic.NameAlias"/></td>
+                    <td>@comic.Name</td>
+                    <td>@comic.AnotherNameOfComic</td>
+                    <td>@comic.NameAlias</td>
+                    <td>@comic.Author</td>
+                    <td>@comic.Status</td>
+                    <td>@comic.Views</td>
+                    <td>@comic.Description</td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+
+}
