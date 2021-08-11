@@ -1,0 +1,6 @@
+﻿.preview-image {
+    height: auto;
+    width: 14rem;
+    -webkit-object-fit: cover;
+    object-fit: cover;
+}

@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using WebTruyen.UI.Admin.Data;
 using WebTruyen.UI.Admin.Service.ChapterService;
 using WebTruyen.UI.Admin.Service.ComicService;
+using WebTruyen.UI.Admin.Service.ImageService;
 using WebTruyen.UI.Admin.Service.PageService;
 
 namespace WebTruyen.UI.Admin
@@ -35,6 +36,7 @@ namespace WebTruyen.UI.Admin
             services.AddSingleton<WeatherForecastService>();
             services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:5001/") });
 
+            services.AddTransient<IImageService, ImageService>();
             services.AddTransient<IComicApiClient, ComicApiClient>();
             services.AddTransient<IChapterService, ChapterService>();
             services.AddTransient<IPageService, PageService>();

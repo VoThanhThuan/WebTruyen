@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Components;
 using WebTruyen.Library.Entities.ViewModel;
 using WebTruyen.UI.Admin.Service.ComicService;
 
-namespace WebTruyen.UI.Admin.Pages.ComicPages
+namespace WebTruyen.UI.Admin.Pages.ComicPage
 {
     public partial class Comic
     {

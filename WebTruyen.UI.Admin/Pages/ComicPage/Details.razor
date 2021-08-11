@@ -5,6 +5,7 @@
 @using WebTruyen.UI.Admin.Components;
 @using WebTruyen.UI.Admin.RequestClient
 @using WebTruyen.UI.Admin.Service.ChapterService
+@using WebTruyen.UI.Admin.Service.ImageService
 @using WebTruyen.UI.Admin.Service.PageService
 
 
@@ -48,10 +49,10 @@ else
         </div>
     }
 
-
+<div class="container">
     <div class="row g-2 g-lg-3">
         <div class="col" style="min-width: 18rem;">
-            <div class="card slide-in-elliptic-top-fwd me-5" style="min-width: 18rem; z-index: 1">
+            <div class="card slide-in-elliptic-top-fwd" style="min-width: 18rem; z-index: 1">
                 <img src="@_element.ThumbnailComic" class="card-img-top mx-auto" alt="@_comic.NameAlias" style="width: 18rem;">
                 <div class="card-body">
                     <h5 class="card-title">@_comic.Name</h5>
@@ -90,7 +91,7 @@ else
         @if (_element.IsShow)
         {
             <div class="col" style="min-width: 18rem;">
-                <div class="d-flex flex-wrap @_element.AnimationSlide">
+                <div class="flex-wrap @_element.AnimationSlide">
                     <EditForm Model="@_comicRequest" OnSubmit="@Update">
                         <span>Hình</span>
                         <InputFile class="form-control" OnChange="InputImage" @bind-Value="_comicRequest.Thumbnail" name="Thumbnail"></InputFile>
@@ -110,7 +111,7 @@ else
                         </InputSelect>
                         @if (_element.IsSubmit)
                         {
-                            <input type="submit" class="btn btn-primary mt-3" value="Save" />
+                            <InputFile type="submit" class="btn btn-primary mt-3" value="Save" accept="image/*"/>
                         }
                         else
                         {
@@ -125,6 +126,7 @@ else
         }
 
         <div class="col" style="min-width: 18rem;">
+            <a class="btn btn-outline-primary" href="./chapter?comic=@NameAlias"><i class="far fa-plus"></i> Thêm Chap</a>
             <div class="flex-wrap">
                 <!--button call offcanvas-bottom -->
                 <!--Chapter -->
@@ -152,7 +154,9 @@ else
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">Chaper View</li>
-                        <li class="breadcrumb-item active" aria-current="page">> Edit</li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            Edit
+                        </li>
                     </ol>
                 </nav>
 
@@ -177,7 +181,7 @@ else
             }
         </div>
     </div>
-
+</div>
 }
 
 @code {
@@ -187,6 +191,7 @@ else
     [Inject] private IComicApiClient _ComicApi { get; set; }
     [Inject] private IChapterService _ChapterApi { get; set; }
     [Inject] private IPageService _PageApi { get; set; }
+    [Inject] private IImageService _image { get; set; }
 
     private ComicVM _comic = new ComicVM();
     private ComicRequestClient _comicRequest = new ComicRequestClient();
@@ -242,19 +247,15 @@ else
     /// <param name="e"></param>
     private async void InputImage(InputFileChangeEventArgs e)
     {
+        if(e == null) return;
+
         _comicRequest.Thumbnail = e.File;
-
-        var format = e.File.ContentType; //lấy định dạng file
-
-        var buffer = new byte[e.File.Size];//Khởi tạo vùng nhớ
-
-        await e.File.OpenReadStream().ReadAsync(buffer);//Đọc dữ liệu vào vùng nhớ
-        var imageDataUrl = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+        
+        var imageDataUrl = await _image.ImageToString(e.File);
 
         _element.ThumbnailComic = imageDataUrl;
         //Cập nhât UI
         StateHasChanged();
-
     }
 
     private async void GetChapters()

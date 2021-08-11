@@ -1,0 +1,145 @@
+﻿@page "/chapter"
+@using WebTruyen.UI.Admin.Service.ImageService
+@using WebTruyen.UI.Admin.Service.PageService
+@using WebTruyen.UI.Admin.Service.ChapterService
+@using Microsoft.AspNetCore.WebUtilities
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Chapter</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="page">
+
+                <h3 class="title">
+                    <a href="">Return Comic</a>
+                </h3>
+
+                <div class="row">
+                    <form>
+                        <div class="row g-2">
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="floatingInput" placeholder="69">
+                                <label for="floatingInput">Số Chap</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="floatingInput" placeholder="Tên Chap" />
+                                <label for="floatingInput">Tên Chap</label>
+                            </div>
+
+                        </div>
+                        <div class="row g-2">
+                            <div class="mb-3">
+                                <label for="formFileMultiple" class="form-label">Upload Trang Truyện</label>
+                                <InputFile class="form-control" type="file" id="formFileMultiple" multiple OnChange="InputImage" />
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <div class="form-check form-switch d-inline-flex">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                                <label class="form-check-label" for="flexSwitchCheckDefault">Bật nếu muốn khóa chap này lại</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div>
+        @if (!_element.Images.Any())
+        {
+            <div></div>
+        }
+        else
+        {
+            <div class="d-block @_element.visibility">Loading....</div>
+            <div class="d-flex flex-wrap">
+                @{
+                    var index = 0;
+                    foreach (var image in _element.Images)
+                    {
+                        <div class="card">
+                            <img src="@(image)" class="img-thumbnail preview-image" />
+                            <span class="badge bg-secondary">@(++index)</span>
+                        </div>
+                    }
+                }
+
+            </div>
+                    }
+    </div>
+
+</div>
+
+
+@code {
+
+    [Parameter]
+    public string nameAlias { get; set; }
+    [Parameter]
+    public string idChaper { get; set; }
+
+    [Inject] IChapterService _ChapterApi { get; set; }
+    [Inject] IPageService _PageApi { get; set; }
+    [Inject] IImageService _image { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
+
+
+    ViewElement _element = new ViewElement();
+
+    protected override Task OnInitializedAsync()
+    {
+        NavigateToComponent();
+
+        return base.OnInitializedAsync();
+    }
+
+    private async void InputImage(InputFileChangeEventArgs e)
+    {
+        if (e == null) return;
+        if (e.FileCount > 100) return;
+
+        var imageDataUrl = _image.ImagesToString(e.GetMultipleFiles(100));
+
+        _element.visibility = "visible";
+        await foreach (var image in imageDataUrl)
+        {
+            if (!string.IsNullOrEmpty(image))
+            {
+                _element.Images.AddLast(image);
+                //Cập nhât UI
+                StateHasChanged();
+            }
+
+        }
+        _element.visibility = "invisible";
+        StateHasChanged();
+    }
+
+    private void NavigateToComponent()
+    {
+        var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
+
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("comic", out var comic))
+        {
+            nameAlias = comic.First();
+        }
+
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("idChaper", out var chapter))
+        {
+            idChaper = chapter.First();
+        }
+    }
+
+    protected class ViewElement
+    {
+        public LinkedList<string> Images { get; set; } = new LinkedList<string>();
+        public string visibility { get; set; } = "visible";
+    }
+}
