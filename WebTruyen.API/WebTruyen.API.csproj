@@ -23,9 +23,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\avatar\" />
-    <Folder Include="wwwroot\comic\" />
     <Folder Include="wwwroot\avatar\" />
-    <Folder Include="wwwroot\comic\" />
   </ItemGroup>
 
 </Project>

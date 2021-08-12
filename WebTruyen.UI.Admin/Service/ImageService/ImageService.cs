@@ -42,21 +42,23 @@ namespace WebTruyen.UI.Admin.Service.ImageService
             }
         }
 
-        public async IAsyncEnumerable<string> ImagesToString(IReadOnlyList<IBrowserFile> imgs)
+        public async IAsyncEnumerable<(byte[] data, string stringValue)> ImagesToString(IReadOnlyList<IBrowserFile> imgs)
         {
             foreach (var img in imgs)
             {
                 if (img.Size > 2048000L)
-                    yield return null;
-                var data = new byte[img.Size];
+                    yield return (data: null, stringValue: null);
+                var buffer = new byte[img.Size];
                 await using var br = img.OpenReadStream(maxAllowedSize: 2048000L);
-                await br.ReadAsync(data);
+                await br.ReadAsync(buffer);
                 br.Close();
                 var format = img.ContentType; //lấy định dạng file
 
-                var dataString = $"data:{format};base64,{Convert.ToBase64String(data)}";
+                var dataString = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
 
-                yield return dataString;
+                var value = (data: buffer, stringValue: dataString);
+
+                yield return value;
             }
 
         }

@@ -110,9 +110,9 @@
         _element.visibility = "visible";
         await foreach (var image in imageDataUrl)
         {
-            if (!string.IsNullOrEmpty(image))
+            if (!string.IsNullOrEmpty(image.stringValue))
             {
-                _element.Images.AddLast(image);
+                _element.Images.AddLast(image.stringValue);
                 //Cập nhât UI
                 StateHasChanged();
             }

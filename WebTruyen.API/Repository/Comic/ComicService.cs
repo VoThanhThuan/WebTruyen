@@ -47,13 +47,20 @@ namespace WebTruyen.API.Repository.Comic
             var comic = await _context.Comics.FindAsync(request.Id);
             if (comic == null)
                 return false;
-            comic.Name = string.IsNullOrEmpty(text.RemoveSpaces(request.Name)) == true ? comic.Name : request.Name;
             comic.AnotherNameOfComic = string.IsNullOrEmpty(text.RemoveSpaces(request.AnotherNameOfComic)) == true ? comic.AnotherNameOfComic : request.AnotherNameOfComic;
             comic.Author = string.IsNullOrEmpty(text.RemoveSpaces(request.Author)) == true ? comic.Author : request.Author;
             comic.Status = request.Status??comic.Status;
             comic.Description = string.IsNullOrEmpty(text.RemoveSpaces(request.Description)) == true ? comic.Description : request.Description;
-            
-            var path = $"comic/{comic.NameAlias}";
+
+            if (!string.IsNullOrEmpty(request.Name))
+            {
+                comic.Name = request.Name;
+                //Lưu name alias có dạnh như [ a-b-c ]
+                comic.NameAlias = new TextService().ConvertToUnSign(request.Name).Replace(" ", "-");
+
+            }
+
+            var path = $"comic/{comic.Id}";
             if (request.Thumbnail != null)
             {
                 if(comic.Thumbnail != null)
@@ -86,7 +93,7 @@ namespace WebTruyen.API.Repository.Comic
 
             //Lưu name alias có dạnh như [ a-b-c ]
             comic.NameAlias = new TextService().ConvertToUnSign(request.Name).Replace(" ", "-");
-            var path = $@"comic/{comic.NameAlias}";
+            var path = $@"comic/{comic.Id}";
             //Tạo thư mục truyện mới
             var folder = _storageService.CreateDirectory(path);
             //Lưu hình ảnh
