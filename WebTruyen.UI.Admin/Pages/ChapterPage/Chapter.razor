@@ -3,76 +3,103 @@
 @using WebTruyen.UI.Admin.Service.PageService
 @using WebTruyen.UI.Admin.Service.ChapterService
 @using Microsoft.AspNetCore.WebUtilities
+@using WebTruyen.Library.Entities.ViewModel
+@using System.Threading
+@using System.Timers
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <h1>Chapter</h1>
+<div>
+    @if (_element.Apiresult is >= 200 and <= 299)
+    {
+        <div class="alert alert-success d-flex align-items-center alert-dismissible" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill" /></svg>
+            <div>
+                Cập nhật thành công.
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="page">
+    }
+    else if (_element.Apiresult != 0)
+    {
+        <div class="alert alert-danger d-flex align-items-center alert-dismissible" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill" /></svg>
+            <div>
+                Cập nhật thất bại.
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
-                <h3 class="title">
-                    <a href="">Return Comic</a>
-                </h3>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Chapter</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="page">
 
-                <div class="row">
-                    <form>
-                        <div class="row g-2">
-                            <div class="form-floating mb-3">
-                                <input type="number" class="form-control" id="floatingInput" placeholder="69">
-                                <label for="floatingInput">Số Chap</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="floatingInput" placeholder="Tên Chap" />
-                                <label for="floatingInput">Tên Chap</label>
-                            </div>
+                    <h3 class="title">
+                        <a href="">Return Comic</a>
+                    </h3>
 
-                        </div>
-                        <div class="row g-2">
-                            <div class="mb-3">
-                                <label for="formFileMultiple" class="form-label">Upload Trang Truyện</label>
-                                <InputFile class="form-control" type="file" id="formFileMultiple" multiple OnChange="InputImage" />
+                    <div class="row">
+                        <EditForm Model="@_chapterVm" OnSubmit="@Update">
+                            <div class="row g-2">
+                                <div class="form-floating mb-3">
+                                    <InputNumber @bind-Value="_chapterVm.Ordinal" type="number" class="form-control" id="floatingInput" placeholder="0" />
+                                    <label for="floatingInput">Số Chap</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <InputText @bind-Value="_chapterVm.Name" type="text" class="form-control" id="floatingInput" placeholder="Tên Chap" />
+                                    <label for="floatingInput">Tên Chap</label>
+                                </div>
+
                             </div>
-                        </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                            <div class="form-check form-switch d-inline-flex">
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                                <label class="form-check-label" for="flexSwitchCheckDefault">Bật nếu muốn khóa chap này lại</label>
+                            <div class="row g-2">
+                                <div class="mb-3">
+                                    <label for="formFileMultiple" class="form-label">Upload Trang Truyện</label>
+                                    <InputFile class="form-control" type="file" id="formFileMultiple" multiple OnChange="InputImage" />
+                                </div>
                             </div>
-                        </div>
-                    </form>
+                            <div class="d-flex align-items-center mb-3">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <div class="form-check form-switch d-inline-flex">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                                    <label class="form-check-label" for="flexSwitchCheckDefault">Bật nếu muốn khóa chap này lại</label>
+                                </div>
+                            </div>
+                        </EditForm>
+                    </div>
+
                 </div>
-
             </div>
         </div>
-    </div>
 
-    <div>
-        @if (!_element.Images.Any())
-        {
-            <div></div>
-        }
-        else
-        {
-            <div class="d-block @_element.visibility">Loading....</div>
-            <div class="d-flex flex-wrap">
-                @{
-                    var index = 0;
-                    foreach (var image in _element.Images)
-                    {
-                        <div class="card">
-                            <img src="@(image)" class="img-thumbnail preview-image" />
-                            <span class="badge bg-secondary">@(++index)</span>
-                        </div>
+        <div>
+            @if (!_Pages.Any())
+            {
+                <div class="d-block @_element.visibility">Loading....</div>
+            }
+            else
+            {
+                <div class="d-block @_element.visibility">Loading....</div>
+                <div class="d-flex flex-wrap">
+                    @{
+                        var index = 0;
+                        foreach (var page in _Pages)
+                        {
+                            <div class="card">
+                                <img src="@(page.Image)" class="img-thumbnail preview-image" loading="lazy" />
+                                <span class="badge bg-secondary">@(++index)</span>
+                            </div>
+                        }
                     }
-                }
 
-            </div>
-                    }
+                </div>
+            }
+        </div>
+
     </div>
 
 </div>
@@ -81,29 +108,74 @@
 @code {
 
     [Parameter]
-    public string nameAlias { get; set; }
+    public Guid idComic { get; set; } = Guid.Empty;
+
     [Parameter]
-    public string idChaper { get; set; }
+    public string idChaper { get; set; } = null;
 
     [Inject] IChapterService _ChapterApi { get; set; }
     [Inject] IPageService _PageApi { get; set; }
     [Inject] IImageService _image { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
 
-
+    ChapterVM _chapterVm = new ChapterVM();
     ViewElement _element = new ViewElement();
+    List<PageVM> _Pages { get; set; } = new List<PageVM>();
 
-    protected override Task OnInitializedAsync()
+    List<(byte[] image, string nameFile)> _imageValues = new List<(byte[] image, string nameFile)>();
+
+    //Xem là đang trong tiến trình tạo mới hay cập nhật
+    private bool _isUpdate = false;
+
+
+    protected override async Task OnInitializedAsync()
     {
+        _chapterVm.IdComic = Guid.Empty;
+
         NavigateToComponent();
 
-        return base.OnInitializedAsync();
+        await LoadPages();
+
     }
 
-    private async void InputImage(InputFileChangeEventArgs e)
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            StateHasChanged();
+        }
+    }
+
+    async Task LoadPages()
+    {
+        if (!string.IsNullOrEmpty(idChaper))
+        {
+            var result = _PageApi.GetPagesInChapterYeild(Guid.Parse(idChaper));
+            await foreach (var page in result)
+            {
+                _Pages.Add(page);
+                StateHasChanged();
+            }
+            _element.visibility = "invisible";
+        }
+    }
+
+    async void Update()
+    {
+        if (!_isUpdate)
+        {
+            _element.Apiresult = await _ChapterApi.PostChapter(_chapterVm, _imageValues);
+            StateHasChanged();
+        }
+    }
+
+    async void InputImage(InputFileChangeEventArgs e)
     {
         if (e == null) return;
         if (e.FileCount > 100) return;
+
+        _Pages = new List<PageVM>();
 
         var imageDataUrl = _image.ImagesToString(e.GetMultipleFiles(100));
 
@@ -112,9 +184,10 @@
         {
             if (!string.IsNullOrEmpty(image.stringValue))
             {
-                _element.Images.AddLast(image.stringValue);
+                _Pages.Add(new PageVM() { Image = image.stringValue });
                 //Cập nhât UI
                 StateHasChanged();
+                _imageValues.Add(image.image);
             }
 
         }
@@ -122,24 +195,28 @@
         StateHasChanged();
     }
 
-    private void NavigateToComponent()
+    void NavigateToComponent()
     {
         var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
 
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("comic", out var comic))
         {
-            nameAlias = comic.First();
+            _chapterVm.IdComic = Guid.Parse((ReadOnlySpan<char>)comic.First());
         }
 
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("idChaper", out var chapter))
         {
             idChaper = chapter.First();
         }
+        if (_chapterVm.IdComic == Guid.Empty)
+        {
+            _navigationManager.NavigateTo("comic");
+        }
     }
 
-    protected class ViewElement
+    class ViewElement
     {
-        public LinkedList<string> Images { get; set; } = new LinkedList<string>();
         public string visibility { get; set; } = "visible";
+        public int Apiresult { get; set; } = 0;
     }
 }

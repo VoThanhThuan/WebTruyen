@@ -12,7 +12,9 @@ namespace WebTruyen.UI.Admin.Service.ImageService
         public Task<byte[]> ImageToByte(IBrowserFile img);
         public Task<string> ImageToString(IBrowserFile img);
         public IAsyncEnumerable<byte[]> ImagesToByte(IReadOnlyList<IBrowserFile> imgs);
-        public IAsyncEnumerable<(byte[] data, string stringValue)> ImagesToString(IReadOnlyList<IBrowserFile> imgs);
+
+        public IAsyncEnumerable<((byte[] data, string fileName) image, string stringValue)> ImagesToString(
+            IReadOnlyList<IBrowserFile> imgs);
 
     }
 }

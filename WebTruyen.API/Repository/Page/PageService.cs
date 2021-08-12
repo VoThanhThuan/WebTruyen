@@ -96,7 +96,7 @@ namespace WebTruyen.API.Repository.Page
                                 select new { chap, com }).First();
 
             //lấy đường dẫn
-            var path = $@"comic/{chapAndComic.com.NameAlias}/chapter{chapAndComic.chap.Ordinal}";
+            var path = $@"comic-collection//{chapAndComic.com.NameAlias}/chapter{chapAndComic.chap.Ordinal}";
             //Tạo folder cho chapter
             _storage.CreateDirectory(path);
 
@@ -124,7 +124,7 @@ namespace WebTruyen.API.Repository.Page
                                 select new { chap, com }).First();
 
             //lấy đường dẫn
-            var path = $@"comic/{chapAndComic.com.Id}/chapter{chapAndComic.chap.Ordinal}";
+            var path = $@"comic-collection/{chapAndComic.com.Id}/chapter{chapAndComic.chap.Ordinal}";
             //Tạo folder cho chapter
             _storage.CreateDirectory(path);
             images = images.OrderBy(x => x.FileName).ToList();
@@ -153,7 +153,7 @@ namespace WebTruyen.API.Repository.Page
                                 select new { chap, com }).First();
 
             //lấy đường dẫn
-            var path = $@"comic/{chapAndComic.com.Id}/chapter{chapAndComic.chap.Ordinal}";
+            var path = $@"comic-collection/{chapAndComic.com.Id}/chapter{chapAndComic.chap.Ordinal}";
             //Tạo folder cho chapter
             _storage.CreateDirectory(path);
 

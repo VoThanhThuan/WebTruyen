@@ -89,7 +89,9 @@ namespace WebTruyen.API.Controllers
 
             await _page.PostPages(result.Id, pages);
 
-            return CreatedAtAction("GetChapter", new { id = result.Id }, chapter);
+            return NoContent();
+
+            //return CreatedAtAction("GetChapter", new { id = result.Id }, chapter);
         }
 
         // DELETE: api/Chapters/5

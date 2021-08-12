@@ -10,9 +10,10 @@ namespace WebTruyen.UI.Admin.Service.PageService
 {
     public interface IPageService
     {
-        public Task<IEnumerable<PageVM>> GetPages();
+        public Task<List<PageVM>> GetPages();
         public Task<PageVM> GetPage(Guid id);
-        public Task<IEnumerable<PageVM>> GetPagesInChapter(Guid idChapter);
+        public Task<List<PageVM>> GetPagesInChapter(Guid idChapter);
+        public IAsyncEnumerable<PageVM> GetPagesInChapterYeild(Guid idChapter);
         public Task<bool> PutPage(Guid id, PageRequest request);
         public Task<bool> PostPages(Guid idChapter, List<string> request);
         public Task<PageVM> PostPage(Guid idChapter, PageRequest request);

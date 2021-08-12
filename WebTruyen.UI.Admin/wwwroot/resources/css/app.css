@@ -1,4 +1,8 @@
-﻿.preview-image {
+﻿body {
+    overflow: auto!important
+}
+
+.preview-image {
     height: auto;
     width: 14rem;
     -webkit-object-fit: cover;

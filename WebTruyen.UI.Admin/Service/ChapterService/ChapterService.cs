@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -21,7 +22,7 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
             _http = http;
         }
 
-        public Task<bool> DeleteChapter(Guid id)
+        public Task<int> DeleteChapter(Guid id)
         {
             throw new NotImplementedException();
         }
@@ -35,17 +36,36 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
         {
             throw new NotImplementedException();
         }
-        public Task<IEnumerable<ChapterVM>> GetChaptersInComic(Guid idComic)
+        public Task<List<ChapterVM>> GetChaptersInComic(Guid idComic)
         {
-            return _http.GetFromJsonAsync<IEnumerable<ChapterVM>>($"api/Chapters/comic?idComic={idComic}");
+            return _http.GetFromJsonAsync<List<ChapterVM>>($"api/Chapters/comic?idComic={idComic}");
         }
 
-        public Task<ChapterVM> PostChapter(ChapterRequest chapter)
+        public async Task<int> PostChapter(ChapterVM chapter, IEnumerable<(byte[] image, string nameFile)> images)
         {
-            throw new NotImplementedException();
+            var requestContent = new MultipartFormDataContent();
+
+            if (images != null)
+            {
+                foreach (var image in images)
+                {
+                    var bytes = new ByteArrayContent(image.image);
+
+                    requestContent.Add(bytes, "pages", image.nameFile);
+
+                }
+            }
+
+            requestContent.Add(new StringContent(chapter.Id.ToString()), "Id");
+            requestContent.Add(new StringContent(chapter.Name), "Name");
+            requestContent.Add(new StringContent(chapter.Ordinal.ToString(CultureInfo.InvariantCulture)), "Ordinal");
+            requestContent.Add(new StringContent(chapter.IdComic.ToString()), "IdComic");
+
+            var response = await _http.PostAsync($"/api/Chapters", requestContent);
+            return (int)response.StatusCode;
         }
 
-        public Task<bool> PutChapter(Guid id, ChapterRequest chapter)
+        public Task<int> PutChapter(Guid id, ChapterVM chapter)
         {
             throw new NotImplementedException();
         }

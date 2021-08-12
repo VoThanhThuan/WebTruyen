@@ -11,10 +11,10 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
     {
         public Task<IEnumerable<ChapterVM>> GetChapters();
         public Task<ChapterVM> GetChapter(Guid id);
-        public Task<IEnumerable<ChapterVM>> GetChaptersInComic(Guid idComic);
-        public Task<bool> PutChapter(Guid id, ChapterRequest chapter);
-        public Task<ChapterVM> PostChapter(ChapterRequest chapter);
-        public Task<bool> DeleteChapter(Guid id);
+        public Task<List<ChapterVM>> GetChaptersInComic(Guid idComic);
+        public Task<int> PutChapter(Guid id, ChapterVM chapter);
+        public Task<int> PostChapter(ChapterVM chapter, IEnumerable<(byte[] image, string nameFile)> images);
+        public Task<int> DeleteChapter(Guid id);
 
     }
 }

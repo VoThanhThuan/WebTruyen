@@ -60,7 +60,7 @@ namespace WebTruyen.API.Repository.Comic
 
             }
 
-            var path = $"comic/{comic.Id}";
+            var path = $"comic-collection/{comic.Id}";
             if (request.Thumbnail != null)
             {
                 if(comic.Thumbnail != null)
@@ -93,7 +93,7 @@ namespace WebTruyen.API.Repository.Comic
 
             //Lưu name alias có dạnh như [ a-b-c ]
             comic.NameAlias = new TextService().ConvertToUnSign(request.Name).Replace(" ", "-");
-            var path = $@"comic/{comic.Id}";
+            var path = $@"comic-collection/{comic.Id}";
             //Tạo thư mục truyện mới
             var folder = _storageService.CreateDirectory(path);
             //Lưu hình ảnh
