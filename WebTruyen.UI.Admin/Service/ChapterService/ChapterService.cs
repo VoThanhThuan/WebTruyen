@@ -27,21 +27,51 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
             throw new NotImplementedException();
         }
 
-        public Task<ChapterVM> GetChapter(Guid id)
+        public async Task<ChapterVM> GetChapter(Guid id)
         {
-            throw new NotImplementedException();
+            return await _http.GetFromJsonAsync<ChapterVM>($"api/Chapters/{id}");
         }
 
         public Task<IEnumerable<ChapterVM>> GetChapters()
         {
             throw new NotImplementedException();
         }
-        public Task<List<ChapterVM>> GetChaptersInComic(Guid idComic)
+        public async Task<List<ChapterVM>> GetChaptersInComic(Guid idComic)
         {
-            return _http.GetFromJsonAsync<List<ChapterVM>>($"api/Chapters/comic?idComic={idComic}");
+            return await _http.GetFromJsonAsync<List<ChapterVM>>($"api/Chapters/comic?idComic={idComic}");
         }
 
-        public async Task<int> PostChapter(ChapterVM chapter, IEnumerable<(byte[] image, string nameFile)> images)
+        public async Task<int> PutChapter(Guid id, ChapterVM chapter, List<(byte[] image, string nameFile)> images)
+        {
+            var requestContent = new MultipartFormDataContent();
+
+            if (images != null)
+            {
+                foreach (var image in images)
+                {
+                    var bytes = new ByteArrayContent(image.image);
+
+                    requestContent.Add(bytes, "pages", image.nameFile);
+
+                }
+            }
+
+            requestContent.Add(new StringContent(chapter.Id.ToString()), "Id");
+            requestContent.Add(new StringContent(chapter.Name), "Name");
+            requestContent.Add(new StringContent(chapter.Ordinal.ToString(CultureInfo.InvariantCulture)), "Ordinal");
+            requestContent.Add(new StringContent(chapter.IdComic.ToString()), "IdComic");
+
+            var response = await _http.PutAsync($"/api/Chapters", requestContent);
+            return (int)response.StatusCode;
+        }
+
+        public async Task<ChapterVM> GetLastChapter(Guid idComic)
+        {
+            var a = await _http.GetFromJsonAsync<ChapterVM>($"api/Chapters/lastChapter?idComic={idComic}");
+            return a;
+        }
+
+        public async Task<int> PostChapter(ChapterVM chapter, List<(byte[] image, string nameFile)> images)
         {
             var requestContent = new MultipartFormDataContent();
 
@@ -63,11 +93,6 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
 
             var response = await _http.PostAsync($"/api/Chapters", requestContent);
             return (int)response.StatusCode;
-        }
-
-        public Task<int> PutChapter(Guid id, ChapterVM chapter)
-        {
-            throw new NotImplementedException();
         }
     }
 }

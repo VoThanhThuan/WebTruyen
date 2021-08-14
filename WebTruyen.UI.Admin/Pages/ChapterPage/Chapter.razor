@@ -44,10 +44,10 @@
                     </h3>
 
                     <div class="row">
-                        <EditForm Model="@_chapterVm" OnSubmit="@Update">
+                        <EditForm Model="@_chapterVm" OnSubmit="@Upload">
                             <div class="row g-2">
                                 <div class="form-floating mb-3">
-                                    <InputNumber @bind-Value="_chapterVm.Ordinal" type="number" class="form-control" id="floatingInput" placeholder="0" />
+                                    <InputNumber @bind-Value="_chapterVm.Ordinal" type="number" class="form-control" id="floatingInput" placeholder="0"/>
                                     <label for="floatingInput">Số Chap</label>
                                 </div>
                                 <div class="form-floating mb-3">
@@ -58,8 +58,15 @@
                             </div>
                             <div class="row g-2">
                                 <div class="mb-3">
-                                    <label for="formFileMultiple" class="form-label">Upload Trang Truyện</label>
-                                    <InputFile class="form-control" type="file" id="formFileMultiple" multiple OnChange="InputImage" />
+                                    @if (string.IsNullOrEmpty(idChaper))
+                                    {
+                                        <label for="formFileMultiple" class="form-label">Upload Trang Truyện</label>
+                                    }
+                                    else
+                                    {
+                                        <label for="formFileMultiple" class="form-label">Upload Lại Các Trang Truyện</label>
+                                    }
+                                    <InputFile class="form-control" type="file" id="formFileMultiple" multiple OnChange="InputImage"/>
                                 </div>
                             </div>
                             <div class="d-flex align-items-center mb-3">
@@ -79,7 +86,7 @@
         <div>
             @if (!_Pages.Any())
             {
-                <div class="d-block @_element.visibility">Loading....</div>
+                <div class="d-block @_element.visibility">Không có hình ảnh!</div>
             }
             else
             {
@@ -90,7 +97,7 @@
                         foreach (var page in _Pages)
                         {
                             <div class="card">
-                                <img src="@(page.Image)" class="img-thumbnail preview-image" loading="lazy" />
+                                <img src="@(page.Image)" class="img-thumbnail preview-image lazy-loading" loading="lazy" />
                                 <span class="badge bg-secondary">@(++index)</span>
                             </div>
                         }
@@ -132,12 +139,11 @@
     {
         _chapterVm.IdComic = Guid.Empty;
 
-        NavigateToComponent();
+        await NavigateToComponent();
 
         await LoadPages();
 
     }
-
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -161,11 +167,16 @@
         }
     }
 
-    async void Update()
+    async void Upload()
     {
         if (!_isUpdate)
         {
             _element.Apiresult = await _ChapterApi.PostChapter(_chapterVm, _imageValues);
+            StateHasChanged();
+        }
+        else
+        {
+            _element.Apiresult = await _ChapterApi.PutChapter(Guid.Parse(idChaper), _chapterVm, _imageValues);
             StateHasChanged();
         }
     }
@@ -195,10 +206,10 @@
         StateHasChanged();
     }
 
-    void NavigateToComponent()
+    async Task NavigateToComponent()
     {
         var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
-
+        // Phân tích query
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("comic", out var comic))
         {
             _chapterVm.IdComic = Guid.Parse((ReadOnlySpan<char>)comic.First());
@@ -207,10 +218,19 @@
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("idChaper", out var chapter))
         {
             idChaper = chapter.First();
+            _chapterVm = await _ChapterApi.GetChapter(Guid.Parse(idChaper));
         }
+
+        //chuyển trang nếu query comic rỗng
         if (_chapterVm.IdComic == Guid.Empty)
         {
             _navigationManager.NavigateTo("comic");
+        }
+        //nếu idChapter rỗng nghĩa là đang tạo chapter mới // tự động đánh số thứ tự chap
+        if (string.IsNullOrEmpty(idChaper))
+        {
+            _chapterVm.Ordinal = (await _ChapterApi.GetLastChapter(_chapterVm.IdComic)).Ordinal+1;
+            StateHasChanged();
         }
     }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Service;
 using WebTruyen.Library.Data;
@@ -29,7 +30,7 @@ namespace WebTruyen.API.Repository.Chapter
         public async Task<ChapterVM> GetChapter(Guid id)
         {
             var chapter = await _context.Chapters.FindAsync(id);
-            chapter.Views += 1;
+            //chapter.Views += 1;
             _context.Entry(chapter).State = EntityState.Modified;
             return chapter?.ToViewModel();
         }
@@ -43,10 +44,12 @@ namespace WebTruyen.API.Repository.Chapter
             return chapter;
         }
 
-        public async Task<bool> PutChapter(Guid id, ChapterRequest request)
+        public async Task<int> PutChapter(Guid id, ChapterRequest request)
         {
-
             var chapter = await _context.Chapters.FindAsync(id);
+
+            if (chapter is null)
+                return StatusCodes.Status404NotFound;
 
             chapter.Ordinal = request.Ordinal ?? chapter.Ordinal;
             chapter.Name = string.IsNullOrEmpty(request.Name) ? chapter.Name : request.Name;
@@ -63,7 +66,7 @@ namespace WebTruyen.API.Repository.Chapter
             {
                 if (!ChapterExists(id))
                 {
-                    return false;
+                    return StatusCodes.Status500InternalServerError;
                 }
                 else
                 {
@@ -71,7 +74,8 @@ namespace WebTruyen.API.Repository.Chapter
                 }
             }
 
-            return true;
+
+            return StatusCodes.Status200OK;
         }
 
         public async Task<ChapterVM> PostChapter(ChapterRequest request)
@@ -90,13 +94,19 @@ namespace WebTruyen.API.Repository.Chapter
                 IdComic = request.IdComic
             };
 
+            //Add chapter
             _context.Chapters.Add(chapter.ToChapter());
             await _context.SaveChangesAsync();
+
+            //đường dẫn thư mục cho chap mới
+            var path = $@"comic-collection/{comic.Id}/chapter{chapter.Ordinal}";
+            //Tạo folder cho chapter
+            _storage.CreateDirectory(path);
 
             return chapter;
         }
 
-        public async Task<bool> DeleteChapter(Guid id)
+        public async Task<int> DeleteChapter(Guid id)
         {
             //xóa danh sách image =========================================================================================
             var listImage = _context.Pages.Where(x => x.IdChapter == id);
@@ -128,13 +138,13 @@ namespace WebTruyen.API.Repository.Chapter
             var chapter = await _context.Chapters.FindAsync(id);
             if (chapter == null)
             {
-                return false;
+                return StatusCodes.Status404NotFound;
             }
 
             _context.Chapters.Remove(chapter);
             await _context.SaveChangesAsync();
 
-            return true;
+            return StatusCodes.Status200OK;
         }
 
         private bool ChapterExists(Guid id)
@@ -142,5 +152,9 @@ namespace WebTruyen.API.Repository.Chapter
             return _context.Chapters.Any(e => e.Id == id);
         }
 
+        public async Task<ChapterVM> GetLastChapter(Guid idComic)
+        {
+            return (await _context.Chapters.FirstOrDefaultAsync(x => x.IdComic == idComic))?.ToViewModel();
+        }
     }
 }

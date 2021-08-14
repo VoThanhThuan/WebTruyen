@@ -61,8 +61,8 @@ namespace WebTruyen.API.Controllers
 
 
             var result = await _page.PutPage(idChapter, requests);
-            if (!result)
-                return NotFound();
+            if (result != StatusCodes.Status200OK)
+                return StatusCode(result);
 
             return NoContent();
         }
@@ -84,10 +84,10 @@ namespace WebTruyen.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePage(Guid id)
         {
-            var page = await _page.DeletePage(id);
-            if (!page)
+            var result = await _page.DeletePage(id);
+            if (result != StatusCodes.Status200OK)
             {
-                return NotFound();
+                return StatusCode(result);
             }
             return NoContent();
         }

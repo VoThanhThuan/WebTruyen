@@ -10,15 +10,19 @@ namespace WebTruyen.API.Repository.Page
 {
     public interface IPageService
     {
+        //Get
         public Task<IEnumerable<PageVM>> GetPages();
         public Task<PageVM> GetPage(Guid id);
         public Task<IEnumerable<PageVM>> GetPagesInChapter(Guid idChapter);
-
-        public Task<bool> PutPage(Guid id, PageRequest request);
-        public Task<bool> PostPages(Guid idChapter, List<string> request);
-        public Task<bool> PostPages(Guid idChapter, List<IFormFile> request);
+        //Put
+        public Task<int> PutPage(Guid id, PageRequest request);
+        public Task<int> PutPages(Guid idChapter, List<IFormFile> images);
+        //Post
+        public Task<int> PostPages(Guid idChapter, List<string> request);
+        public Task<int> PostPages(Guid idChapter, List<IFormFile> request);
         public Task<PageVM> PostPage(Guid idChapter, PageRequest request);
-        public Task<bool> DeletePage(Guid id);
+        //Delete
+        public Task<int> DeletePage(Guid id);
 
     }
 }

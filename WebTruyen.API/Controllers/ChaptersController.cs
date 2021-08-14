@@ -41,6 +41,7 @@ namespace WebTruyen.API.Controllers
         {
             return Ok(await _chapter.GetChaptersInComic(idComic));
         }
+
         // GET: api/Chapters/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ChapterVM>> GetChapter(Guid id)
@@ -55,10 +56,23 @@ namespace WebTruyen.API.Controllers
             return Ok(result);
         }
 
+        // GET: api/Chapters/
+        [HttpGet("lastChapter")]
+        public async Task<ActionResult<ChapterVM>> GetLastChapter([FromQuery]Guid idComic)
+        {
+            var result = await _chapter.GetLastChapter(idComic);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
+
         // PUT: api/Chapters/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutChapter(Guid id, ChapterRequest chapter)
+        public async Task<IActionResult> PutChapter(Guid id, [FromForm]ChapterRequest chapter, [FromForm]List<IFormFile> pages)
         {
             if (id != chapter.Id)
             {
@@ -67,16 +81,17 @@ namespace WebTruyen.API.Controllers
 
             var result = await _chapter.PutChapter(id, chapter);
 
-            if (result == false)
+            result = await _page.PutPages(id, pages);
+
+            if (result != StatusCodes.Status200OK)
             {
-                return NotFound();
+                return StatusCode(result);
             }
 
             return NoContent();
         }
 
         // POST: api/Chapters
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<ChapterVM>> PostChapter([FromForm]ChapterRequest chapter, [FromForm]List<IFormFile> pages)
         {
@@ -99,9 +114,9 @@ namespace WebTruyen.API.Controllers
         public async Task<IActionResult> DeleteChapter(Guid id)
         {
             var result = await _chapter.DeleteChapter(id);
-            if (result == false)
+            if (result != StatusCodes.Status200OK)
             {
-                return NotFound();
+                return StatusCode(result);
             }
 
             return NoContent();

@@ -62,6 +62,36 @@ namespace WebTruyen.API.Service
             return fileName;
         }
 
+        public async Task<int> DeleteFolderAsync(string folder)
+        {
+            var di = new DirectoryInfo(folder);
 
+            foreach (var file in di.GetFiles())
+            {
+                try
+                {
+                    await Task.Run(() => file.Delete());
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return StatusCodes.Status500InternalServerError;
+                }
+            }
+            foreach (var dir in di.GetDirectories())
+            {
+                try
+                {
+                    await Task.Run(() => dir.Delete(true));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return StatusCodes.Status500InternalServerError;
+                }
+            }
+
+            return 200;
+        }
     }
 }
