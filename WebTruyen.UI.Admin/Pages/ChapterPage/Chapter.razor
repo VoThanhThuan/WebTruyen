@@ -23,7 +23,7 @@
         <div class="alert alert-danger d-flex align-items-center alert-dismissible" role="alert">
             <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill" /></svg>
             <div>
-                Cập nhật thất bại.
+                Cập nhật thất bại. (@_element.Apiresult)
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
@@ -70,7 +70,18 @@
                                 </div>
                             </div>
                             <div class="d-flex align-items-center mb-3">
-                                <button type="submit" class="btn btn-primary">Submit</button>
+                                @if (!_element.IsLoadImage)
+                                {
+                                <button class="btn btn-primary" type="submit">Submit</button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-primary" type="submit" disabled>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        Loading...
+                                    </button>
+                                }
+
                                 <div class="form-check form-switch d-inline-flex">
                                     <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
                                     <label class="form-check-label" for="flexSwitchCheckDefault">Bật nếu muốn khóa chap này lại</label>
@@ -132,7 +143,7 @@
     List<(byte[] image, string nameFile)> _imageValues = new List<(byte[] image, string nameFile)>();
 
     //Xem là đang trong tiến trình tạo mới hay cập nhật
-    private bool _isUpdate = false;
+    private bool _isUpdate = true;
 
 
     protected override async Task OnInitializedAsync()
@@ -169,10 +180,13 @@
 
     async void Upload()
     {
+        _element.Apiresult = 0;
         if (!_isUpdate)
         {
             _element.Apiresult = await _ChapterApi.PostChapter(_chapterVm, _imageValues);
             StateHasChanged();
+            await Task.Delay(300);
+            _navigationManager.NavigateTo(@"comic/detail?id={idComic}");
         }
         else
         {
@@ -191,6 +205,10 @@
         var imageDataUrl = _image.ImagesToString(e.GetMultipleFiles(100));
 
         _element.visibility = "visible";
+        _element.IsLoadImage = true;
+        StateHasChanged();
+
+        _imageValues = new List<(byte[] image, string nameFile)>();
         await foreach (var image in imageDataUrl)
         {
             if (!string.IsNullOrEmpty(image.stringValue))
@@ -202,6 +220,7 @@
             }
 
         }
+        _element.IsLoadImage = false;
         _element.visibility = "invisible";
         StateHasChanged();
     }
@@ -225,11 +244,14 @@
         if (_chapterVm.IdComic == Guid.Empty)
         {
             _navigationManager.NavigateTo("comic");
+            return;
         }
         //nếu idChapter rỗng nghĩa là đang tạo chapter mới // tự động đánh số thứ tự chap
         if (string.IsNullOrEmpty(idChaper))
         {
-            _chapterVm.Ordinal = (await _ChapterApi.GetLastChapter(_chapterVm.IdComic)).Ordinal+1;
+            var result = await _ChapterApi.GetLastChapter(_chapterVm.IdComic);
+            _chapterVm.Ordinal = result?.Ordinal+1 ?? 0;
+            _isUpdate = false;
             StateHasChanged();
         }
     }
@@ -238,5 +260,6 @@
     {
         public string visibility { get; set; } = "visible";
         public int Apiresult { get; set; } = 0;
+        public bool IsLoadImage{ get; set; } = false;
     }
 }

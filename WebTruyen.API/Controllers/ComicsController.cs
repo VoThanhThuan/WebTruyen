@@ -98,22 +98,17 @@ namespace WebTruyen.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ComicVM>> PostComic([FromForm] ComicRequest request)
         {
-            await _comic.PostComic(request);
+            var result = await _comic.PostComic(request);
 
-            return CreatedAtAction("GetComic", new { id = request.Id }, request);
+            return Ok(result.Id);
         }
 
         // DELETE: api/Comics/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComic(Guid id)
         {
-            var comic = await _comic.DeleteComic(id);
-            if (comic == false)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
+            var result = await _comic.DeleteComic(id);
+            return result == 200 ? StatusCode(result) : NoContent();
         }
 
 

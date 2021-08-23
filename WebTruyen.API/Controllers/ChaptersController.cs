@@ -81,14 +81,12 @@ namespace WebTruyen.API.Controllers
 
             var result = await _chapter.PutChapter(id, chapter);
 
+            if (result != StatusCodes.Status200OK)
+                return StatusCode(result);
+            if (!pages.Any()) return NoContent();
             result = await _page.PutPages(id, pages);
 
-            if (result != StatusCodes.Status200OK)
-            {
-                return StatusCode(result);
-            }
-
-            return NoContent();
+            return result != StatusCodes.Status200OK ? StatusCode(result) : NoContent();
         }
 
         // POST: api/Chapters

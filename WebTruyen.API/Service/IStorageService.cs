@@ -12,6 +12,8 @@ namespace WebTruyen.API.Service
         public string GetFileUrl(string fileName);
         public Task<string> SaveFile(IFormFile file, string path);
         public DirectoryInfo CreateDirectory(string path);
+        public bool Exists(string path);
+        public void Move(string sourceDirName, string destDirName);
         public Task<int> DeleteFileAsync(string fileName);
         public Task<int> DeleteFolderAsync(string folder);
     }

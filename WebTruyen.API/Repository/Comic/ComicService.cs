@@ -87,9 +87,10 @@ namespace WebTruyen.API.Repository.Comic
             return true;
         }
 
-        public async Task<bool> PostComic(ComicRequest request)
+        public async Task<ComicVM> PostComic(ComicRequest request)
         {
             var comic = request.ToComic();
+            comic.Id = Guid.NewGuid();
 
             //Lưu name alias có dạnh như [ a-b-c ]
             comic.NameAlias = new TextService().ConvertToUnSign(request.Name).Replace(" ", "-");
@@ -98,29 +99,33 @@ namespace WebTruyen.API.Repository.Comic
             var folder = _storageService.CreateDirectory(path);
             //Lưu hình ảnh
             if (!folder.Exists)
-                return false;
+                return null;
 
             comic.Thumbnail = await _storageService.SaveFile(request.Thumbnail, path);
 
             _context.Comics.Add(comic);
             await _context.SaveChangesAsync();
 
-            return true;
+            return comic.ToViewModel();
 
         }
 
-        public async Task<bool> DeleteComic(Guid id)
+        public async Task<int> DeleteComic(Guid id)
         {
             var comic = await _context.Comics.FindAsync(id);
             if (comic == null)
             {
-                return false;
+                return StatusCodes.Status404NotFound;
             }
+            var path = $@"comic-collection/{comic.Id}";
+            var resultRemove = await _storageService.DeleteFolderAsync(path);
+            if (resultRemove == StatusCodes.Status500InternalServerError)
+                return StatusCodes.Status500InternalServerError;
 
             _context.Comics.Remove(comic);
             await _context.SaveChangesAsync();
 
-            return true;
+            return StatusCodes.Status200OK;
         }
 
         private bool ComicExists(Guid id)

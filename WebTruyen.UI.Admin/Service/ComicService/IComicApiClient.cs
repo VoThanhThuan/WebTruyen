@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ViewModel;
@@ -14,7 +16,7 @@ namespace WebTruyen.UI.Admin.Service.ComicService
         public Task<ComicVM> GetComic(Guid id);
         public Task<ComicVM> GetComic(string nameAlias);
         public Task<int> PutComic(Guid id, ComicRequestClient request);
-        public Task<int> PostComic(ComicRequestClient request);
+        public Task<(HttpStatusCode StatusCode, string Content)> PostComic(ComicRequestClient request);
         public Task<int> DeleteComic(Guid id);
     }
 }

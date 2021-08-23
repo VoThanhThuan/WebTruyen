@@ -57,18 +57,22 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
             }
 
             requestContent.Add(new StringContent(chapter.Id.ToString()), "Id");
-            requestContent.Add(new StringContent(chapter.Name), "Name");
+            requestContent.Add(new StringContent(chapter.Name??""), "Name");
             requestContent.Add(new StringContent(chapter.Ordinal.ToString(CultureInfo.InvariantCulture)), "Ordinal");
             requestContent.Add(new StringContent(chapter.IdComic.ToString()), "IdComic");
 
-            var response = await _http.PutAsync($"/api/Chapters", requestContent);
+            var response = await _http.PutAsync($"/api/Chapters/{id}", requestContent);
             return (int)response.StatusCode;
         }
 
         public async Task<ChapterVM> GetLastChapter(Guid idComic)
         {
-            var a = await _http.GetFromJsonAsync<ChapterVM>($"api/Chapters/lastChapter?idComic={idComic}");
-            return a;
+            var result = await _http.GetAsync($"api/Chapters/lastChapter?idComic={idComic}");
+            if (result.IsSuccessStatusCode)
+            {
+                return await result.Content.ReadFromJsonAsync<ChapterVM>();
+            }
+            return null;
         }
 
         public async Task<int> PostChapter(ChapterVM chapter, List<(byte[] image, string nameFile)> images)

@@ -17,6 +17,8 @@ namespace WebTruyen.API.Repository.Page
         //Put
         public Task<int> PutPage(Guid id, PageRequest request);
         public Task<int> PutPages(Guid idChapter, List<IFormFile> images);
+        public Task MoveUrlPages(Guid idChapter, string oldChapter, string newChapter);
+
         //Post
         public Task<int> PostPages(Guid idChapter, List<string> request);
         public Task<int> PostPages(Guid idChapter, List<IFormFile> request);

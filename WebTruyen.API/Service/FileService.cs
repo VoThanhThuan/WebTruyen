@@ -38,10 +38,23 @@ namespace WebTruyen.API.Service
             return Directory.CreateDirectory(newPath);
         }
 
+        public bool Exists(string path)
+        {
+            var newPath = Path.Combine(_userContentFolder, path);
+            return Directory.Exists(newPath);
+        }
+
+        public void Move(string sourceDirName, string destDirName)
+        {
+            sourceDirName = Path.Combine(_userContentFolder, sourceDirName);
+            destDirName = Path.Combine(_userContentFolder, destDirName);
+            Directory.Move(sourceDirName, destDirName);
+        }
+
         public async Task<int> DeleteFileAsync(string fileName)
         {
             var filePath = Path.Combine(_userContentFolder, fileName);
-            if (!File.Exists(filePath)) return StatusCodes.Status200OK;
+            if (!File.Exists(filePath)) return StatusCodes.Status404NotFound;
             try
             {
                 await Task.Run(() => File.Delete(filePath));
@@ -64,7 +77,11 @@ namespace WebTruyen.API.Service
 
         public async Task<int> DeleteFolderAsync(string folder)
         {
-            var di = new DirectoryInfo(folder);
+            var folderPath = Path.Combine(_userContentFolder, folder);
+
+            if (!Directory.Exists(folderPath)) return StatusCodes.Status404NotFound;
+
+            var di = new DirectoryInfo(folderPath);
 
             foreach (var file in di.GetFiles())
             {

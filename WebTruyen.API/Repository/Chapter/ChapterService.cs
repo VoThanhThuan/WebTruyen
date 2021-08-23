@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using WebTruyen.API.Repository.Page;
 using WebTruyen.API.Service;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.Request;
@@ -15,11 +17,13 @@ namespace WebTruyen.API.Repository.Chapter
     public class ChapterService : IChapterService
     {
         private readonly ComicDbContext _context;
+        private readonly IPageService _page;
         private readonly IStorageService _storage;
 
-        public ChapterService(ComicDbContext context, IStorageService storageService)
+        public ChapterService(ComicDbContext context, IStorageService storageService, IPageService page)
         {
             _context = context;
+            _page = page;
             _storage = storageService;
         }
         public async Task<IEnumerable<ChapterVM>> GetChapters()
@@ -46,15 +50,34 @@ namespace WebTruyen.API.Repository.Chapter
 
         public async Task<int> PutChapter(Guid id, ChapterRequest request)
         {
-            var chapter = await _context.Chapters.FindAsync(id);
+            var comic = await _context.Comics.FindAsync(request.IdComic);
+            if (comic is null)
+                return StatusCodes.Status404NotFound;
 
+            var chapter = await _context.Chapters.FindAsync(id);
             if (chapter is null)
                 return StatusCodes.Status404NotFound;
 
-            chapter.Ordinal = request.Ordinal ?? chapter.Ordinal;
+            if (request.Ordinal is not null)
+            {
+                if (!Equals(request.Ordinal, chapter.Ordinal))
+                {
+                    //Đường dẫn thư mục chap truyện
+                    var path = $@"comic-collection/{comic.Id}/chapter{chapter.Ordinal}";
+                    var pathNew = $@"comic-collection/{comic.Id}/chapter{request.Ordinal}";
+                    if (_storage.Exists(pathNew))
+                    {
+                        request.Ordinal += 0.1f;
+                        pathNew = $@"comic-collection/{comic.Id}/chapter{request.Ordinal}";
+                    }
+                    await _page.MoveUrlPages(chapter.Id, $"chapter{chapter.Ordinal}", $"chapter{request.Ordinal}");
+                    _storage.Move(path, pathNew);
+                    chapter.Ordinal = (float)request.Ordinal;
+                }
+
+
+            }
             chapter.Name = string.IsNullOrEmpty(request.Name) ? chapter.Name : request.Name;
-            chapter.DateTimeUp = request.DateTimeUp ?? chapter.DateTimeUp;
-            chapter.Views = request.Views ?? chapter.Views;
 
             _context.Entry(chapter).State = EntityState.Modified;
 

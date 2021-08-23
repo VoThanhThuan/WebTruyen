@@ -91,11 +91,24 @@ namespace WebTruyen.API.Repository.Page
 
             //đường dẫn thư mục của chapter 
             var path = $@"comic-collection/{chapAndComic.com.Id}/chapter{chapAndComic.chap.Ordinal}";
-            //Xóa các chap cũ
-            var resultRemove = await _storage.DeleteFolderAsync(path);
+            if (_storage.Exists(path))
+            {
+                //Xóa các chap cũ
+                //  <> Xóa Hình
+                var resultRemove = await _storage.DeleteFolderAsync(path);
 
-            if (resultRemove == StatusCodes.Status500InternalServerError)
-                return StatusCodes.Status500InternalServerError;
+                if (resultRemove == StatusCodes.Status500InternalServerError)
+                    return StatusCodes.Status500InternalServerError;
+            }
+            else
+            {
+                _storage.CreateDirectory(path);
+            }
+            
+
+            // <> Xóa CSDL
+            var pagesInDb = await _context.Pages.Where(x => x.IdChapter == idChapter).ToListAsync();
+            _context.Pages.RemoveRange(pagesInDb);
 
             //Lưu những chap mới
             images = images.OrderBy(x => x.FileName).ToList();
@@ -119,6 +132,22 @@ namespace WebTruyen.API.Repository.Page
             }
 
             return StatusCodes.Status200OK;
+        }
+
+        public async Task MoveUrlPages(Guid idChapter, string oldChapter, string newChapter)
+        {
+            var pages = await _context.Pages.Where(x => x.IdChapter == idChapter).ToListAsync();
+            
+            if (pages.Any())
+            {
+                foreach (var page in pages)
+                {
+                    page.Image = page.Image.Replace($@"/{oldChapter}/", $@"/{newChapter}/");
+                }
+                _context.Pages.AttachRange(pages);
+                await _context.SaveChangesAsync();
+            }
+                
         }
 
         public async Task<PageVM> PostPage(Guid idChapter, PageRequest request)

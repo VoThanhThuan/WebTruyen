@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -75,9 +76,30 @@ namespace WebTruyen.UI.Admin.Service.ComicService
             return (int)response.StatusCode;
         }
 
-        public async Task<int> PostComic(ComicRequestClient request)
+        public async Task<(HttpStatusCode StatusCode, string Content)> PostComic(ComicRequestClient request)
         {
-            throw new NotImplementedException();
+            var requestContent = new MultipartFormDataContent();
+
+            if (request.Thumbnail != null)
+            {
+                var data = new byte[request.Thumbnail.Size];
+                await using (var br = request.Thumbnail.OpenReadStream())
+                {
+                    await br.ReadAsync(data);
+                }
+
+                var bytes = new ByteArrayContent(data);
+                requestContent.Add(bytes, "Thumbnail", request.Thumbnail.Name);
+            }
+
+            requestContent.Add(new StringContent(request.Name), "Name");
+            requestContent.Add(new StringContent(request.AnotherNameOfComic), "AnotherNameOfComic");
+            requestContent.Add(new StringContent(request.Author), "Author");
+            requestContent.Add(new StringContent(request.Status.ToString() ?? string.Empty), "Status");
+            requestContent.Add(new StringContent(request.Description), "Description");
+
+            var response = await _http.PostAsync($"/api/Comics/", requestContent);
+            return (response.StatusCode, response.Content.ReadAsStringAsync().Result.Trim('"'));
         }
 
         public Task<int> DeleteComic(Guid id)
