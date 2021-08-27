@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using WebTruyen.UI.Admin.Data;
 using WebTruyen.UI.Admin.Service.ChapterService;
 using WebTruyen.UI.Admin.Service.ComicService;
+using WebTruyen.UI.Admin.Service.GenreService;
 using WebTruyen.UI.Admin.Service.ImageService;
 using WebTruyen.UI.Admin.Service.PageService;
 
@@ -40,6 +41,7 @@ namespace WebTruyen.UI.Admin
             services.AddTransient<IComicApiClient, ComicApiClient>();
             services.AddTransient<IChapterService, ChapterService>();
             services.AddTransient<IPageService, PageService>();
+            services.AddTransient<IGenreService, GenreService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

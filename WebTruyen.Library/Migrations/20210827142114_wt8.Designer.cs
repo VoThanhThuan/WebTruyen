@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebTruyen.Library.Data;
 
 namespace WebTruyen.Library.Migrations
 {
     [DbContext(typeof(ComicDbContext))]
-    partial class ComicDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210827142114_wt8")]
+    partial class wt8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,13 +118,17 @@ namespace WebTruyen.Library.Migrations
 
             modelBuilder.Entity("WebTruyen.Library.Entities.Announcement", b =>
                 {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ComicId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("IdChapter")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("IdUser")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ComicId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsRead")
@@ -130,9 +136,11 @@ namespace WebTruyen.Library.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.HasKey("IdChapter", "IdUser");
+                    b.HasKey("Id");
 
                     b.HasIndex("ComicId");
+
+                    b.HasIndex("IdChapter");
 
                     b.HasIndex("IdUser");
 
@@ -305,9 +313,6 @@ namespace WebTruyen.Library.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("IdComic")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("LastReadChapter")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("IdUser", "IdComic");

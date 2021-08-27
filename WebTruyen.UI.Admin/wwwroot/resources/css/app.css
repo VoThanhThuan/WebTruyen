@@ -1,7 +1,10 @@
 ﻿body {
-    overflow: auto!important
+    overflow: auto !important;
 }
-.container {
+.content {
+    background-color: var(--bs-body-bg);
+}
+.overflow-auto {
     overflow: auto;
 }
 .preview-image {

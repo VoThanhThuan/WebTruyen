@@ -13,7 +13,8 @@ namespace WebTruyen.Library.Data.Configurations
         public void Configure(EntityTypeBuilder<Announcement> builder)
         {
             builder.ToTable("NewComicAnnouncement");
-            builder.HasKey(x => new { x.IdUser, x.IdChapter });
+            builder.HasKey(x => new{x.IdChapter, x.IdUser});
+            builder.Property(x => x.IsRead).HasDefaultValue(false);
             builder.HasOne(x => x.User).WithMany(x => x.NewComicAnnouncements)
                 .HasForeignKey(x => x.IdUser);
             builder.HasOne(x => x.Chapter).WithMany(x => x.NewComicAnnouncements)

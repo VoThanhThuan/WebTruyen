@@ -13,9 +13,12 @@ namespace WebTruyen.Library.Entities
             return new HistoryReadVM()
             {
                 IdUser = IdUser,
-                IdComic = IdComic
+                IdComic = IdComic,
+                LastReadChapter = LastReadChapter
             };
         }
+
+        public Guid LastReadChapter { get; set; }
 
         public Guid IdComic { get; set; }
         public Guid IdUser { get; set; }

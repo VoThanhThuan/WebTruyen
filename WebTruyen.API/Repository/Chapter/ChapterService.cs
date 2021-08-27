@@ -129,11 +129,11 @@ namespace WebTruyen.API.Repository.Chapter
             return chapter;
         }
 
-        public async Task<int> DeleteChapter(Guid id)
+        private async Task DeleteForeignKey(Guid idChapter)
         {
             //xóa danh sách image =========================================================================================
-            var listImage = _context.Pages.Where(x => x.IdChapter == id);
-            if(!listImage.Any())
+            var listImage = _context.Pages.Where(x => x.IdChapter == idChapter);
+            if (!listImage.Any())
             {
                 foreach (var item in listImage)
                 {
@@ -144,26 +144,53 @@ namespace WebTruyen.API.Repository.Chapter
                 await _context.SaveChangesAsync();
             }
             //xóa report =========================================================================================
-            var report = _context.Report.Where(x => x.IdChapter == id);
-            if(!report.Any())
+            var report = _context.Report.Where(x => x.IdChapter == idChapter);
+            if (!report.Any())
             {
                 _context.Report.RemoveRange(report);
                 await _context.SaveChangesAsync();
             }
             //xóa thông báo =========================================================================================
-            var announcement = _context.NewComicAnnouncements.Where(x => x.IdChapter == id);
-            if(!announcement.Any())
+            var announcement = _context.NewComicAnnouncements.Where(x => x.IdChapter == idChapter);
+            if (!announcement.Any())
             {
                 _context.NewComicAnnouncements.RemoveRange(announcement);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<int> DeleteChapterInComic(Guid idComic)
+        {
+            var chapters = await _context.Chapters.Where(x => x.IdComic == idComic).ToListAsync();
+            //Xóa các bảng kết nối với chapter
+            foreach (var chapter in chapters)
+            {
+                await DeleteForeignKey(chapter.Id);
+            }
+
             //Xóa chapter =========================================================================================
+            _context.Chapters.RemoveRange(chapters);
+            await _context.SaveChangesAsync();
+
+            return StatusCodes.Status200OK;
+
+        }
+
+        public async Task<int> DeleteChapter(Guid id)
+        {
+            //Tìm Chapter
             var chapter = await _context.Chapters.FindAsync(id);
+
             if (chapter == null)
             {
                 return StatusCodes.Status404NotFound;
             }
 
+            //Xóa các bảng kết nối với chapter
+            await DeleteForeignKey(chapter.Id);
+
+
+            //Xóa chapter =========================================================================================
             _context.Chapters.Remove(chapter);
             await _context.SaveChangesAsync();
 

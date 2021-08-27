@@ -48,7 +48,7 @@ namespace WebTruyen.UI.Admin.Service.ComicService
             return result;
         }
 
-        public async Task<int> PutComic(Guid id, ComicRequestClient request)
+        public async Task<int> PutComic(Guid id, ComicRequestClient request, List<GenreVM> genres)
         {
             var requestContent = new MultipartFormDataContent();
 
@@ -63,7 +63,7 @@ namespace WebTruyen.UI.Admin.Service.ComicService
                 var bytes = new ByteArrayContent(data);
                 requestContent.Add(bytes, "Thumbnail", request.Thumbnail.Name);
             }
-
+            //Comic
             requestContent.Add(new StringContent(request.Id.ToString()), "id");
             requestContent.Add(new StringContent(request.Name), "Name");
             requestContent.Add(new StringContent(request.NameAlias), "NameAlias");
@@ -72,11 +72,17 @@ namespace WebTruyen.UI.Admin.Service.ComicService
             requestContent.Add(new StringContent(request.Status.ToString() ?? string.Empty), "Status");
             requestContent.Add(new StringContent(request.Description), "Description");
 
+            //genre
+            foreach (var genre in genres)
+            {
+                requestContent.Add(new StringContent(genre.Id.ToString()), "genres");
+            }
+
             var response = await _http.PutAsync($"/api/Comics/{id}", requestContent);
             return (int)response.StatusCode;
         }
 
-        public async Task<(HttpStatusCode StatusCode, string Content)> PostComic(ComicRequestClient request)
+        public async Task<(HttpStatusCode StatusCode, string Content)> PostComic(ComicRequestClient request, List<GenreVM> genres)
         {
             var requestContent = new MultipartFormDataContent();
 
@@ -97,6 +103,12 @@ namespace WebTruyen.UI.Admin.Service.ComicService
             requestContent.Add(new StringContent(request.Author), "Author");
             requestContent.Add(new StringContent(request.Status.ToString() ?? string.Empty), "Status");
             requestContent.Add(new StringContent(request.Description), "Description");
+
+            //genre
+            foreach (var genre in genres)
+            {
+                requestContent.Add(new StringContent(genre.Id.ToString()), "genres");
+            }
 
             var response = await _http.PostAsync($"/api/Comics/", requestContent);
             return (response.StatusCode, response.Content.ReadAsStringAsync().Result.Trim('"'));

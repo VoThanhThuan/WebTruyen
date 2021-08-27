@@ -69,7 +69,7 @@ namespace WebTruyen.API.Controllers
         {
             await _genre.PostGenre(genre);
 
-            return CreatedAtAction("GetGenre", new { id = genre.Id }, genre);
+            return NoContent();
         }
 
         // DELETE: api/Genres/5

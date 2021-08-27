@@ -52,6 +52,24 @@ namespace WebTruyen.API.Repository.ComicInGenre
             return true;
         }
 
+        public async Task<bool> PutComicInGenres(Guid idComic, List<ComicInGenreVM> request)
+        {
+            if (!request.Any()) return false;
+            var comic = await _context.ComicInGenres.Where(x => x.IdComic == idComic).ToListAsync();
+            if (comic.Any())
+            {
+                _context.ComicInGenres.RemoveRange(comic);
+                await _context.SaveChangesAsync();
+            }
+
+            var cig = request.Select(x => x.ToComicInGenre()).ToList();
+
+            await _context.AddRangeAsync(cig);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
         public async Task<bool> PostComicInGenre(ComicInGenreVM request)
         {
             _context.ComicInGenres.Add(request.ToComicInGenre());
@@ -74,15 +92,15 @@ namespace WebTruyen.API.Repository.ComicInGenre
             return true;
         }
 
-        public async Task<bool> DeleteComicInGenre(int id)
+        public async Task<bool> DeleteComicInGenre(int idGenre)
         {
-            var comicInGenre = await _context.ComicInGenres.FindAsync(id);
-            if (comicInGenre == null)
+            var comicInGenre = await _context.ComicInGenres.Where(x => x.IdGenre == idGenre).ToListAsync();
+            if (!comicInGenre.Any())
             {
                 return false;
             }
 
-            _context.ComicInGenres.Remove(comicInGenre);
+            _context.ComicInGenres.RemoveRange(comicInGenre);
             await _context.SaveChangesAsync();
 
             return true;

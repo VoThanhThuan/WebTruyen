@@ -12,13 +12,14 @@ namespace WebTruyen.Library.Entities
         {
             return new AnnouncementVM()
             {
-                Id = Id,
+                IsRead = IsRead,
                 IdUser = IdUser,
                 IdChapter = IdChapter
             };
         }
 
-        public Guid Id { get; set; }
+        public bool IsRead { get; set; } = false;
+
         public Guid IdUser { get; set; }
         public Guid IdChapter { get; set; }
         public virtual User User { get; set; }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using WebTruyen.Library.Enums;
 
@@ -33,6 +34,8 @@ namespace WebTruyen.Library.Entities.ViewModel
         public int? Views { get; set; } = 0;
         public string Description { get; set; } = "";
         public string Thumbnail { get; set; } = "";
+
+        public List<GenreVM> Genres { get; set; } = new List<GenreVM>();
 
     }
 }

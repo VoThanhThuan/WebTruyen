@@ -12,6 +12,7 @@ namespace WebTruyen.API.Repository.ComicInGenre
         public Task<IEnumerable<ComicInGenreVM>> GetComicInGenres();
         public Task<ComicInGenreVM> GetComicInGenre(int id);
         public Task<bool> PutComicInGenre(int id, ComicInGenreVM request);
+        public Task<bool> PutComicInGenres(Guid idComic, List<ComicInGenreVM> request);
         public Task<bool> PostComicInGenre(ComicInGenreVM request);
         public Task<bool> DeleteComicInGenre(int id);
 

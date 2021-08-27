@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Repository.Comic;
+using WebTruyen.API.Repository.ComicInGenre;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
 using WebTruyen.Library.Entities.Request;
@@ -20,10 +21,12 @@ namespace WebTruyen.API.Controllers
     public class ComicsController : ControllerBase
     {
         private readonly IComicService _comic;
+        private readonly IComicInGenreService _comicInGenre;
         private readonly IWebHostEnvironment _env;
-        public ComicsController(IComicService context, IWebHostEnvironment env)
+        public ComicsController(IComicService context, IWebHostEnvironment env, IComicInGenreService comicInGenre)
         {
             _comic = context;
+            _comicInGenre = comicInGenre;
             _env = env;
         }
 
@@ -76,19 +79,22 @@ namespace WebTruyen.API.Controllers
         // PUT: api/Comics/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutComic(Guid id, [FromForm] ComicRequest request)
+        public async Task<IActionResult> PutComic(Guid id, [FromForm] ComicRequest request, [FromForm]List<int> genres)
         {
             if (id != request.Id)
-            {
                 return BadRequest();
-            }
 
             var result = await _comic.PutComic(id, request);
 
             if (!result)
-            {
                 return NotFound();
-            }
+
+            var cig = genres.Select(genre => new ComicInGenreVM() {IdComic = id, IdGenre = genre}).ToList();
+
+            result = await _comicInGenre.PutComicInGenres(id, cig);
+
+            if (!result)
+                return NotFound();
 
             return NoContent();
         }
@@ -96,11 +102,18 @@ namespace WebTruyen.API.Controllers
         // POST: api/Comics
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ComicVM>> PostComic([FromForm] ComicRequest request)
+        public async Task<ActionResult<ComicVM>> PostComic([FromForm] ComicRequest request, [FromForm] List<int> genres)
         {
-            var result = await _comic.PostComic(request);
+            var comic = await _comic.PostComic(request);
 
-            return Ok(result.Id);
+            var cig = genres.Select(genre => new ComicInGenreVM() { IdComic = comic.Id, IdGenre = genre }).ToList();
+
+            var result = await _comicInGenre.PutComicInGenres(comic.Id, cig);
+
+            if (!result)
+                return NotFound();
+
+            return Ok(comic.Id);
         }
 
         // DELETE: api/Comics/5

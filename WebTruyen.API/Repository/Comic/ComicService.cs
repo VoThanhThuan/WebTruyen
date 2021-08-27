@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using WebTruyen.API.Repository.Chapter;
 using WebTruyen.API.Service;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.Request;
@@ -16,11 +17,13 @@ namespace WebTruyen.API.Repository.Comic
     {
         private readonly ComicDbContext _context;
         private readonly IStorageService _storageService;
+        private readonly IChapterService _chapterService;
 
-        public ComicService(ComicDbContext context, IStorageService storageService)
+        public ComicService(ComicDbContext context, IStorageService storageService, IChapterService chapterService)
         {
             _context = context;
             _storageService = storageService;
+            _chapterService = chapterService;
         }
         public async Task<IEnumerable<ComicVM>> GetComics()
         {
@@ -30,15 +33,31 @@ namespace WebTruyen.API.Repository.Comic
         public async Task<ComicVM> GetComic(Guid id)
         {
             var comic = await _context.Comics.FindAsync(id);
+            var comicInGenre = await _context.ComicInGenres.Where(x => x.IdComic == comic.Id).ToListAsync();
+            var genres = new List<GenreVM>();
+            foreach (var cig in comicInGenre)
+            {
+                var geren = await _context.Genres.FindAsync(cig.IdComic, cig.IdGenre);
+                genres.Add(geren.ToViewModel());
+            }
+            var comicView = comic?.ToViewModel(genres);
 
-            return comic?.ToViewModel();
+            return comicView;
         }
 
         public async Task<ComicVM> GetComic(string nameAlias)
         {
             var comic = await _context.Comics.FirstOrDefaultAsync(x => x.NameAlias == nameAlias);
 
-            return comic?.ToViewModel();
+            var comicInGenre = await _context.ComicInGenres.Where(x => x.IdComic == comic.Id).ToListAsync();
+            var genres = new List<GenreVM>();
+            foreach (var cig in comicInGenre)
+            {
+                var geren = await _context.Genres.FindAsync(cig.IdGenre);
+                genres.Add(geren.ToViewModel());
+            }
+            var comicView = comic?.ToViewModel(genres);
+            return comicView;
         }
 
         public async Task<bool> PutComic(Guid id, ComicRequest request)
@@ -118,6 +137,38 @@ namespace WebTruyen.API.Repository.Comic
                 return StatusCodes.Status404NotFound;
             }
             var path = $@"comic-collection/{comic.Id}";
+
+
+            // Xóa ComicInGenres
+            var cig = await _context.ComicInGenres.Where(x => x.IdComic == id).ToListAsync();
+            if (!cig.Any())
+            {
+                _context.ComicInGenres.RemoveRange(cig);
+            }
+            // Xóa Chapters
+            await _chapterService.DeleteChapterInComic(id);
+
+            // Xóa TranslationOfUsers
+            var trans = await _context.TranslationOfUsers.Where(x => x.IdComic == id).ToListAsync();
+            if (!trans.Any())
+            {
+                _context.TranslationOfUsers.RemoveRange(trans);
+            }
+            // Xóa Bookmarks
+            var bookmarks = await _context.Bookmarks.Where(x => x.IdComic == id).ToListAsync();
+            if (!bookmarks.Any())
+            {
+                _context.Bookmarks.RemoveRange(bookmarks);
+            }
+
+            // Xóa HistoryReads
+            var history = await _context.HistoryReads.Where(x => x.IdComic == id).ToListAsync();
+            if (!history.Any())
+            {
+                _context.HistoryReads.RemoveRange(history);
+            }
+
+            //Xóa Comic
             var resultRemove = await _storageService.DeleteFolderAsync(path);
             if (resultRemove == StatusCodes.Status500InternalServerError)
                 return StatusCodes.Status500InternalServerError;

@@ -12,9 +12,11 @@ namespace WebTruyen.Library.Entities.ViewModel
             return new HistoryRead()
             {
                 IdUser = IdUser,
-                IdComic = IdComic
+                IdComic = IdComic,
+                LastReadChapter = LastReadChapter
             };
         }
+        public Guid LastReadChapter { get; set; }
 
         public Guid IdComic { get; set; }
         public Guid IdUser { get; set; }

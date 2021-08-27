@@ -2,16 +2,17 @@
 @using WebTruyen.UI.Admin.Components;
 
 
-<a href="comic/create" class="btn btn-info text-decoration-none text-dark"><i class="far fa-plus"></i>Thêm Truyện</a>
-<div class="container" >
-    @if (_comics == null)
-    {
-        <Loading></Loading>
-    }
-    else
-    {
-        <table class="table">
-            <thead>
+<div class="container overflow-auto mt-2">
+    <div class="content rounded-3 p-1">
+        <a href="comic/create" class="btn btn-info text-decoration-none text-dark"><i class="far fa-plus"></i>Thêm Truyện</a>
+        @if (_comics == null)
+        {
+            <Loading></Loading>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Hình Ảnh</th>
@@ -23,8 +24,8 @@
                     <th scope="col" style="min-width: 10rem;">Mô Tả</th>
                     <th scope="col" style="min-width: 120px;">#</th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
 
                 @{
                     var index = 0;
@@ -32,7 +33,7 @@
                     {
                         <tr>
                             <th scope="row">@(index++)</th>
-                            <td><img src="@comic.Thumbnail" alt="@comic.NameAlias" height="64" /></td>
+                            <td><img src="@comic.Thumbnail" alt="@comic.NameAlias" height="64"/></td>
                             <td>@comic.Name</td>
                             <td>@comic.AnotherNameOfComic</td>
                             <td>@comic.Author</td>
@@ -45,9 +46,10 @@
                         </tr>
                     }
                 }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
 
-    }
+        }
 
+    </div>
 </div>

@@ -29,99 +29,100 @@
         </div>
     }
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <h1>Chapter</h1>
+    <div class="container overflow-auto mt-2">
+        <div class="content rounded-3 p-1">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>Chapter</h1>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="page">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page">
 
-                    <h3 class="title">
-                        <a href="">Return Comic</a>
-                    </h3>
+                        <h3 class="title">
+                            <a href="">Return Comic</a>
+                        </h3>
 
-                    <div class="row">
-                        <EditForm Model="@_chapterVm" OnSubmit="@Upload">
-                            <div class="row g-2">
-                                <div class="form-floating mb-3">
-                                    <InputNumber @bind-Value="_chapterVm.Ordinal" type="number" class="form-control" id="floatingInput" placeholder="0"/>
-                                    <label for="floatingInput">Số Chap</label>
+                        <div class="row">
+                            <EditForm Model="@_chapterVm" OnSubmit="@Upload">
+                                <div class="row g-2">
+                                    <div class="form-floating mb-3">
+                                        <InputNumber @bind-Value="_chapterVm.Ordinal" type="number" class="form-control" id="floatingInput" placeholder="0" />
+                                        <label for="floatingInput">Số Chap</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <InputText @bind-Value="_chapterVm.Name" type="text" class="form-control" id="floatingInput" placeholder="Tên Chap" />
+                                        <label for="floatingInput">Tên Chap</label>
+                                    </div>
+
                                 </div>
-                                <div class="form-floating mb-3">
-                                    <InputText @bind-Value="_chapterVm.Name" type="text" class="form-control" id="floatingInput" placeholder="Tên Chap" />
-                                    <label for="floatingInput">Tên Chap</label>
+                                <div class="row g-2">
+                                    <div class="mb-3">
+                                        @if (string.IsNullOrEmpty(idChaper))
+                                        {
+                                            <label for="formFileMultiple" class="form-label">Upload Trang Truyện</label>
+                                        }
+                                        else
+                                        {
+                                            <label for="formFileMultiple" class="form-label">Upload Lại Các Trang Truyện</label>
+                                        }
+                                        <InputFile class="form-control" type="file" id="formFileMultiple" multiple OnChange="InputImage" />
+                                    </div>
                                 </div>
-
-                            </div>
-                            <div class="row g-2">
-                                <div class="mb-3">
-                                    @if (string.IsNullOrEmpty(idChaper))
+                                <div class="d-flex align-items-center mb-3">
+                                    @if (!_element.IsLoadImage)
                                     {
-                                        <label for="formFileMultiple" class="form-label">Upload Trang Truyện</label>
+                                        <button class="btn btn-primary" type="submit">Submit</button>
                                     }
                                     else
                                     {
-                                        <label for="formFileMultiple" class="form-label">Upload Lại Các Trang Truyện</label>
+                                        <button class="btn btn-primary" type="submit" disabled>
+                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                            Loading...
+                                        </button>
                                     }
-                                    <InputFile class="form-control" type="file" id="formFileMultiple" multiple OnChange="InputImage"/>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center mb-3">
-                                @if (!_element.IsLoadImage)
-                                {
-                                <button class="btn btn-primary" type="submit">Submit</button>
-                                }
-                                else
-                                {
-                                    <button class="btn btn-primary" type="submit" disabled>
-                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                        Loading...
-                                    </button>
-                                }
 
-                                <div class="form-check form-switch d-inline-flex">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                                    <label class="form-check-label" for="flexSwitchCheckDefault">Bật nếu muốn khóa chap này lại</label>
+                                    <div class="form-check form-switch d-inline-flex">
+                                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                                        <label class="form-check-label" for="flexSwitchCheckDefault">Bật nếu muốn khóa chap này lại</label>
+                                    </div>
                                 </div>
-                            </div>
-                        </EditForm>
+                            </EditForm>
+                        </div>
+
                     </div>
-
                 </div>
             </div>
-        </div>
 
-        <div>
-            @if (!_Pages.Any())
-            {
-                <div class="d-block @_element.visibility">Không có hình ảnh!</div>
-            }
-            else
-            {
-                <div class="d-block @_element.visibility">Loading....</div>
-                <div class="d-flex flex-wrap">
-                    @{
-                        var index = 0;
-                        foreach (var page in _Pages)
-                        {
-                            <div class="card">
-                                <img src="@(page.Image)" class="img-thumbnail preview-image lazy-loading" loading="lazy" />
-                                <span class="badge bg-secondary">@(++index)</span>
-                            </div>
+            <div class="d-flex justify-content-center">
+                @if (!_Pages.Any())
+                {
+                    <div class="d-block @_element.visibility">Không có hình ảnh!</div>
+                }
+                else
+                {
+                    <div class="d-block @_element.visibility">Loading....</div>
+                    <div class="d-flex flex-wrap">
+                        @{
+                            var index = 0;
+                            foreach (var page in _Pages)
+                            {
+                                <div class="card">
+                                    <img src="@(page.Image)" class="img-thumbnail preview-image lazy-loading" loading="lazy" />
+                                    <span class="badge bg-secondary">@(++index)</span>
+                                </div>
+                            }
                         }
-                    }
 
-                </div>
-            }
+                    </div>
+                }
+            </div>
+
         </div>
 
     </div>
-
 </div>
-
 
 @code {
 
@@ -250,7 +251,7 @@
         if (string.IsNullOrEmpty(idChaper))
         {
             var result = await _ChapterApi.GetLastChapter(_chapterVm.IdComic);
-            _chapterVm.Ordinal = result?.Ordinal+1 ?? 0;
+            _chapterVm.Ordinal = result?.Ordinal + 1 ?? 0;
             _isUpdate = false;
             StateHasChanged();
         }
@@ -260,6 +261,6 @@
     {
         public string visibility { get; set; } = "visible";
         public int Apiresult { get; set; } = 0;
-        public bool IsLoadImage{ get; set; } = false;
+        public bool IsLoadImage { get; set; } = false;
     }
 }

@@ -10,6 +10,7 @@ namespace WebTruyen.Library.Entities
 {
     public class Comic
     {
+        
         public ComicVM ToViewModel()
         {
             return new ComicVM()
@@ -24,6 +25,13 @@ namespace WebTruyen.Library.Entities
                 Description = Description,
                 Thumbnail = Thumbnail
             };
+        }
+
+        public ComicVM ToViewModel(List<GenreVM> genres)
+        {
+            var view = ToViewModel();
+            view.Genres = genres;
+            return view;
         }
 
         [Key]

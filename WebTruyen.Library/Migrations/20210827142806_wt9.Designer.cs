@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebTruyen.Library.Data;
 
 namespace WebTruyen.Library.Migrations
 {
     [DbContext(typeof(ComicDbContext))]
-    partial class ComicDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210827142806_wt9")]
+    partial class wt9
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -305,9 +307,6 @@ namespace WebTruyen.Library.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("IdComic")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("LastReadChapter")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("IdUser", "IdComic");

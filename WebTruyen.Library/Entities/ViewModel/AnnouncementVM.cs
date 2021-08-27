@@ -11,12 +11,12 @@ namespace WebTruyen.Library.Entities.ViewModel
         {
             return new Announcement()
             {
-                Id = Id,
                 IdUser = IdUser,
+                IsRead = IsRead,
                 IdChapter = IdChapter
             };
         }
-        public Guid Id { get; set; }
+        public bool IsRead { get; set; } = false;
         public Guid IdUser { get; set; }
         public Guid IdChapter { get; set; }
 
