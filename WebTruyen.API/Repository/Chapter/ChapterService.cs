@@ -204,7 +204,7 @@ namespace WebTruyen.API.Repository.Chapter
 
         public async Task<ChapterVM> GetLastChapter(Guid idComic)
         {
-            return (await _context.Chapters.FirstOrDefaultAsync(x => x.IdComic == idComic))?.ToViewModel();
+            return (_context.Chapters.Where(x => x.IdComic == idComic).OrderBy(x => x.Ordinal).Last())?.ToViewModel();
         }
     }
 }

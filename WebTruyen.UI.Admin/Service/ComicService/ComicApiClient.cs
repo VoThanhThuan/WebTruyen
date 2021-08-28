@@ -82,7 +82,7 @@ namespace WebTruyen.UI.Admin.Service.ComicService
             return (int)response.StatusCode;
         }
 
-        public async Task<(HttpStatusCode StatusCode, string Content)> PostComic(ComicRequestClient request, List<GenreVM> genres)
+        public async Task<(HttpStatusCode StatusCode, ComicVM Content)> PostComic(ComicRequestClient request, List<GenreVM> genres)
         {
             var requestContent = new MultipartFormDataContent();
 
@@ -111,12 +111,13 @@ namespace WebTruyen.UI.Admin.Service.ComicService
             }
 
             var response = await _http.PostAsync($"/api/Comics/", requestContent);
-            return (response.StatusCode, response.Content.ReadAsStringAsync().Result.Trim('"'));
+            return (response.StatusCode, await response.Content.ReadFromJsonAsync<ComicVM>());
         }
 
-        public Task<int> DeleteComic(Guid id)
+        public async Task<int> DeleteComic(Guid id)
         {
-            throw new NotImplementedException();
+            var response = await _http.DeleteAsync($"/api/Comics/{id}");
+            return (int)response.StatusCode;
         }
     }
 }

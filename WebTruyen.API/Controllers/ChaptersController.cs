@@ -102,7 +102,7 @@ namespace WebTruyen.API.Controllers
 
             await _page.PostPages(result.Id, pages);
 
-            return NoContent();
+            return Ok(result);
 
             //return CreatedAtAction("GetChapter", new { id = result.Id }, chapter);
         }

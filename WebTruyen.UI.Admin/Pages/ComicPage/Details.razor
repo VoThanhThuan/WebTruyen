@@ -100,9 +100,9 @@ else
                                 }
                             </li>
                         </ul>
-                        <div class="card-body">
+                        <div class="card-body d-flex justify-content-between">
                             <button type="button" class="btn btn-primary" @onclick=OpenUpdate>@_element.TextButtonUpdate</button>
-                            <a href="#" class="card-link">Xóa</a>
+                            <a href="javascript:void(0)" class="card-link text-danger" data-bs-toggle="modal" data-bs-target="#POP-alert" @onclick='() => _element.ContentAlert = "Bạn Thực Sự Muốn Xóa?" '>Xóa</a>
                         </div>
                     </div>
                 </div>
@@ -248,6 +248,29 @@ else
     </div>
     <!-- End Modal Thể Loại  -->
 
+    <!-- Modal Thông Báo -->
+    <div class="modal fade" id="POP-alert" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Chú Ý</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex flex-wrap">
+                        
+                        @_element.ContentAlert
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="close-ask-modal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="ResultAlert">Xác Nhận</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Modal Thông Báo  -->
 }
 
 @code {
@@ -316,6 +339,7 @@ else
     /// </summary>
     private async void Update()
     {
+        _element.Apiresult = 0;
         _element.Apiresult = await _ComicApi.PutComic(_comicRequest.Id, _comicRequest, _genreRequest);
         StateHasChanged();
     }
@@ -331,6 +355,15 @@ else
         _idChapter = idChapter;
         _pages = await _PageApi.GetPagesInChapter(idChapter);
         StateHasChanged();
+    }
+
+    async Task ResultAlert()
+    {
+        _element.Apiresult = 0;
+        _element.Apiresult = await _ComicApi.DeleteComic(_comic.Id);
+        StateHasChanged();
+        await Task.Delay(500);
+        _navigationManager.NavigateTo("comic");
     }
 
     #endregion
@@ -447,7 +480,7 @@ else
 
         public List<(int index, bool check, GenreVM value)> GenreVM { get; set; } = new List<(int index, bool check, GenreVM value)>();
         public string AllGenreChoose { get; set; } = "";
-
+        public string ContentAlert { get; set; } = "";
 
     }
 

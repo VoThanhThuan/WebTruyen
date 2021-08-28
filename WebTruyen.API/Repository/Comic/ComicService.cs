@@ -136,8 +136,7 @@ namespace WebTruyen.API.Repository.Comic
             {
                 return StatusCodes.Status404NotFound;
             }
-            var path = $@"comic-collection/{comic.Id}";
-
+            
 
             // Xóa ComicInGenres
             var cig = await _context.ComicInGenres.Where(x => x.IdComic == id).ToListAsync();
@@ -146,7 +145,8 @@ namespace WebTruyen.API.Repository.Comic
                 _context.ComicInGenres.RemoveRange(cig);
             }
             // Xóa Chapters
-            await _chapterService.DeleteChapterInComic(id);
+            var chapter = await _chapterService.DeleteChapterInComic(id);
+            Console.WriteLine($">> Tình trạng xóa chapter >> {chapter}");
 
             // Xóa TranslationOfUsers
             var trans = await _context.TranslationOfUsers.Where(x => x.IdComic == id).ToListAsync();
@@ -168,6 +168,7 @@ namespace WebTruyen.API.Repository.Comic
                 _context.HistoryReads.RemoveRange(history);
             }
 
+            var path = $@"comic-collection/{comic.Id}";
             //Xóa Comic
             var resultRemove = await _storageService.DeleteFolderAsync(path);
             if (resultRemove == StatusCodes.Status500InternalServerError)

@@ -16,7 +16,7 @@ namespace WebTruyen.UI.Admin.Service.ComicService
         public Task<ComicVM> GetComic(Guid id);
         public Task<ComicVM> GetComic(string nameAlias);
         public Task<int> PutComic(Guid id, ComicRequestClient request, List<GenreVM> genres);
-        public Task<(HttpStatusCode StatusCode, string Content)> PostComic(ComicRequestClient request, List<GenreVM> genres);
+        public Task<(HttpStatusCode StatusCode, ComicVM Content)> PostComic(ComicRequestClient request, List<GenreVM> genres);
         public Task<int> DeleteComic(Guid id);
     }
 }

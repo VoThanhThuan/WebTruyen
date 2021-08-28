@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -41,6 +42,15 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
             return await _http.GetFromJsonAsync<List<ChapterVM>>($"api/Chapters/comic?idComic={idComic}");
         }
 
+        public async Task<ChapterVM> GetLastChapter(Guid idComic)
+        {
+            var result = await _http.GetAsync($"api/Chapters/lastChapter?idComic={idComic}");
+            if (result.IsSuccessStatusCode)
+            {
+                return await result.Content.ReadFromJsonAsync<ChapterVM>();
+            }
+            return null;
+        }
         public async Task<int> PutChapter(Guid id, ChapterVM chapter, List<(byte[] image, string nameFile)> images)
         {
             var requestContent = new MultipartFormDataContent();
@@ -65,17 +75,8 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
             return (int)response.StatusCode;
         }
 
-        public async Task<ChapterVM> GetLastChapter(Guid idComic)
-        {
-            var result = await _http.GetAsync($"api/Chapters/lastChapter?idComic={idComic}");
-            if (result.IsSuccessStatusCode)
-            {
-                return await result.Content.ReadFromJsonAsync<ChapterVM>();
-            }
-            return null;
-        }
 
-        public async Task<int> PostChapter(ChapterVM chapter, List<(byte[] image, string nameFile)> images)
+        public async Task<(HttpStatusCode StatusCode, ChapterVM Content)> PostChapter(ChapterVM chapter, List<(byte[] image, string nameFile)> images)
         {
             var requestContent = new MultipartFormDataContent();
 
@@ -96,7 +97,7 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
             requestContent.Add(new StringContent(chapter.IdComic.ToString()), "IdComic");
 
             var response = await _http.PostAsync($"/api/Chapters", requestContent);
-            return (int)response.StatusCode;
+            return (response.StatusCode, await response.Content.ReadFromJsonAsync<ChapterVM>());
         }
     }
 }

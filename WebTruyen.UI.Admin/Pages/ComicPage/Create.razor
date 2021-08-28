@@ -220,8 +220,9 @@ else if (_element.Apiresult != 0)
         var (statusCode, content) = await _ComicApi.PostComic(_comicRequest, _genreRequest);
         if (((int)statusCode) is 200)
         {
+            _element.Apiresult = (int)statusCode;
             await Task.Delay(200);
-            _navigationManager.NavigateTo($"comic/detail?id={content}");
+            _navigationManager.NavigateTo($"comic/detail?id={content.Id}");
         }
         _element.IsSubmit = true;
         StateHasChanged();

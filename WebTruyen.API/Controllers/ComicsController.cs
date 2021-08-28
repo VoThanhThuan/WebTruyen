@@ -113,7 +113,7 @@ namespace WebTruyen.API.Controllers
             if (!result)
                 return NotFound();
 
-            return Ok(comic.Id);
+            return Ok(comic);
         }
 
         // DELETE: api/Comics/5

@@ -107,7 +107,7 @@ namespace WebTruyen.API.Service
                     return StatusCodes.Status500InternalServerError;
                 }
             }
-
+            await Task.Run(() => di.Delete(true));
             return 200;
         }
     }
