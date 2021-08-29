@@ -1,0 +1,36 @@
+﻿@page "/user"
+@using System.Dynamic
+@using Microsoft.JSInterop.Implementation
+
+<link rel="stylesheet" href="./vendors/Cropprjs/croppr.min.css">
+<div class="container overflow-auto mt-2">
+    <div class="content rounded-3 p-1">
+        <style>
+            .frame-cropper {
+                padding: 18px;
+                border: 1px solid lightgrey;
+                width: 300px;
+            }
+
+                .modal img {
+                    max-width: 100%;
+                }
+        </style>
+        <div class="frame-cropper">
+            <img src="https://unsplash.it/500/500/?random" alt="" id="cropper">
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Inject] IJSRuntime JS { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        await JS.InvokeVoidAsync("Cropper", "#cropper");
+    }
+
+
+}

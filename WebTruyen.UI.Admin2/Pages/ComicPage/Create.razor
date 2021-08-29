@@ -1,0 +1,325 @@
+﻿@page "/comic/create"
+@using Microsoft.AspNetCore.Components.Forms
+@using WebTruyen.UI.Admin.Service.ComicService
+@using WebTruyen.Library.Entities.ViewModel
+@using WebTruyen.Library.Enums
+@using WebTruyen.UI.Admin.Components;
+@using WebTruyen.UI.Admin.RequestClient
+@using WebTruyen.UI.Admin.Service.ChapterService
+@using WebTruyen.UI.Admin.Service.ImageService
+@using WebTruyen.UI.Admin.Service.PageService
+@using Microsoft.AspNetCore.WebUtilities
+@using WebTruyen.UI.Admin.Service.GenreService
+
+
+<link href="./resources/css/animation.css" rel="stylesheet" />
+
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+    </symbol>
+    <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+    </symbol>
+    <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+    </symbol>
+</svg>
+@if (_element.Apiresult is >= 200 and <= 299)
+{
+    <div>
+        <div class="alert alert-success d-flex align-items-center alert-dismissible" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill" /></svg>
+            <div>
+                Cập nhật thành công.
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+
+}
+else if (_element.Apiresult != 0)
+{
+    <div>
+        <div class="alert alert-danger d-flex align-items-center alert-dismissible" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill" /></svg>
+            <div>
+                Cập nhật thất bại.
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+
+}
+
+<div class="container overflow-auto mt-2">
+    <div class="content rounded-3 p-1">
+        <div class="row g-2 g-lg-3">
+            <div class="col" style="min-width: 18rem;">
+                <div class="card slide-in-elliptic-top-fwd" style="min-width: 18rem; z-index: 1">
+                    <img src="@_element.ThumbnailComic" class="card-img-top mx-auto lazy-loading" alt="@_comicRequest.NameAlias" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">@_comicRequest.Name</h5>
+                        <p class="card-text">@_comicRequest.Description</p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><span class="fw-bold">Tác Giả:</span>@_comicRequest.Author</li>
+                        <li class="list-group-item">
+                            <span class="fw-bold">
+                                Tình Trạng:
+                            </span>
+
+
+                            @switch (_comicRequest.Status)
+                            {
+                                case Status.InProgress:
+                                    <span>Đang Tiến Hành</span>
+                                    break;
+                                case Status.IsFinish:
+                                    <span>Đã Hoàn Thành</span>
+                                    break;
+                                case Status.Drop:
+                                    <span>Ngưng Dịch</span>
+                                    break;
+                                default:
+                                    <span>Đang Tiến Hành</span>
+                                    break;
+
+                            }
+                        </li>
+
+                        <li class="list-group-item"><span class="fw-bold">Lượt Xem:</span>@_comicRequest.Views</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col" style="min-width: 18rem;">
+                <div class="flex-wrap @_element.AnimationSlide">
+                    <EditForm Model="@_comicRequest" OnSubmit="@Update">
+                        <span>Hình</span>
+                        <InputFile class="form-control" OnChange="InputImage" @bind-Value="_comicRequest.Thumbnail" name="Thumbnail"></InputFile>
+                        <span>Tên</span>
+                        <InputText class="form-control" @bind-Value="_comicRequest.Name"></InputText>
+                        <span>Tên Khác</span>
+                        <InputText class="form-control" @bind-Value="_comicRequest.AnotherNameOfComic"></InputText>
+                        <span>Tác Giả</span>
+                        <InputText class="form-control" @bind-Value="_comicRequest.Author"></InputText>
+                        <span>Mô Tả</span>
+                        <InputText class="form-control" @bind-Value="_comicRequest.Description"></InputText>
+                        <span>Tình Trạng</span>
+                        <InputSelect class="form-control" @bind-Value="_comicRequest.Status">
+                            <option value="0">Đang Tiến Hành</option>
+                            <option value="1">Đã Hoàn Thành</option>
+                            <option value="2">Đã Hủy</option>
+                            <InputFile type="submit" class="btn btn-primary mt-3" value="Save" accept="image/*" />
+
+                        </InputSelect>
+
+                        <div class="input-group mt-2">
+                            <input type="button" id="button-addon1" class="btn btn-outline-info d-block" data-bs-toggle="modal" data-bs-target="#POPask" @onclick="OpenGenre" value="Thêm Thể Loại Truyện" />
+                            <input type="text" class="form-control" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" disabled value="@_element.AllGenreChoose">
+                        </div>
+
+                        @if (_element.IsSubmit)
+                        {
+                            <input type="submit" class="btn btn-primary mt-5" />
+                        }
+                        else
+                        {
+                            <button class="btn btn-primary mt-5" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Loading...
+                            </button>
+                        }
+                    </EditForm>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal Thể Loại -->
+<div class="modal fade" id="POPask" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Chọn Thể Loại Truyện</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex flex-wrap">
+                    @if (_element.GenreVM.Any())
+                    {
+                        foreach (var genre in _element.GenreVM)
+                        {
+                            <div class="form-check form-switch border border-1 rounded-pill m-1">
+                                <div class="m-1">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @onclick="() => AddGenre(genre)" checked="@genre.check">
+                                    <label class="form-check-label" for="flexSwitchCheckDefault">@genre.value.Name</label>
+                                </div>
+                            </div>
+                        }
+
+                    }
+                    else
+                    {
+                        <div></div>
+                    }
+
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="close-ask-modal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Xác Nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Modal Thể Loại  -->
+
+@code {
+
+
+
+    #region Initialization
+
+    [Inject] private IComicApiClient _ComicApi { get; set; }
+    [Inject] private IChapterService _ChapterApi { get; set; }
+    [Inject] private IPageService _PageApi { get; set; }
+    [Inject] private IGenreService _genreApi { get; set; }
+    [Inject] private IImageService _image { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
+
+    private ComicRequestClient _comicRequest = new ComicRequestClient();
+    private ViewElement _element = new ViewElement();
+    private List<GenreVM> _genreRequest = new List<GenreVM>();
+
+    public Guid _idChapter { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    #endregion
+
+    #region Giao tiếp server
+
+    /// <summary>
+    /// Cập nhật dữ liệu lên server
+    /// </summary>
+    private async void Update()
+    {
+        _element.IsSubmit = false;
+        StateHasChanged();
+
+        var (statusCode, content) = await _ComicApi.PostComic(_comicRequest, _genreRequest);
+        if (((int)statusCode) is 200)
+        {
+            _element.Apiresult = (int)statusCode;
+            await Task.Delay(200);
+            _navigationManager.NavigateTo($"comic/detail?id={content.Id}");
+        }
+        _element.IsSubmit = true;
+        StateHasChanged();
+    }
+
+    async void OpenGenre()
+    {
+        if (_element.GenreVM.Any()) return;
+        var result = await _genreApi.GetGenres();
+
+        var index = 0;
+
+        foreach (var genre in result)
+        {
+            _element.GenreVM.Add((index, false, genre));
+            index++;
+        }
+
+
+        StateHasChanged();
+    }
+
+    #endregion
+
+    #region Xử lý giao diện
+
+    /// <summary>
+    /// Mở Form cập nhật
+    /// </summary>
+    private async void OpenUpdate()
+    {
+        _element.TextButtonUpdate = _element.IsShow ? "Cập Nhật" : "Hủy";
+        _element.AnimationSlide = _element.IsShow ? "slide-out-elliptic-right-fwd" : "slide-in-elliptic-right-fwd";
+        if (_element.IsShow)
+            await Task.Delay(400);
+        _element.IsShow = !_element.IsShow;
+        StateHasChanged();
+
+    }
+
+    #endregion
+
+    #region Xử lý dữ liệu
+
+    /// <summary>
+    /// Hiển thị image preview và lấy dữ liệu image
+    /// </summary>
+    /// <param name="e"></param>
+    private async void InputImage(InputFileChangeEventArgs e)
+    {
+        if (e == null) return;
+
+        _comicRequest.Thumbnail = e.File;
+
+        var imageDataUrl = await _image.ImageToString(e.File);
+
+        _element.ThumbnailComic = imageDataUrl;
+        //Cập nhât UI
+        StateHasChanged();
+    }
+
+    void AddGenre((int index, bool check, GenreVM value) genre)
+    {
+        var g = _element.GenreVM[genre.index];
+        g.check = !g.check;
+        if (g.check)
+        {
+            _genreRequest.Add(g.value);
+
+            _element.AllGenreChoose += $"{g.value.Name};";
+            StateHasChanged();
+        }
+        else
+        {
+            _genreRequest.Remove(g.value);
+
+            _element.AllGenreChoose = _element.AllGenreChoose.Replace($"{g.value.Name};", "");
+            StateHasChanged();
+        }
+        _element.GenreVM[genre.index] = g;
+    }
+
+    #endregion
+
+
+    protected class ViewElement
+    {
+        public bool IsShow = false;
+        public bool IsSubmit { get; set; } = true;
+        public string TextButtonUpdate = "Cập Nhật";
+        public string AnimationSlide { get; set; } = "slide-in-elliptic-right-fwd";
+        public string ThumbnailComic { get; set; } = "";
+        public int Apiresult { get; set; } = 0;
+        public string AllGenreChoose { get; set; } = "";
+        public List<(int index, bool check, GenreVM value)> GenreVM { get; set; } = new List<(int index, bool check, GenreVM value)>();
+
+    }
+
+}

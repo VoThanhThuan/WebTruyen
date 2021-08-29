@@ -1,0 +1,48 @@
+﻿@using WebTruyen.UI.Admin.Shared
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Demo.Web</title>
+    <base href="~/" />
+
+    @(await Html.RenderComponentAsync<HeadHtml>(RenderMode.ServerPrerendered))
+
+</head>
+<body style="background-color: var(--bs-gray-200);">
+
+    <div class="page">
+        <div class="sidebar">
+            @(await Html.RenderComponentAsync<NavMenu>(RenderMode.ServerPrerendered))
+        </div>
+
+        <div class="main">
+            <div class="top-row px-4">
+                <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            </div>
+
+            <div class="px-4">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            An error has occurred. This application may no longer respond until reloaded.
+        </environment>
+        <environment include="Development">
+            An unhandled exception has occurred. See browser dev tools for details.
+        </environment>
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    @{ await Html.RenderPartialAsync("ScriptHtml"); }
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
+
