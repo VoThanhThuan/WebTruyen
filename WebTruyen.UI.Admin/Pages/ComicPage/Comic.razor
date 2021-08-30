@@ -2,8 +2,8 @@
 @using WebTruyen.UI.Admin.Components;
 
 
-<div class="container overflow-auto mt-2">
-    <div class="content rounded-3 p-1">
+<div class="container-xl mt-2">
+    <div class="content rounded-3 p-1 overflow-auto">
         <a href="comic/create" class="btn btn-info text-decoration-none text-dark"><i class="far fa-plus"></i>Thêm Truyện</a>
         @if (_comics == null)
         {
@@ -11,8 +11,8 @@
         }
         else
         {
-            <table class="table">
-                <thead>
+            <table class="table rounded-3 overflow-hidden mt-3">
+                <thead class="table-primary">
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Hình Ảnh</th>

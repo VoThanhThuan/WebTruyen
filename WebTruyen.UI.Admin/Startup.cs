@@ -16,6 +16,7 @@ using WebTruyen.UI.Admin.Service.ComicService;
 using WebTruyen.UI.Admin.Service.GenreService;
 using WebTruyen.UI.Admin.Service.ImageService;
 using WebTruyen.UI.Admin.Service.PageService;
+using WebTruyen.UI.Admin.Service.UserService;
 
 namespace WebTruyen.UI.Admin
 {
@@ -42,6 +43,7 @@ namespace WebTruyen.UI.Admin
             services.AddTransient<IChapterService, ChapterService>();
             services.AddTransient<IPageService, PageService>();
             services.AddTransient<IGenreService, GenreService>();
+            services.AddTransient<IUserService, UserService>();
 
         }
 

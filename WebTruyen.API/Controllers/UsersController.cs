@@ -15,7 +15,7 @@ namespace WebTruyen.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _user;
@@ -43,6 +43,7 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Users
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<UserVM>>> GetUsers()
         {
             return Ok(await _user.GetUsers());
@@ -50,6 +51,7 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Users/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<UserVM>> GetUser(Guid id)
         {
             var user = await _user.GetUser(id);
@@ -88,9 +90,11 @@ namespace WebTruyen.API.Controllers
             if (user.Password != user.ConfirmPassword)
                 return BadRequest();
 
-            await _user.PostUser(user);
+            var result = await _user.PostUser(user);
+            if (result == null)
+                return Conflict("Username đã tồn tại");
 
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            return CreatedAtAction("GetUser", new { id = result.Id }, user);
         }
 
         // DELETE: api/Users/5

@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebTruyen.API", "WebTruyen.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebTruyen.Library", "WebTruyen.Library\WebTruyen.Library.csproj", "{6FEA9519-844F-4A67-A804-2FAA784809D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebTruyen.UI.Admin", "WebTruyen.UI.Admin\WebTruyen.UI.Admin.csproj", "{499758EF-2E25-43D5-B98F-E9DD2FB26C01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebTruyen.UI.Admin", "WebTruyen.UI.Admin\WebTruyen.UI.Admin.csproj", "{499758EF-2E25-43D5-B98F-E9DD2FB26C01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

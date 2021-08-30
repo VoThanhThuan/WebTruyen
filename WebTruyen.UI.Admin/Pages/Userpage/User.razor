@@ -1,36 +1,73 @@
 ﻿@page "/user"
-@using System.Dynamic
-@using Microsoft.JSInterop.Implementation
 
-<link rel="stylesheet" href="./vendors/Cropprjs/croppr.min.css">
-<div class="container overflow-auto mt-2">
+@using WebTruyen.UI.Admin.RequestClient
+@using WebTruyen.UI.Admin.Service.UserService
+@using WebTruyen.Library.Entities.ViewModel
+@using WebTruyen.UI.Admin.Components;
+<h3>User</h3>
+
+<div class="container-xl mt-2">
     <div class="content rounded-3 p-1">
-        <style>
-            .frame-cropper {
-                padding: 18px;
-                border: 1px solid lightgrey;
-                width: 300px;
-            }
+        <div class="overflow-auto">
 
-                .modal img {
-                    max-width: 100%;
-                }
-        </style>
-        <div class="frame-cropper">
-            <img src="https://unsplash.it/500/500/?random" alt="" id="cropper">
+
+            <a href="comic/create" class="btn btn-info text-decoration-none text-dark"><i class="far fa-plus"></i>Thêm Truyện</a>
+            @if (_userVM == null)
+            {
+                <Loading></Loading>
+            }
+            else
+            {
+                <table class="table rounded-3 overflow-hidden mt-3">
+                    <thead class="table-primary">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Hình Ảnh</th>
+                            <th scope="col" style="min-width: 10rem;">Tên</th>
+                            <th scope="col">Tài Khoản</th>
+                            <th scope="col">Ngày Sinh</th>
+                            <th scope="col">SĐT</th>
+                            <th scope="col">Giới Tính</th>
+                            <th scope="col" style="min-width: 10rem;">Địa Chỉ</th>
+                            <th scope="col" style="min-width: 120px;">#</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @{
+                            var index = 0;
+                            foreach (var user in _userVM)
+                            {
+                                <tr>
+                                    <th scope="row">@(index++)</th>
+                                    <td><img src="@user.Avatar" alt="Avatar" height="64" onerror="this.src = './resources/img/LazyLoading.gif'" /></td>
+                                    <td>@user.Nickname</td>
+                                    <td>@user.Username</td>
+                                    <td>@user.Dob</td>
+                                    <td>@user.PhoneNumber</td>
+                                    <td>@user.sex</td>
+                                    <td>@user.Address</td>
+                                    <td>
+                                        <a href="user/detail?id=@user.Id" class="btn btn-info text-decoration-none text-dark"><i class="far fa-info-circle"></i> Chi Tiết</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+
+            }
         </div>
     </div>
 </div>
 
 @code {
+    [Inject] private IUserService _UserApi { get; set; }
 
-    [Inject] IJSRuntime JS { get; set; }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private List<UserRequestClient> _userRequest;
+    private List<UserVM> _userVM;
+    protected override async Task OnInitializedAsync()
     {
-        await base.OnAfterRenderAsync(firstRender);
-        await JS.InvokeVoidAsync("Cropper", "#cropper");
+        _userVM = await _UserApi.GetUsers();
     }
-
-
 }

@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.UI.Admin.RequestClient;
 
-namespace WebTruyen.API.Repository.User
+namespace WebTruyen.UI.Admin.Service.UserService
 {
     public interface IUserService
     {
-        public Task<IEnumerable<UserVM>> GetUsers();
+        public Task<List<UserVM>> GetUsers();
         public Task<string> Authenticate(LoginRequest request);
         public Task<UserVM> GetUser(Guid id);
-        public Task<bool> PutUser(Guid id, UserRequest request);
-        public Task<UserVM> PostUser(UserRequest request);
+        public Task<bool> PutUser(Guid id, UserRequestClient request);
+        public Task<(HttpStatusCode StatusCode, UserVM)> PostUser(UserRequestClient request);
         public Task<int> DeleteUser(Guid id);
-
     }
 }

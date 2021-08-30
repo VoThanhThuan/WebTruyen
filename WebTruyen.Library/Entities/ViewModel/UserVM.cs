@@ -34,7 +34,7 @@ namespace WebTruyen.Library.Entities.ViewModel
         [DataType(DataType.Date)]
         public DateTime? Dob { get; set; }
         public string Avatar { get; set; } = "";
-        public bool? sex { get; set; }
+        public bool? sex { get; set; } = true;
         public string Address { get; set; } = "";
         public string Fanpage { get; set; } = "";
 
@@ -45,8 +45,6 @@ namespace WebTruyen.Library.Entities.ViewModel
 
         [DataType(DataType.Password)]
         public string Password { get; set; }
-        [DataType(DataType.Password)]
-        public string ConfirmPassword { get; set; }
         public Guid? IdRole { get; set; }
 
 

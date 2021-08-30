@@ -1,0 +1,78 @@
+﻿@page "/user/create"
+@using System.Dynamic
+@using Microsoft.JSInterop.Implementation
+
+<link rel="stylesheet" href="./vendors/Cropprjs/croppr.min.css">
+<div class="container overflow-auto mt-2">
+    <div class="content rounded-3 p-1">
+
+        <div class="row">
+            <div class="col-auto">
+                <img src="https://unsplash.it/500/500/?random" alt="" class="img-thumbnail rounded" style="width: 480px; height: 480px;">
+                <div class="mb-3">
+                    <label for="formFile" class="form-label">Ảnh Đại Diện</label>
+                    <input class="form-control" type="file" id="formFile">
+                </div>
+            </div>
+            <div class="col">
+                <form>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com">
+                        <label for="floatingInput">Nick Name</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="floatingPassword" placeholder="Password">
+                        <label for="floatingPassword">Tên Đăng Nhập</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+                        <label for="floatingInput">Mật Khẩu</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+                        <label for="floatingPassword">Xác Nhận Mật Khẩu</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="date" class="form-control" id="floatingInput" placeholder="name@example.com">
+                        <label for="floatingInput">Ngày Sinh</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
+                            <option value="1">Nam</option>
+                            <option value="2">Nữ</option>
+                        </select>
+                        <label for="floatingSelect">Giới Tính</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+                        <label for="floatingInput">Địa Chỉ</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+                        <label for="floatingPassword">Số Điện Thoại</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+                        <label for="floatingPassword">Link Website</label>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+@code {
+
+    [Inject] IJSRuntime JS { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        //await JS.InvokeVoidAsync("Cropper", "#cropper");
+    }
+
+
+}

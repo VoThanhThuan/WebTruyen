@@ -86,15 +86,19 @@ namespace WebTruyen.API.Repository.User
             return true;
         }
 
-        public async Task<bool> PostUser(UserRequest request)
+        public async Task<UserVM> PostUser(UserRequest request)
         {
+            var checkUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == request.Username);
+            if (checkUser != null)
+                return null;
             var user = request.ToUser();
+            user.Id = Guid.NewGuid();
             user.Avatar = await SaveFile(request.Avatar);
             user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return true;
+            return user.ToViewModel();
         }
 
         public async Task<int> DeleteUser(Guid id)
