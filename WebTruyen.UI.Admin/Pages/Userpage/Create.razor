@@ -1,6 +1,9 @@
 ﻿@page "/user/create"
 @using System.Dynamic
 @using Microsoft.JSInterop.Implementation
+@using WebTruyen.Library.Entities.ViewModel
+@using WebTruyen.UI.Admin.RequestClient
+@using WebTruyen.UI.Admin.Service.ImageService
 
 <link rel="stylesheet" href="./vendors/Cropprjs/croppr.min.css">
 <div class="container overflow-auto mt-2">
@@ -8,10 +11,10 @@
 
         <div class="row">
             <div class="col-auto">
-                <img src="https://unsplash.it/500/500/?random" alt="" class="img-thumbnail rounded" style="width: 480px; height: 480px;">
+                <img src="@_element.Avatar" alt="" class="img-thumbnail rounded" style="width: 480px; height: 480px;">
                 <div class="mb-3">
                     <label for="formFile" class="form-label">Ảnh Đại Diện</label>
-                    <input class="form-control" type="file" id="formFile">
+                    <InputFile class="form-control" type="file" id="formFile" OnChange="InputImage" data-bs-toggle="modal" data-bs-target="#POPcrop" />
                 </div>
             </div>
             <div class="col">
@@ -64,15 +67,90 @@
     </div>
 </div>
 
+<!-- Modal Crop hình -->
+<div class="modal fade" id="POPcrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Xác Nhận Xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <img id="cropper" src="@_element.AvatarCrop" alt="" class="img-thumbnail rounded" style="max-height: 500px;">
+            </div>
+            <div class="modal-footer">
+                <button id="close-ask-modal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" @onclick="CropImage">Xác Nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Modal Crop hình -->
+
 @code {
 
+    #region Initialization
+
     [Inject] IJSRuntime JS { get; set; }
+    [Inject] private IImageService _image { get; set; }
+
+    private UserRequestClient _userRequest = new UserRequestClient();
+    private ViewElement _element = new ViewElement();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
-        //await JS.InvokeVoidAsync("Cropper", "#cropper");
+        
     }
 
+    #endregion
 
+    #region Giao Tiếp Server
+
+
+
+    #endregion
+
+    #region Xử Lý Dữ Liệu
+
+    /// <summary>
+    /// Hiển thị image preview và lấy dữ liệu image
+    /// </summary>
+    /// <param name="e"></param>
+    private async void InputImage(InputFileChangeEventArgs e)
+    {
+        if (e == null)
+        {
+            await JS.InvokeVoidAsync("Click", "#close-ask-modal");
+            return;
+        }
+
+        _userRequest.Avatar = e.File;
+
+        var imageDataUrl = await _image.ImageToString(e.File);
+
+        _element.AvatarCrop = imageDataUrl;
+        //Cập nhât UI
+        StateHasChanged();
+        await JS.InvokeVoidAsync("Cropper", "#cropper");
+
+    }
+
+    private async void CropImage()
+    {
+    }
+    #endregion
+
+
+    protected class ViewElement
+    {
+        public bool IsShow = false;
+        public bool IsSubmit { get; set; } = true;
+        public string TextButtonUpdate = "Cập Nhật";
+        public string Avatar { get; set; } = "https://unsplash.it/500/500/?random";
+        public string AvatarCrop { get; set; } = "https://unsplash.it/500/500/?random";
+        public int Apiresult { get; set; } = 0;
+        public string AllGenreChoose { get; set; } = "";
+
+    }
 }

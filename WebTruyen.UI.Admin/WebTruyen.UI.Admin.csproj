@@ -5,6 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Components\Loading.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Components\Loading.razor.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\WebTruyen.Library\WebTruyen.Library.csproj" />
   </ItemGroup>
 
