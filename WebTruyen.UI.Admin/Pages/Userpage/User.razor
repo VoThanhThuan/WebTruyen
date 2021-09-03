@@ -11,7 +11,7 @@
         <div class="overflow-auto">
 
 
-            <a href="user/create" class="btn btn-info text-decoration-none text-dark"><i class="far fa-plus"></i>Thêm Truyện</a>
+            <a href="user/create" class="btn btn-info text-decoration-none text-dark"><i class="far fa-plus"></i>Thêm Người Dùng</a>
             @if (_userVM == null)
             {
                 <Loading></Loading>
@@ -40,7 +40,7 @@
                             {
                                 <tr>
                                     <th scope="row">@(index++)</th>
-                                    <td><img src="@user.Avatar" alt="Avatar" height="64" onerror="this.src = './resources/img/LazyLoading.gif'" /></td>
+                                    <td><img src="@user.Avatar" alt="Avatar" height="64"/></td>
                                     <td>@user.Nickname</td>
                                     <td>@user.Username</td>
                                     <td>@user.Dob</td>

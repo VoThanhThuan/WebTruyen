@@ -1,5 +1,21 @@
 ﻿$ = document.querySelector.bind(document);
 $$ = document.querySelectorAll.bind(document);
+
+document.addEventListener('error',
+    (e) => {
+        if (e.target.localName == "img") {
+            imgError(e.target);
+        }
+    },
+    true);
+
+function imgError(image) {
+    image.onerror = "";
+    image.src = './resources/img/LazyLoading.gif';
+    return true;
+}
+//onerror = "this.src = './resources/img/LazyLoading.gif'"
+
 function Click(parameters) {
     $(parameters).click();
 }
@@ -8,22 +24,33 @@ function RawHtml(element, value) {
     e.innerHTML = value;
 };
 
+var cropvalue;
 function Cropper(parameters) {
+    let check = $(parameters);
+    if (check == null) {
+        return;
+    }
     var croppr = new Croppr(parameters, {
         onInitialize: (instance) => {
-            console.log(instance);
+            console.log('instance', instance);
         },
         onCropStart: (data) => {
             console.log('start', data);
         },
         onCropEnd: (data) => {
+            cropvalue = croppr.getValue();
             console.log('end', data);
         },
         onCropMove: (data) => {
             console.log('move', data);
         },
         aspectRatio: 1,
+        startSize: [100,100]
     });
-    return croppr;
+    cropvalue = croppr.getValue();
+}
+
+function GetValueCrop() {
+    return cropvalue;
 }
 

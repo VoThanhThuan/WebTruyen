@@ -111,10 +111,9 @@ else if (_element.Apiresult != 0)
                             <option value="0">Đang Tiến Hành</option>
                             <option value="1">Đã Hoàn Thành</option>
                             <option value="2">Đã Hủy</option>
-                            <InputFile type="submit" class="btn btn-primary mt-3" value="Save" accept="image/*" />
-
                         </InputSelect>
 
+                        <InputFile type="submit" class="btn btn-primary mt-3" value="Save" accept="image/*" />
                         <div class="input-group mt-2">
                             <input type="button" id="button-addon1" class="btn btn-outline-info d-block" data-bs-toggle="modal" data-bs-target="#POPask" @onclick="OpenGenre" value="Thêm Thể Loại Truyện" />
                             <input type="text" class="form-control" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" disabled value="@_element.AllGenreChoose">
@@ -216,9 +215,10 @@ else if (_element.Apiresult != 0)
         StateHasChanged();
 
         var (statusCode, content) = await _ComicApi.PostComic(_comicRequest, _genreRequest);
-        if (((int)statusCode) is 200)
+        _element.Apiresult = 0;
+        _element.Apiresult = (int)statusCode;
+        if (_element.Apiresult >= 200 && _element.Apiresult < 299)
         {
-            _element.Apiresult = (int)statusCode;
             await Task.Delay(200);
             _navigationManager.NavigateTo($"comic/detail?id={content.Id}");
         }

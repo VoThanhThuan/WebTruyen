@@ -1,0 +1,433 @@
+﻿@page "/user/detail"
+
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.WebUtilities
+@using SixLabors.ImageSharp
+@using SixLabors.ImageSharp.Processing
+@using WebTruyen.Library.Entities
+@using WebTruyen.Library.Entities.ViewModel
+@using WebTruyen.UI.Admin.Service.ImageService
+@using WebTruyen.UI.Admin.Service.UserService
+@using WebTruyen.UI.Admin.RequestClient
+@using WebTruyen.UI.Admin.Components
+@using WebTruyen.UI.Admin.Service.RoleService
+
+<link href="./resources/css/animation.css" rel="stylesheet" />
+<link rel="stylesheet" href="./vendors/Cropprjs/croppr.min.css">
+
+<h3>Details</h3>
+
+@if (_userVM == null)
+{
+    <Loading></Loading>
+}
+else
+{
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+        </symbol>
+        <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+        </symbol>
+        <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+        </symbol>
+    </svg>
+    @if (_element.Apiresult is >= 200 and <= 299)
+    {
+        <div>
+            <div class="alert alert-success d-flex align-items-center alert-dismissible" role="alert">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill" /></svg>
+                <div>
+                    Cập nhật thành công.
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+
+    }
+    else if (_element.Apiresult != 0)
+    {
+        <div>
+            <div class="alert alert-danger d-flex align-items-center alert-dismissible" role="alert">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill" /></svg>
+                <div>
+                    Cập nhật thất bại (@_element.Apiresult).
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+
+    }
+
+    <div class="container overflow-auto mt-2">
+        <div class="content rounded-3 p-1">
+            <div class="row g-2 g-lg-3 slide-in-elliptic-top-fwd">
+
+                <div class="col" style="min-width: 18rem;">
+                    <div class="m-2">
+                        <!--Card info-->
+                        <div class="card @_element.AnimationScale" style="min-width: 18rem; z-index: 1">
+                            <img src="@_element.Avatar" class="card-img-top mx-auto lazy-loading" alt="@_userVM.Nickname" style="width: 18rem;">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold">@_userVM.Nickname</h5>
+                                <p class="card-text">@_userVM.Username</p>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><span class="fw-bold">Giới Tính:</span>@_userVM.sex</li>
+                                <li class="list-group-item"><span class="fw-bold">Ngày Sinh: </span>@_userVM.Dob</li>
+                                <li class="list-group-item"><span class="fw-bold">Email: </span>@_userVM.Email</li>
+                                <li class="list-group-item"><span class="fw-bold">Địa Chỉ: </span>@_userVM.Address</li>
+                                <li class="list-group-item"><span class="fw-bold">Website: </span>@_userVM.Fanpage</li>
+                            </ul>
+                            <div class="card-body d-flex justify-content-between">
+                                <button type="button" class="btn btn-primary" @onclick=OpenUpdate>@_element.TextButtonUpdate</button>
+                                <a href="javascript:void(0)" class="card-link text-danger" data-bs-toggle="modal" data-bs-target="#POP-alert" @onclick="DeleteUser">Xóa</a>
+                            </div>
+                        </div>
+                        <!--End Card info-->
+                        @if (_element.IsShow)
+                        {
+                            <label for="formFile" class="form-label mt-2">Ảnh Đại Diện</label>
+                            <InputFile class="form-control" type="file" id="formFile" OnChange="InputImage" />
+                        }
+                    </div>
+
+                </div>
+                @if (_element.IsShow)
+                {
+                    <div class="col" style="min-width: 18rem;">
+                        <div class="content rounded-3 p-1">
+                            <!--Edit Form-->
+
+                            <div class="col" style="min-width: 18rem;">
+                                <div class="flex-wrap @_element.AnimationSlide p-1">
+                                    <EditForm Model="_userRequest" OnSubmit="Update">
+                                        <div class="form-floating mb-3">
+                                            <InputText type="text" class="form-control" id="floatingNickName" placeholder="Nickname" @bind-Value="_userRequest.Nickname" />
+                                            <label for="floatingNickName">Nick Name</label>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <InputText type="text" class="form-control" id="floatingUsername" placeholder="Password" @bind-Value="_userRequest.Username" />
+                                            <label for="floatingUsername">Tên Đăng Nhập</label>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <InputText type="password" class="form-control" id="floatingPassword" placeholder="name@example.com" @bind-Value="_userRequest.Password" />
+                                            <label for="floatingPassword">Mật Khẩu</label>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <InputText type="password" class="form-control" id="floatingConfirmPassword" placeholder="Password" @bind-Value="_userRequest.ConfirmPassword" />
+                                            <label for="floatingConfirmPassword">Xác Nhận Mật Khẩu</label>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <InputDate type="date" class="form-control" id="floatingDob" placeholder="Ngày sinh" @bind-Value="_userRequest.Dob" />
+                                            <label for="floatingDob">Ngày Sinh</label>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="floatingSelect" aria-label="Floating label select example" @onchange="(e) => { var v = e.Value.ToString();_userRequest.sex = string.IsNullOrEmpty(v) || bool.Parse(v); }">
+                                                <option value="True">Nam</option>
+                                                <option value="False">Nữ</option>
+                                            </select>
+                                            <label for="floatingSelect">Giới Tính</label>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <InputText type="text" class="form-control" id="floatingAddress" placeholder="Địa Chỉ" @bind-Value="_userRequest.Address" />
+                                            <label for="floatingAddress">Địa Chỉ</label>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <InputText type="text" class="form-control" id="floatingPhoneNumber" placeholder="Số điện thoại" @bind-Value="_userRequest.PhoneNumber" />
+                                            <label for="floatingPhoneNumber">Số Điện Thoại</label>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <InputText type="text" class="form-control" id="floatingWebsite" placeholder="Website" @bind-Value="_userRequest.Fanpage" />
+                                            <label for="floatingWebsite">Link Website</label>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="floatingSelectRole" aria-label="Floating label select example" @onchange="(e) => { _userRequest.IdRole = Guid.Parse(e.Value.ToString()); }">
+                                                <option selected>Chọn Quyền Cho Tài Khoản</option>
+                                                @foreach (var role in _roleVM)
+                                                {
+                                                    if (_userVM.IdRole == role.Id)
+                                                    {
+                                                        <option value="@role.Id">@role.Name</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@role.Id" selected>@role.Name</option>
+                                                    }
+                                                }
+                                            </select>
+                                            <label for="floatingSelectRole">Quyền</label>
+                                        </div>
+
+                                        @if (_element.IsSubmit)
+                                        {
+                                            <input type="submit" class="btn btn-primary mt-2" />
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-primary mt-2" type="button" disabled>
+                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                Loading...
+                                            </button>
+                                        }
+                                    </EditForm>
+                                </div>
+                            </div>
+
+                            <!--End Edit Form-->
+
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <!-- Modal Thông báo -->
+    <ModalAlert _contentAlert="Bạn Thực Sự Muốn Xóa ?" @ref="_modalAlert"></ModalAlert>
+    <!-- End Modal Thông báo -->
+    <button id="open-crop-image" data-bs-toggle="modal" data-bs-target="#POPcrop" hidden></button>
+    @if (_element.CropOn)
+    {
+
+        <!-- Modal Crop hình -->
+        <div class="modal fade" id="POPcrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Xác Nhận Xóa</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <img id="cropper" src="@_element.AvatarCrop" alt="" class="img-thumbnail rounded" style="max-height: 500px;">
+                    </div>
+                    <div class="modal-footer">
+                        <button id="close-ask-modal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-primary" @onclick="CropImage">Xác Nhận</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Modal Crop hình -->
+    }
+}
+
+
+    @code {
+
+        #region initialization
+
+        [Inject] IJSRuntime JS { get; set; }
+        [Inject] private IImageService _image { get; set; }
+        [Inject] private IUserService _userApi { get; set; }
+        [Inject] private IRoleService _roleApi { get; set; }
+        [Inject] NavigationManager _navigationManager { get; set; }
+
+        public string _username { get; set; } = "";
+        public Guid _idUser { get; set; } = Guid.Empty;
+
+        private UserVM _userVM = new UserVM();
+        private List<Role> _roleVM = new List<Role>();
+        private UserRequestClient _userRequest = new UserRequestClient();
+        private ViewElement _element = new ViewElement();
+        private ModalAlert _modalAlert = new ModalAlert();
+        private IBrowserFile _valueImage = null;
+
+        protected override async Task OnInitializedAsync()
+        {
+            NavigateToComponent();
+            if (_idUser != Guid.Empty)
+            {
+                _userVM = await _userApi.GetUser(_idUser);
+                _roleVM = await _roleApi.GetRoles();
+
+                _element.Avatar = _userVM.Avatar;
+            }
+
+        }
+
+        #endregion
+
+        #region Giao Tiếp Server
+
+        /// <summary>
+        /// Cập nhật dữ liệu lên server
+        /// </summary>
+        private async void Update()
+        {
+            _element.IsSubmit = false;
+            StateHasChanged();
+
+            var result = await _userApi.PutUser(_userVM.Id, _userRequest);
+            _element.Apiresult = 0;
+            _element.Apiresult = (int)result;
+            if (_element.Apiresult >= 200 && _element.Apiresult < 299)
+            {
+                await Task.Delay(200);
+                _navigationManager.NavigateTo($"/user");
+            }
+            _element.IsSubmit = true;
+            StateHasChanged();
+        }
+
+        #endregion
+
+        #region Xử lý dữ liệu
+
+        /// <summary>
+        /// Hiển thị image preview và lấy dữ liệu image
+        /// </summary>
+        /// <param name="e"></param>
+        private async void InputImage(InputFileChangeEventArgs e)
+        {
+            _element.CropOn = false;
+            StateHasChanged();
+            if (e == null)
+            {
+                //await JS.InvokeVoidAsync("Click", "#close-ask-modal");
+                return;
+            }
+            _element.CropOn = true;
+            StateHasChanged();
+            await JS.InvokeVoidAsync("Click", "#open-crop-image");
+
+            _valueImage = e.File;
+            if (!_image.ImageIsValid(_valueImage.ContentType))
+                return;
+            var imageDataUrl = await _image.ImageToString(e.File);
+
+            _element.AvatarCrop = imageDataUrl;
+            //Cập nhât UI
+            StateHasChanged();
+
+            await Task.Delay(400);
+            await JS.InvokeVoidAsync("Cropper", "#cropper");
+
+        }
+
+        private async void CropImage()
+        {
+            if (_valueImage == null)
+                return;
+            if (!_image.ImageIsValid(_valueImage.ContentType))
+                return;
+            var valueCrop = await JS.InvokeAsync<ValueCrop>("GetValueCrop");
+
+            if (valueCrop.width < 1 || valueCrop.height < 1)
+                return;
+
+            using (var image = Image.Load(await _image.ImageToByte(_valueImage), out var format))
+            {
+                image.Mutate(x =>
+                    x.Crop(new Rectangle(
+                        valueCrop.x,
+                        valueCrop.y,
+                        valueCrop.width,
+                        valueCrop.height
+                        )).Resize(500, 500));
+                _element.Avatar = $"{image.ToBase64String(format)}";
+                await JS.InvokeVoidAsync("Click", "#close-ask-modal");
+
+                _userRequest.Avatar = (_element.Avatar, _valueImage.Name);
+
+                image.Dispose();
+            }
+            StateHasChanged();
+        }
+
+        void NavigateToComponent()
+        {
+            var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
+            // Phân tích query
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("name", out var comic))
+            {
+                _username = comic.First();
+            }
+            if (string.IsNullOrEmpty(_username))
+                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var id))
+                {
+                    _idUser = Guid.Parse(id.First());
+                }
+
+            //chuyển trang nếu query comic rỗng
+            if (string.IsNullOrEmpty(_username) && _idUser == Guid.Empty)
+            {
+                _navigationManager.NavigateTo("user");
+            }
+        }
+
+
+        #endregion
+
+        #region Xử lý giao diện
+
+        //<> Xử lý giao diện ----------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Mở Form cập nhật
+        /// </summary>
+        private async void OpenUpdate()
+        {
+            _element.TextButtonUpdate = _element.IsShow ? "Cập Nhật" : "Hủy";
+            if (_element.IsShow)
+            {
+                _element.AnimationSlide = "slide-out-elliptic-right-fwd";
+                StateHasChanged();
+                await Task.Delay(400);
+                _element.IsShow = !_element.IsShow;
+                _element.AnimationScale = "scale-up-hor-left-50-reverse";
+                StateHasChanged();
+                await Task.Delay(400);
+            }
+            else
+            {
+                _element.AnimationScale = "scale-up-hor-left-50";
+
+                StateHasChanged();
+                await Task.Delay(400);
+                _element.IsShow = !_element.IsShow;
+                _element.AnimationSlide = "slide-in-elliptic-right-fwd";
+                StateHasChanged();
+            }
+
+
+            _element.AnimationScale = "Thuan-Dep-Zai";
+            StateHasChanged();
+
+
+        }
+
+        void DeleteUser()
+        {
+            var a = _modalAlert.Result;
+        }
+
+        #endregion
+
+
+        protected class ViewElement
+        {
+            public bool IsShow = false;
+            public bool IsSubmit { get; set; } = true;
+            public string TextButtonUpdate = "Cập Nhật";
+            public string AnimationSlide { get; set; } = "slide-in-elliptic-right-fwd";
+            public string AnimationScale { get; set; } = "";
+            public bool CropOn = false;
+            public string Avatar { get; set; } = "";
+            public string AvatarCrop { get; set; } = "";
+            public int Apiresult { get; set; } = 0;
+
+            public string AllGenreChoose { get; set; } = "";
+            public string ContentAlert { get; set; } = "";
+
+        }
+
+        protected class ValueCrop
+        {
+            public int x { get; set; }
+            public int y { get; set; }
+            public int width { get; set; }
+            public int height { get; set; }
+        }
+    }

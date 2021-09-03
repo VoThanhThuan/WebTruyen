@@ -29,7 +29,7 @@ namespace WebTruyen.API.Service
             var filePath = Path.Combine(_userContentFolder, fileName);
             await using var output = new FileStream(filePath, FileMode.Create, FileAccess.Write);
             await mediaBinaryStream.CopyToAsync(output);
-            //output.Close();
+            await output.DisposeAsync();
         }
 
         public DirectoryInfo CreateDirectory(string path)

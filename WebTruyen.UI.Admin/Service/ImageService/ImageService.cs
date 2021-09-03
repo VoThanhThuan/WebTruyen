@@ -10,7 +10,7 @@ namespace WebTruyen.UI.Admin.Service.ImageService
     {
         public bool ImageIsValid(string contentType)
         {
-            var fileTypeSupported = new List<string>() { "image/jpg", "image/jpeg", "image/png", "image/gif", "image/webp", "image/bmp", "image/tiff" };
+            var fileTypeSupported = new List<string>() { "image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp" };
             return fileTypeSupported.Any(type => contentType == type);
         }
 
@@ -20,7 +20,7 @@ namespace WebTruyen.UI.Admin.Service.ImageService
             var buffer = new byte[img.Size]; // Tạo bộ nhớ đệm
             await using var br = img.OpenReadStream();
             await br.ReadAsync(buffer); //ghi dữ liệu vào bộ nhớ đệm
-
+            GC.Collect();
             return buffer;
         }
 
@@ -40,6 +40,7 @@ namespace WebTruyen.UI.Admin.Service.ImageService
                 await br.ReadAsync(data);
                 yield return data;
             }
+            GC.Collect();
         }
 
         public async IAsyncEnumerable<((byte[] data, string fileName) image, string stringValue)> ImagesToString(
@@ -61,7 +62,7 @@ namespace WebTruyen.UI.Admin.Service.ImageService
 
                 yield return value;
             }
-
+            GC.Collect();
         }
     }
 }
