@@ -13,6 +13,7 @@ namespace WebTruyen.UI.Admin.Service.UserService
     {
         public Task<List<UserVM>> GetUsers();
         public Task<string> Authenticate(LoginRequest request);
+        public Task<UserVM> GetUserByAccessTokenAsync(string accessToken);
         public Task<UserVM> GetUser(Guid id);
         public Task<int> PutUser(Guid id, UserRequestClient request);
         public Task<(HttpStatusCode StatusCode, UserVM)> PostUser(UserRequestClient request);

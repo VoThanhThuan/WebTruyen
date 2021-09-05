@@ -27,6 +27,7 @@ namespace WebTruyen.API.Repository.User
         private readonly UserManager<Library.Entities.User> _userManager; //Thư viện quản lý user
         private readonly SignInManager<Library.Entities.User> _signInManager; //Thư viên đăng nhập
         private readonly IConfiguration _config; //lấy config từ appsetting.config
+
         public UserService(ComicDbContext context, 
             IStorageService storageService, 
             SignInManager<Library.Entities.User> signInManager, 
@@ -54,8 +55,9 @@ namespace WebTruyen.API.Repository.User
         public async Task<bool> PutUser(Guid id, UserRequest request)
         {
             var text = new TextService();
-            var user = await _context.Users.FindAsync(request.Id);
-            
+            var user = await _userManager.FindByIdAsync(request.Id.ToString());
+            if (user == null)
+                return false;
             user.Nickname = string.IsNullOrEmpty(text.RemoveSpaces(request.Nickname)) == true ? user.Nickname : request.Nickname;
             user.Dob = request.Dob ?? user.Dob;
             user.sex = request.sex ?? user.sex;
@@ -74,7 +76,8 @@ namespace WebTruyen.API.Repository.User
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _userManager.UpdateAsync(user);
+                //await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -86,19 +89,24 @@ namespace WebTruyen.API.Repository.User
             return true;
         }
 
-        public async Task<UserVM> PostUser(UserRequest request)
+        public async Task<(int apiResult, string mess, UserVM user)> PostUser(UserRequest request)
         {
             var checkUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == request.Username);
             if (checkUser != null)
-                return null;
+                return (StatusCodes.Status409Conflict, "Username đã tồn tại", null);
             var user = request.ToUser();
             user.Id = Guid.NewGuid();
             user.Avatar = await SaveFile(request.Avatar);
             user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            var result = await _userManager.CreateAsync(user);
+            if (!result.Succeeded)
+            {
+                return (StatusCodes.Status409Conflict, "Tạo tài khoản thất bại", null);
+            }
+            //_context.Users.Add(user);
+           //await _context.SaveChangesAsync();
 
-            return user.ToViewModel();
+            return (StatusCodes.Status200OK, "Ok",user.ToViewModel());
         }
 
         public async Task<int> DeleteUser(Guid id)
@@ -148,7 +156,7 @@ namespace WebTruyen.API.Repository.User
             var roles = await _userManager.GetRolesAsync(user); //lấy quyền người dùng
             var claims = new[]
             {
-                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Email, string.IsNullOrEmpty(user.Email) ? "" : user.Email),
                 new Claim(ClaimTypes.GivenName, user.Nickname),
                 new Claim(ClaimTypes.Role, string.Join(";", roles)),
                 new Claim(ClaimTypes.Name, user.UserName)
@@ -166,5 +174,17 @@ namespace WebTruyen.API.Repository.User
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        public async Task<UserVM> GetUserFromAccessToken(string accessToken)
+        {
+
+            var token = accessToken;
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(token);
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            return null;
+        }
+
     }
 }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using WebTruyen.API.Repository.Chapter;
 using WebTruyen.API.Repository.Page;
 using WebTruyen.Library.Data;
@@ -17,6 +18,7 @@ namespace WebTruyen.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ChaptersController : ControllerBase
     {
         private readonly IChapterService _chapter;

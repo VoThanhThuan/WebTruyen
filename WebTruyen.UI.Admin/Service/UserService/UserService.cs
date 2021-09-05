@@ -4,8 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using SixLabors.ImageSharp;
 using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ViewModel;
@@ -16,21 +23,48 @@ namespace WebTruyen.UI.Admin.Service.UserService
     public class UserService : IUserService
     {
         private readonly HttpClient _http;
+        ProtectedLocalStorage _localStorageService { get; set; }
 
-        public UserService(HttpClient http)
+        public UserService(HttpClient http, ProtectedLocalStorage localStorageService)
         {
             _http = http;
+            _localStorageService = localStorageService;
         }
+
+        public async Task<string> Authenticate(LoginRequest request)
+        {
+
+            var json = JsonSerializer.Serialize(request);
+            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _http.PostAsync(@"/api/Users/authenticate", httpContent);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsStringAsync();
+            }
+
+            return null;
+        }
+
+        public async Task<UserVM> GetUserByAccessTokenAsync(string accessToken)
+        {
+            var json = JsonSerializer.Serialize(accessToken);
+            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _http.PostAsync(@"/api/Users/GetUserByAccessToken", httpContent);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<UserVM>();
+            }
+
+            return null;
+        }
+
         public async Task<List<UserVM>> GetUsers()
         {
             var result = await _http.GetFromJsonAsync<List<UserVM>>("/api/Users");
             var users = result?.Select(x => { x.Avatar = $"{_http.BaseAddress}{x.Avatar}"; return x; }).ToList();
             return users;
-        }
-
-        public Task<string> Authenticate(LoginRequest request)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<UserVM> GetUser(Guid id)

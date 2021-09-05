@@ -11,9 +11,10 @@ namespace WebTruyen.API.Repository.User
     {
         public Task<IEnumerable<UserVM>> GetUsers();
         public Task<string> Authenticate(LoginRequest request);
+        public Task<UserVM> GetUserFromAccessToken(string accessToken);
         public Task<UserVM> GetUser(Guid id);
         public Task<bool> PutUser(Guid id, UserRequest request);
-        public Task<UserVM> PostUser(UserRequest request);
+        public Task<(int apiResult, string mess, UserVM user)> PostUser(UserRequest request);
         public Task<int> DeleteUser(Guid id);
 
     }

@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using WebTruyen.API.Repository.User;
 using WebTruyen.Library.Data;
+using WebTruyen.Library.Entities;
 using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ViewModel;
 
@@ -15,7 +20,7 @@ namespace WebTruyen.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _user;
@@ -27,7 +32,7 @@ namespace WebTruyen.API.Controllers
 
         [HttpPost("authenticate")]
         [AllowAnonymous]
-        public async Task<IActionResult> Authenticate([FromForm]LoginRequest request)
+        public async Task<IActionResult> Authenticate(LoginRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -42,8 +47,21 @@ namespace WebTruyen.API.Controllers
         }
 
         // GET: api/Users
+        [HttpPost("GetUserByAccessToken")]
+        public async Task<ActionResult<UserVM>> GetUserByAccessToken([FromBody] string accessToken)
+        {
+            var user = await _user.GetUserFromAccessToken(accessToken);
+
+            if (user != null)
+            {
+                return user;
+            }
+
+            return null;
+        }
+
+        // GET: api/Users
         [HttpGet]
-        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<UserVM>>> GetUsers()
         {
             return Ok(await _user.GetUsers());
@@ -51,7 +69,6 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        [AllowAnonymous]
         public async Task<ActionResult<UserVM>> GetUser(Guid id)
         {
             var user = await _user.GetUser(id);
@@ -91,10 +108,10 @@ namespace WebTruyen.API.Controllers
                 return BadRequest();
 
             var result = await _user.PostUser(user);
-            if (result == null)
-                return Conflict("Username đã tồn tại");
+            if (result.user == null)
+                return Conflict(result.mess);
 
-            return CreatedAtAction("GetUser", new { id = result.Id }, user);
+            return CreatedAtAction("GetUser", new { id = result.user.Id }, user);
         }
 
         // DELETE: api/Users/5

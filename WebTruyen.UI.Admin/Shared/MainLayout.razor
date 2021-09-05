@@ -1,4 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@using WebTruyen.UI.Admin.Data
+@using System.Net.Http.Headers
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inherits LayoutComponentBase
 
 <div class="page">
     <div class="sidebar">
@@ -15,4 +18,18 @@
         </div>
     </div>
 </div>
+@code
+{
 
+    [Inject] private HttpClient _http { get; set; }
+    [Inject] ProtectedLocalStorage _localStorageService { get; set; }
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        var sessions = (await _localStorageService.GetAsync<string>("Token")).Value;
+
+        _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
+
+    }
+}

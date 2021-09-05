@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
 using WebTruyen.UI.Admin.Data;
 using WebTruyen.UI.Admin.Service.ChapterService;
 using WebTruyen.UI.Admin.Service.ComicService;
@@ -18,6 +19,9 @@ using WebTruyen.UI.Admin.Service.ImageService;
 using WebTruyen.UI.Admin.Service.PageService;
 using WebTruyen.UI.Admin.Service.RoleService;
 using WebTruyen.UI.Admin.Service.UserService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Components.Authorization;
+using WebTruyen.UI.Admin.Service;
 
 namespace WebTruyen.UI.Admin
 {
@@ -34,10 +38,43 @@ namespace WebTruyen.UI.Admin
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSession(options => { options.IdleTimeout = TimeSpan.FromMinutes(30); });
+            services.AddHttpContextAccessor();
+            services.AddScoped<HttpContextBlazor>();
+
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
-            services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:5001/") });
+            services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(Configuration["BaseAddress"]) });
+            services.AddHttpContextAccessor();
+
+            services.AddHttpClient();
+
+            var issuer = Configuration.GetValue<string>("Tokens:Issuer");
+            var signingKey = Configuration.GetValue<string>("Tokens:Key");
+            var signingKeyBytes = System.Text.Encoding.UTF8.GetBytes(signingKey);
+            services.AddAuthentication(opt =>
+                {
+                    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = issuer,
+                        ValidateAudience = true,
+                        ValidAudience = issuer,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ClockSkew = System.TimeSpan.Zero,
+                        IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes)
+                    };
+                }).AddCookie();
+
 
             services.AddTransient<IImageService, ImageService>();
             services.AddTransient<IComicApiClient, ComicApiClient>();
@@ -46,6 +83,8 @@ namespace WebTruyen.UI.Admin
             services.AddTransient<IGenreService, GenreService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IRoleService, RoleService>();
+
+            services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
         }
 
@@ -65,13 +104,21 @@ namespace WebTruyen.UI.Admin
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseAuthentication();
 
             app.UseRouting();
+
+            app.UseAuthorization();
+            app.UseCookiePolicy();
+
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+
             });
         }
     }

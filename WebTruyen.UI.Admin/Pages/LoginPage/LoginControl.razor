@@ -1,0 +1,93 @@
+﻿@page "/signin"
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using Microsoft.AspNetCore.Http
+@using Microsoft.IdentityModel.Logging
+@using Microsoft.IdentityModel.Tokens
+@using System.Security.Claims
+@using System.Text
+@using System.IdentityModel.Tokens.Jwt
+@using System.Web
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Microsoft.Extensions.Configuration
+@using WebTruyen.Library.Entities.Request
+@using WebTruyen.UI.Admin.Data
+@using WebTruyen.UI.Admin.Data.Constants
+@using WebTruyen.UI.Admin.Service
+@using WebTruyen.UI.Admin.Service.UserService
+
+
+<h3>Login</h3>
+<div class="d-flex justify-content-center align-items-center">
+    <div class="rounded-3 bg-white">
+        <div class="m-5" style="width: 396px;">
+            <EditForm Model="@_loginRequest" OnSubmit="@SignIn">
+                <div class="form-floating mb-3">
+                    <InputText type="text" class="form-control" id="floatingNickName" placeholder="Username" @bind-Value="_loginRequest.Username"/>
+                    <label for="floatingNickName">Nick Name</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText type="text" class="form-control" id="floatingUsername" placeholder="Password" @bind-Value="_loginRequest.Password"/>
+                    <label for="floatingUsername">Tên Đăng Nhập</label>
+                </div>
+                <input type="submit" class="form-control" placeholder="Password" value="Đăng Nhập"/>
+            </EditForm>
+
+        </div>
+    </div>
+</div>
+
+@code
+{
+    [Inject] private IUserService _userApi { get; set; }
+    [Inject] private IConfiguration _configuration { get; set; }
+    [Inject] private HttpContextBlazor _httpContext { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
+    [Inject] ProtectedLocalStorage ProtectedLocalStore { get; set; }
+    [Inject] AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+    private SystemConstants scs = new SystemConstants();
+
+    public LoginRequest _loginRequest { get; set; } = new LoginRequest();
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOut();
+
+    }
+
+    async void SignIn()
+    {
+        var token = await _userApi.Authenticate(_loginRequest);
+        if (!string.IsNullOrEmpty(token))
+        {
+            await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticated(token);
+            _navigationManager.NavigateTo("/");
+        }
+    }
+
+    private ClaimsPrincipal ValidateToken(string jwtToken)
+    {
+        IdentityModelEventSource.ShowPII = true;
+
+
+        var validationParameters = new TokenValidationParameters
+        {
+            ValidateLifetime = true,
+            ValidIssuer = _configuration["Tokens:Issuer"],
+            ValidAudience = _configuration["Tokens:Issuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Tokens:Key"]))
+        };
+
+        var principal = new JwtSecurityTokenHandler().ValidateToken(jwtToken, validationParameters, out SecurityToken validatedToken);
+
+        return principal;
+    }
+
+    private string encode(string param)
+    {
+        return HttpUtility.UrlEncode(param);
+    }
+
+}
