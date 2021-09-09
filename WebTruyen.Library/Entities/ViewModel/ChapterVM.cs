@@ -15,6 +15,7 @@ namespace WebTruyen.Library.Entities.ViewModel
                 Name = Name,
                 DateTimeUp = DateTimeUp,
                 Views = Views,
+                IsLock = IsLock,
                 IdComic = IdComic
             };
         }
@@ -24,6 +25,7 @@ namespace WebTruyen.Library.Entities.ViewModel
         public string Name { get; set; } = "";
         public DateTime DateTimeUp { get; set; } = DateTime.Now;
         public int Views { get; set; } = 0;
+        public bool IsLock { get; set; } = false;
 
         public Guid IdComic { get; set; }
 

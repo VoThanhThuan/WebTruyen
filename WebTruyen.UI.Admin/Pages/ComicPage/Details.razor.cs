@@ -43,32 +43,37 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
         public Guid _idChapter { get; set; }
 
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            NavigateToComponent();
-            if (!string.IsNullOrEmpty(NameAlias))
-                _comic = await _ComicApi.GetComic(NameAlias);
-            else
-                _comic = await _ComicApi.GetComic(IdComic);
+            await base.OnAfterRenderAsync(firstRender);
+            if (firstRender)
+            {
+                NavigateToComponent();
+                if (!string.IsNullOrEmpty(NameAlias))
+                    _comic = await _ComicApi.GetComic(NameAlias);
+                else
+                    _comic = await _ComicApi.GetComic(IdComic);
 
-            _comic.Name ??= "";
-            _comic.NameAlias ??= "";
-            _comic.AnotherNameOfComic ??= "";
-            _comic.Author ??= "";
-            _comic.Description ??= "";
-            _element.ThumbnailComic = _comic.Thumbnail;
+                _comic.Name ??= "";
+                _comic.NameAlias ??= "";
+                _comic.AnotherNameOfComic ??= "";
+                _comic.Author ??= "";
+                _comic.Description ??= "";
+                _element.ThumbnailComic = await _image.GetImageFromUrl(_comic.Thumbnail);
 
-            _genreRequest = _comic.Genres;
-            foreach (var genre in _genreRequest)
-                _element.AllGenreChoose += $"{genre.Name};";
+                _genreRequest = _comic.Genres;
+                foreach (var genre in _genreRequest)
+                    _element.AllGenreChoose += $"{genre.Name};";
 
-            _comicRequest.Id = _comic.Id;
-            _comicRequest.Name = _comic.Name;
-            _comicRequest.NameAlias = _comic.NameAlias;
-            _comicRequest.AnotherNameOfComic = _comic.AnotherNameOfComic;
-            _comicRequest.Author = _comic.Author;
-            _comicRequest.Description = _comic.Description;
-            GetChapters();
+                _comicRequest.Id = _comic.Id;
+                _comicRequest.Name = _comic.Name;
+                _comicRequest.NameAlias = _comic.NameAlias;
+                _comicRequest.AnotherNameOfComic = _comic.AnotherNameOfComic;
+                _comicRequest.Author = _comic.Author;
+                _comicRequest.Description = _comic.Description;
+                GetChapters();
+
+            }
 
         }
 
@@ -97,7 +102,12 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
         {
             _idChapter = idChapter;
             _pages = await _PageApi.GetPagesInChapter(idChapter);
-            StateHasChanged();
+            foreach (var page in _pages)
+            {
+                page.Image = await _image.GetImageFromUrl(page.Image);
+                StateHasChanged();
+
+            }
         }
 
         async Task ResultAlert()

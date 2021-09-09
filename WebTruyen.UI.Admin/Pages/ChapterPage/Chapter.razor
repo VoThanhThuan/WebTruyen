@@ -6,6 +6,7 @@
 @using WebTruyen.Library.Entities.ViewModel
 @using System.Threading
 @using System.Timers
+@using System.Net
 
 <div>
     <!-- alert -->
@@ -96,7 +97,7 @@
                                     }
 
                                     <div class="form-check form-switch d-inline-flex">
-                                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                                        <InputCheckbox class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind-Value="_chapterVm.IsLock"/>
                                         <label class="form-check-label" for="flexSwitchCheckDefault">Bật nếu muốn khóa chap này lại</label>
                                     </div>
                                 </div>
@@ -200,12 +201,16 @@
             _element.Apiresult = (int) result.StatusCode;
             StateHasChanged();
             await Task.Delay(500);
-            _navigationManager.NavigateTo($@"comic/detail?id={result.Content.IdComic}");
+            if(result.StatusCode == HttpStatusCode.OK)
+                _navigationManager.NavigateTo($@"comic/detail?id={result.Content.IdComic}");
         }
         else
         {
             _element.Apiresult = await _ChapterApi.PutChapter(Guid.Parse(idChaper), _chapterVm, _imageValues);
             StateHasChanged();
+            await Task.Delay(500);
+            if (_element.Apiresult == (int)HttpStatusCode.OK)
+                _navigationManager.NavigateTo($@"comic/detail?id={idComic}");
         }
     }
 

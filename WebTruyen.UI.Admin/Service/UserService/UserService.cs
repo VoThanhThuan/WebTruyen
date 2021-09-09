@@ -22,18 +22,24 @@ namespace WebTruyen.UI.Admin.Service.UserService
 {
     public class UserService : IUserService
     {
-        private readonly HttpClient _http;
+        private HttpClient _http;
         ProtectedLocalStorage _localStorageService { get; set; }
 
         public UserService(HttpClient http, ProtectedLocalStorage localStorageService)
         {
             _http = http;
             _localStorageService = localStorageService;
+
+        }
+
+        private async Task GetSession()
+        {
+            var sessions = (await _localStorageService.GetAsync<string>("Token")).Value;
+            _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
         }
 
         public async Task<string> Authenticate(LoginRequest request)
         {
-
             var json = JsonSerializer.Serialize(request);
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -62,6 +68,7 @@ namespace WebTruyen.UI.Admin.Service.UserService
 
         public async Task<List<UserVM>> GetUsers()
         {
+            await GetSession();
             var result = await _http.GetFromJsonAsync<List<UserVM>>("/api/Users");
             var users = result?.Select(x => { x.Avatar = $"{_http.BaseAddress}{x.Avatar}"; return x; }).ToList();
             return users;
@@ -69,6 +76,7 @@ namespace WebTruyen.UI.Admin.Service.UserService
 
         public async Task<UserVM> GetUser(Guid id)
         {
+            await GetSession();
             var result = await _http.GetFromJsonAsync<UserVM>($"/api/Users/{id}");
             if (result == null) return null;
             result.Avatar = $"{_http.BaseAddress}{result.Avatar}";
@@ -78,6 +86,7 @@ namespace WebTruyen.UI.Admin.Service.UserService
 
         public async Task<int> PutUser(Guid id, UserRequestClient request)
         {
+            await GetSession();
             var requestContent = new MultipartFormDataContent();
 
             if (!string.IsNullOrEmpty(request.Avatar.data))
@@ -108,6 +117,7 @@ namespace WebTruyen.UI.Admin.Service.UserService
 
         public async Task<(HttpStatusCode StatusCode, UserVM)> PostUser(UserRequestClient request)
         {
+            await GetSession();
             var requestContent = new MultipartFormDataContent();
 
             if (!string.IsNullOrEmpty(request.Avatar.data))

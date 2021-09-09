@@ -86,7 +86,7 @@ namespace WebTruyen.API.Controllers
             if (result != StatusCodes.Status200OK)
                 return StatusCode(result);
             if (!pages.Any()) return NoContent();
-            result = await _page.PutPages(id, pages);
+            result = await _page.PutPages(id, pages, chapter.IsLock);
 
             return result != StatusCodes.Status200OK ? StatusCode(result) : NoContent();
         }

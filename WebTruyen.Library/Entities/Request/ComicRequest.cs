@@ -29,6 +29,7 @@ namespace WebTruyen.Library.Entities.Request
         public string Name { get; set; }
         public string AnotherNameOfComic { get; set; }
         public string Author { get; set; }
+        [Required]
         public Status? Status { get; set; } = 0;
 
         public string Description { get; set; }

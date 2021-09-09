@@ -14,46 +14,62 @@ namespace WebTruyen.API.Service
         public FileService(IWebHostEnvironment webHostEnvironment)
         {
             _userContentFolder = Path.Combine(webHostEnvironment.WebRootPath);
+            _securityContentFolder = Path.Combine($"{webHostEnvironment.ContentRootPath}\\MyStaticFiles");
+
         }
 
         private readonly string _userContentFolder;
+        private readonly string _securityContentFolder;
 
-        public string GetFileUrl(string fileName)
+        public string GetFileUrl(string fileName, bool security = false)
         {
             return $@"/{fileName}";
         }
 
 
-        private async Task SaveFileAsync(Stream mediaBinaryStream, string fileName)
+        private async Task SaveFileAsync(Stream mediaBinaryStream, string fileName, bool security = false)
         {
-            var filePath = Path.Combine(_userContentFolder, fileName);
+            var filePath = security == false ? Path.Combine(_userContentFolder, fileName) : Path.Combine(_securityContentFolder, fileName);
             await using var output = new FileStream(filePath, FileMode.Create, FileAccess.Write);
             await mediaBinaryStream.CopyToAsync(output);
             await output.DisposeAsync();
         }
 
-        public DirectoryInfo CreateDirectory(string path)
+        public DirectoryInfo CreateDirectory(string path, bool security = false)
         {
-            var newPath = Path.Combine(_userContentFolder, path);
+            var newPath = security == false ? Path.Combine(_userContentFolder, path) : Path.Combine(_securityContentFolder, path);
             return Directory.CreateDirectory(newPath);
         }
 
-        public bool Exists(string path)
+        public void CreateFile(string fileName, bool security = false)
         {
-            var newPath = Path.Combine(_userContentFolder, path);
+            var newPath = security == false ? Path.Combine(_userContentFolder, fileName) : Path.Combine(_securityContentFolder, fileName);
+            File.Create(newPath);
+        }
+
+
+        public bool FolderExists(string path, bool security = false)
+        {
+            var newPath = security == false ? Path.Combine(_userContentFolder, path) : Path.Combine(_securityContentFolder, path);
             return Directory.Exists(newPath);
         }
 
-        public void Move(string sourceDirName, string destDirName)
+
+        public bool FileExists(string fileName, bool security = false)
         {
-            sourceDirName = Path.Combine(_userContentFolder, sourceDirName);
-            destDirName = Path.Combine(_userContentFolder, destDirName);
+            var newPath = security == false ? Path.Combine(_userContentFolder, fileName) : Path.Combine(_securityContentFolder, fileName);
+            return File.Exists(newPath);
+        }
+        public void Move(string sourceDirName, string destDirName, bool security = false)
+        {
+            sourceDirName = security == false ? Path.Combine(_userContentFolder, sourceDirName) : Path.Combine(_securityContentFolder, sourceDirName);
+            destDirName = security == false ? Path.Combine(_userContentFolder, destDirName) : Path.Combine(_securityContentFolder, destDirName);
             Directory.Move(sourceDirName, destDirName);
         }
 
-        public async Task<int> DeleteFileAsync(string fileName)
+        public async Task<int> DeleteFileAsync(string fileName, bool security = false)
         {
-            var filePath = Path.Combine(_userContentFolder, fileName);
+            var filePath = security == false ? Path.Combine(_userContentFolder, fileName) : Path.Combine(_securityContentFolder, fileName);
             if (!File.Exists(filePath)) return StatusCodes.Status404NotFound;
             try
             {
@@ -67,17 +83,18 @@ namespace WebTruyen.API.Service
 
         }
 
-        public async Task<string> SaveFile(IFormFile file, string path)
+        public async Task<string> SaveFile(IFormFile file, string path, bool security = false)
         {
             var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim().Value;
             var fileName = $@"{path}/{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
-            await SaveFileAsync(file.OpenReadStream(), fileName);
+            var pathFile = security == false ? Path.Combine(_userContentFolder, fileName) : Path.Combine(_securityContentFolder, fileName);
+            await SaveFileAsync(file.OpenReadStream(), pathFile);
             return fileName;
         }
 
-        public async Task<int> DeleteFolderAsync(string folder)
+        public async Task<int> DeleteFolderAsync(string folder, bool security = false)
         {
-            var folderPath = Path.Combine(_userContentFolder, folder);
+            var folderPath = security == false ? Path.Combine(_userContentFolder, folder) : Path.Combine(_securityContentFolder, folder);
 
             if (!Directory.Exists(folderPath)) return StatusCodes.Status404NotFound;
 

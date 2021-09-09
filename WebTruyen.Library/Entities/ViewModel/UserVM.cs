@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using WebTruyen.Library.Entities.Request;
 
 namespace WebTruyen.Library.Entities.ViewModel
 {
@@ -24,17 +25,32 @@ namespace WebTruyen.Library.Entities.ViewModel
                 Email = Email,
                 PhoneNumber = PhoneNumber,
                 UserName = Username,
-                PasswordHash = Password
+                PasswordHash = Password,
             };
         }
 
+        public UserRequest ToRequest()
+        {
+            return new UserRequest()
+            {
+                Id = Id,
+                Nickname = Nickname,
+                Dob = Dob,
+                sex = sex,
+                Address = Address,
+                Fanpage = Fanpage,
+                Email = Email,
+                PhoneNumber = PhoneNumber,
+                Username = Username
+            };
+        }
         public Guid Id { get; set; }
         public string Nickname { get; set; }
         [Display(Name = "Ngày sinh")]
         [DataType(DataType.Date)]
         public DateTime? Dob { get; set; }
         public string Avatar { get; set; } = "";
-        public bool? sex { get; set; } = true;
+        public bool sex { get; set; } = true;
         public string Address { get; set; } = "";
         public string Fanpage { get; set; } = "";
 
@@ -45,7 +61,8 @@ namespace WebTruyen.Library.Entities.ViewModel
 
         [DataType(DataType.Password)]
         public string Password { get; set; }
-        public Guid? IdRole { get; set; }
+        public Guid IdRole { get; set; }
+        public string RoleName { get; set; }
 
 
     }

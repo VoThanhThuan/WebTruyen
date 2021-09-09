@@ -83,9 +83,8 @@ namespace WebTruyen.API.Repository.Comic
             if (request.Thumbnail != null)
             {
                 if(comic.Thumbnail != null)
-                    await _storageService.DeleteFileAsync(comic.Thumbnail);
-                comic.Thumbnail = await _storageService.SaveFile(request.Thumbnail, path);
-
+                    await _storageService.DeleteFileAsync(comic.Thumbnail, security: true);
+                comic.Thumbnail = $@"api/Pages/image?name={await _storageService.SaveFile(request.Thumbnail, path, security: true)}";
             }
             try
             {
@@ -115,12 +114,12 @@ namespace WebTruyen.API.Repository.Comic
             comic.NameAlias = new TextService().ConvertToUnSign(request.Name).Replace(" ", "-");
             var path = $@"comic-collection/{comic.Id}";
             //Tạo thư mục truyện mới
-            var folder = _storageService.CreateDirectory(path);
+            var folder = _storageService.CreateDirectory(path, security: true);
             //Lưu hình ảnh
             if (!folder.Exists)
                 return null;
 
-            comic.Thumbnail = await _storageService.SaveFile(request.Thumbnail, path);
+            comic.Thumbnail = $@"api/Pages/image?name={await _storageService.SaveFile(request.Thumbnail, path, security: true)}";
 
             _context.Comics.Add(comic);
             await _context.SaveChangesAsync();
@@ -170,7 +169,7 @@ namespace WebTruyen.API.Repository.Comic
 
             var path = $@"comic-collection/{comic.Id}";
             //Xóa Comic
-            var resultRemove = await _storageService.DeleteFolderAsync(path);
+            var resultRemove = await _storageService.DeleteFolderAsync(path, security: true);
             if (resultRemove == StatusCodes.Status500InternalServerError)
                 return StatusCodes.Status500InternalServerError;
 
@@ -187,7 +186,7 @@ namespace WebTruyen.API.Repository.Comic
 
         private async Task<int> DeleteFile(string fileName)
         {
-            return await _storageService.DeleteFileAsync(fileName);
+            return await _storageService.DeleteFileAsync(fileName, security: true);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace WebTruyen.Library.Entities.Request
                 Id = Id,
                 Nickname = Nickname,
                 Dob = Dob,
-                sex = sex,
+                sex = sex ?? true,
                 Address = Address,
                 Fanpage = Fanpage,
                 Email = Email,
@@ -49,7 +49,7 @@ namespace WebTruyen.Library.Entities.Request
 
         [DataType(DataType.Password)] 
         public string ConfirmPassword { get; set; } = "";
-        public Guid? IdRole { get; set; }
+        public Guid IdRole { get; set; }
 
 
     }

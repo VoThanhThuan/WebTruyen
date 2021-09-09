@@ -38,7 +38,15 @@ namespace WebTruyen.UI.Admin
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSession(options => { options.IdleTimeout = TimeSpan.FromMinutes(30); });
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                options.SlidingExpiration = true;
+            });
+            services.AddSession(options => 
+            { 
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+            });
             services.AddHttpContextAccessor();
             services.AddScoped<HttpContextBlazor>();
 
@@ -46,6 +54,7 @@ namespace WebTruyen.UI.Admin
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
             services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(Configuration["BaseAddress"]) });
+            BaseAddressDefault.Address = new Uri(Configuration["BaseAddress"]);
             services.AddHttpContextAccessor();
 
             services.AddHttpClient();
@@ -75,7 +84,7 @@ namespace WebTruyen.UI.Admin
                     };
                 }).AddCookie();
 
-
+            
             services.AddTransient<IImageService, ImageService>();
             services.AddTransient<IComicApiClient, ComicApiClient>();
             services.AddTransient<IChapterService, ChapterService>();

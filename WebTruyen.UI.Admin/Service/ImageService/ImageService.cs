@@ -1,13 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace WebTruyen.UI.Admin.Service.ImageService
 {
     public class ImageService : IImageService
     {
+        private readonly HttpClient _http;
+        ProtectedLocalStorage _localStorageService { get; set; }
+
+        public ImageService(HttpClient http, ProtectedLocalStorage localStorageService)
+        {
+            _http = http;
+            _localStorageService = localStorageService;
+        }
+
+        private async void GetSession()
+        {
+            var sessions = (await _localStorageService.GetAsync<string>("Token")).Value;
+            _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
+        }
+
         public bool ImageIsValid(string contentType)
         {
             var fileTypeSupported = new List<string>() { "image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp" };
@@ -29,6 +47,19 @@ namespace WebTruyen.UI.Admin.Service.ImageService
             var format = img.ContentType; //lấy định dạng file
 
             return $"data:{format};base64,{Convert.ToBase64String(await ImageToByte(img))}";
+        }
+
+        public string ByteToString(byte[] value)
+        {
+            return $"data:image/jpg;base64,{Convert.ToBase64String(value)}";
+        }
+
+        public async Task<string> GetImageFromUrl(string url)
+        {
+            GetSession();
+
+            var result = await _http.GetByteArrayAsync(url);
+            return ByteToString(result);
         }
 
         public async IAsyncEnumerable<byte[]> ImagesToByte(IReadOnlyList<IBrowserFile> imgs)

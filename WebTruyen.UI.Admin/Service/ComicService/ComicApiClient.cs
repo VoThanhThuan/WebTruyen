@@ -4,32 +4,59 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ViewModel;
 using WebTruyen.UI.Admin.RequestClient;
+using WebTruyen.UI.Admin.Service.ImageService;
 
 namespace WebTruyen.UI.Admin.Service.ComicService
 {
     public class ComicApiClient : IComicApiClient
     {
-        private readonly HttpClient _http;
+        private HttpClient _http;
+        private readonly IImageService _image;
+        ProtectedLocalStorage _localStorageService { get; set; }
 
-        public ComicApiClient(HttpClient http)
+        public ComicApiClient(HttpClient http, ProtectedLocalStorage localStorageService, IImageService image)
         {
             _http = http;
+            _localStorageService = localStorageService;
+            _image = image;
+
+
+        }
+
+        private async Task GetSession()
+        {
+            var sessions = (await _localStorageService.GetAsync<string>("Token")).Value;
+            _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
         }
 
         public async Task<IEnumerable<ComicVM>> GetComics()
-        {   
+        {
+            await GetSession();
+
             var result = await _http.GetFromJsonAsync<List<ComicVM>>("/api/Comics");
             var comic = result?.Select(x => { x.Thumbnail = $"{_http.BaseAddress}{x.Thumbnail}"; return x; }).ToList();
             return comic;
         }
 
+        public async Task<string> GetImage(string url)
+        {
+            await GetSession();
+
+            var result = await _http.GetByteArrayAsync(url);
+            return _image.ByteToString(result);
+        }
+
         public async Task<ComicVM> GetComic(Guid id)
         {
+            await GetSession();
+
             var result = await _http.GetFromJsonAsync<ComicVM>($"/api/Comics/{id}");
             if (result != null)
             {
@@ -40,6 +67,8 @@ namespace WebTruyen.UI.Admin.Service.ComicService
 
         public async Task<ComicVM> GetComic(string nameAlias)
         {
+            await GetSession();
+
             var result = await _http.GetFromJsonAsync<ComicVM>($"/api/Comics/detail?nameAlias={nameAlias}");
             if (result != null)
             {
@@ -50,6 +79,8 @@ namespace WebTruyen.UI.Admin.Service.ComicService
 
         public async Task<int> PutComic(Guid id, ComicRequestClient request, List<GenreVM> genres)
         {
+            await GetSession();
+
             var requestContent = new MultipartFormDataContent();
 
             if (request.Thumbnail != null)
@@ -84,6 +115,8 @@ namespace WebTruyen.UI.Admin.Service.ComicService
 
         public async Task<(HttpStatusCode StatusCode, ComicVM Content)> PostComic(ComicRequestClient request, List<GenreVM> genres)
         {
+            await GetSession();
+
             var requestContent = new MultipartFormDataContent();
 
             if (request.Thumbnail != null)
@@ -116,6 +149,8 @@ namespace WebTruyen.UI.Admin.Service.ComicService
 
         public async Task<int> DeleteComic(Guid id)
         {
+            GetSession();
+
             var response = await _http.DeleteAsync($"/api/Comics/{id}");
             return (int)response.StatusCode;
         }

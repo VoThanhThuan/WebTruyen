@@ -10,6 +10,8 @@ namespace WebTruyen.Library.Entities.Request
         public float? Ordinal { get; set; } = 1.0f;
         public string Name { get; set; }
         public DateTime? DateTimeUp { get; set; } = DateTime.Now;
+        public bool IsLock { get; set; } = false;
+
         public int? Views { get; set; } = 0;
 
 

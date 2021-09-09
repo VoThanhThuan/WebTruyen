@@ -53,6 +53,7 @@ namespace WebTruyen.Library.Data
         public DbSet<Comic> Comics { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<IdentityUserRole<Guid>> AppUserRole { get; set; }
         public DbSet<Genre> Genres { get; set; }
         public DbSet<ComicInGenre> ComicInGenres { get; set; }
         public DbSet<Page> Pages { get; set; }

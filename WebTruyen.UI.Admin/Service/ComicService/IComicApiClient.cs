@@ -13,6 +13,7 @@ namespace WebTruyen.UI.Admin.Service.ComicService
     public interface IComicApiClient
     {
         public Task<IEnumerable<ComicVM>> GetComics();
+        public Task<string> GetImage(string url);
         public Task<ComicVM> GetComic(Guid id);
         public Task<ComicVM> GetComic(string nameAlias);
         public Task<int> PutComic(Guid id, ComicRequestClient request, List<GenreVM> genres);

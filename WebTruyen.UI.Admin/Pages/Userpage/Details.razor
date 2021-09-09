@@ -149,13 +149,13 @@ else
                                                 <option selected>Chọn Quyền Cho Tài Khoản</option>
                                                 @foreach (var role in _roleVM)
                                                 {
-                                                    if (_userVM.IdRole == role.Id)
+                                                    if (_userVM.RoleName == role.Name)
                                                     {
-                                                        <option value="@role.Id">@role.Name</option>
+                                                        <option value="@role.Id" selected>@role.Name</option>
                                                     }
                                                     else
                                                     {
-                                                        <option value="@role.Id" selected>@role.Name</option>
+                                                        <option value="@role.Id">@role.Name</option>
                                                     }
                                                 }
                                             </select>
@@ -237,13 +237,30 @@ else
 
         protected override async Task OnInitializedAsync()
         {
+            await base.OnInitializedAsync();
             NavigateToComponent();
-            if (_idUser != Guid.Empty)
+
+        }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            await base.OnAfterRenderAsync(firstRender);
+            if (firstRender)
             {
+                if (_idUser == Guid.Empty)
+                    return;
                 _userVM = await _userApi.GetUser(_idUser);
+                if (_userVM is null)
+                {
+                    _navigationManager.NavigateTo("/user");
+                    return;
+                }
+                _userRequest.ConverRequest(_userVM);
+
                 _roleVM = await _roleApi.GetRoles();
 
                 _element.Avatar = _userVM.Avatar;
+                StateHasChanged();
             }
 
         }

@@ -36,6 +36,7 @@ bld/
 avatar/
 wwwroot/avatar/
 wwwroot/comic-collection/
+MyStaticFiles/comic-collection/
 comic-collection/
 
 # Visual Studio 2015/2017 cache/options directory

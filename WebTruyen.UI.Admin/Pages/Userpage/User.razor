@@ -4,6 +4,7 @@
 @using WebTruyen.UI.Admin.Service.UserService
 @using WebTruyen.Library.Entities.ViewModel
 @using WebTruyen.UI.Admin.Components;
+@using WebTruyen.UI.Admin.Service.ImageService
 <h3>User</h3>
 
 <div class="container-xl mt-2">
@@ -22,6 +23,7 @@
                     <thead class="table-primary">
                         <tr>
                             <th scope="col">#</th>
+                            <th scope="col">Quyền</th>
                             <th scope="col">Hình Ảnh</th>
                             <th scope="col" style="min-width: 10rem;">Tên</th>
                             <th scope="col">Tài Khoản</th>
@@ -40,6 +42,7 @@
                             {
                                 <tr>
                                     <th scope="row">@(index++)</th>
+                                    <th scope="row">@user.RoleName</th>
                                     <td><img src="@user.Avatar" alt="Avatar" height="64"/></td>
                                     <td>@user.Nickname</td>
                                     <td>@user.Username</td>
@@ -63,11 +66,21 @@
 
 @code {
     [Inject] private IUserService _UserApi { get; set; }
+    [Inject] private IImageService _Image { get; set; }
 
     private List<UserRequestClient> _userRequest;
     private List<UserVM> _userVM;
-    protected override async Task OnInitializedAsync()
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        _userVM = await _UserApi.GetUsers();
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            _userVM = await _UserApi.GetUsers();
+            StateHasChanged();
+
+        }
     }
+
+
 }

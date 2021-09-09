@@ -16,7 +16,7 @@ namespace WebTruyen.API.Repository.Page
         public Task<IEnumerable<PageVM>> GetPagesInChapter(Guid idChapter);
         //Put
         public Task<int> PutPage(Guid id, PageRequest request);
-        public Task<int> PutPages(Guid idChapter, List<IFormFile> images);
+        public Task<int> PutPages(Guid idChapter, List<IFormFile> images, bool isLock);
         public Task MoveUrlPages(Guid idChapter, string oldChapter, string newChapter);
 
         //Post

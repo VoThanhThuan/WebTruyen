@@ -87,7 +87,6 @@ namespace WebTruyen.UI.Admin.Data
 
         public async Task MarkUserAsLoggedOut()
         {
-            //await _localStorageService.DeleteAsync("Token");
             await _localStorageService.DeleteAsync("Token");
 
             var identity = new ClaimsIdentity();

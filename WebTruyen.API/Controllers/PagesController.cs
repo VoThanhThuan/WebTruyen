@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using WebTruyen.API.Repository.Page;
-using WebTruyen.Library.Data;
-using WebTruyen.Library.Entities;
+using WebTruyen.API.Service;
 using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ViewModel;
 
@@ -18,17 +20,46 @@ namespace WebTruyen.API.Controllers
     public class PagesController : ControllerBase
     {
         private readonly IPageService _page;
+        private readonly IWebHostEnvironment _env;
+        private readonly IStorageService _storage;
 
-        public PagesController(IPageService context)
+        public PagesController(IPageService context, IWebHostEnvironment env, IStorageService storage)
         {
             _page = context;
+            _env = env;
+            _storage = storage;
         }
+
 
         // GET: api/Pages
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PageVM>>> GetPages()
         {
             return Ok(await _page.GetPages());
+        }
+
+        // GET: api/Pages/image
+        [HttpGet]
+        [Route("image")]
+        public IActionResult GetImage([FromQuery] string name, [FromHeader] string authorization)
+        {
+            //var principal = User as ClaimsPrincipal;
+            var check = User.Identity.IsAuthenticated;
+            
+            var filePath = Path.Combine(
+                _env.ContentRootPath, "MyStaticFiles", name);
+
+            var folder = Path.GetDirectoryName(name);
+            if (_storage.FileExists($@"{folder}/chapter.isLock", security: true))
+            {
+                if(check)
+                    return PhysicalFile(Path.Combine(_env.ContentRootPath, "MyStaticFiles", "Psyduck-image-lock.png"), "image/jpeg");
+                return PhysicalFile(filePath, "image/jpeg");
+            }
+            else
+            {
+                return PhysicalFile(filePath, "image/jpeg");
+            }
         }
 
         // GET: api/Pages/chapter?idChapter=69

@@ -25,31 +25,39 @@ namespace WebTruyen.API.Repository.User
         private readonly IStorageService _storageService;
         private readonly IPasswordHasher<Library.Entities.User> _passwordHasher = new PasswordHasher<Library.Entities.User>();
         private readonly UserManager<Library.Entities.User> _userManager; //Thư viện quản lý user
+        private readonly RoleManager<Library.Entities.Role> _roleManager; //Thư viện quản lý role
         private readonly SignInManager<Library.Entities.User> _signInManager; //Thư viên đăng nhập
         private readonly IConfiguration _config; //lấy config từ appsetting.config
 
         public UserService(ComicDbContext context, 
             IStorageService storageService, 
             SignInManager<Library.Entities.User> signInManager, 
-            UserManager<Library.Entities.User> userManager, 
+            UserManager<Library.Entities.User> userManager,
+            RoleManager<Library.Entities.Role> roleManager,
             IConfiguration config)
         {
             _context = context;
             _storageService = storageService;
             _signInManager = signInManager;
             _userManager = userManager;
+            _roleManager = roleManager;
             _config = config;
         }
         public async Task<IEnumerable<UserVM>> GetUsers()
         {
-            return await _context.Users.Select(x => x.ToViewModel()).ToListAsync();
+            var users = await _context.Users.Select(x => x).ToListAsync();
+            var uservm = new List<UserVM>();
+            foreach (var user in users)
+            {
+                uservm.Add(await user.ToViewModel(_userManager));
+            }
+            return uservm;
         }
 
         public async Task<UserVM> GetUser(Guid id)
         {
             var user = await _context.Users.FindAsync(id);
-
-            return user?.ToViewModel();
+            return await user.ToViewModel(_userManager);
         }
 
         public async Task<bool> PutUser(Guid id, UserRequest request)
@@ -73,6 +81,25 @@ namespace WebTruyen.API.Repository.User
                 user.Avatar = await SaveFile(request.Avatar);
 
             //_context.Entry(request.ToUser()).State = EntityState.Modified;
+
+            //Role assign
+
+            var roles = await _context.Roles.Select(x => x).ToListAsync();
+            var userRole = await _context.AppUserRole.FindAsync(id, request.IdRole);
+            if (userRole == null)
+            {
+                foreach (var role in roles)
+                {
+                    if (await _userManager.IsInRoleAsync(user, role.Name) == true)
+                    {
+                        await _userManager.RemoveFromRoleAsync(user, role.Name);
+                    }
+                }
+
+                var roleNew = await _context.Roles.FindAsync(request.IdRole);
+
+                await _userManager.AddToRoleAsync(user, roleNew.Name);
+            }
 
             try
             {
@@ -103,8 +130,14 @@ namespace WebTruyen.API.Repository.User
             {
                 return (StatusCodes.Status409Conflict, "Tạo tài khoản thất bại", null);
             }
+
+            //Role assign
+            var role = await _context.Roles.FindAsync(request.IdRole);
+
+            await _userManager.AddToRoleAsync(user, role.Name);
+
             //_context.Users.Add(user);
-           //await _context.SaveChangesAsync();
+            //await _context.SaveChangesAsync();
 
             return (StatusCodes.Status200OK, "Ok",user.ToViewModel());
         }
@@ -173,6 +206,15 @@ namespace WebTruyen.API.Repository.User
             //</>
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public string DecryptString(string cipherText)
+        {
+            //<>Mã hóa SymmetricS
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            return "";
         }
 
         public async Task<UserVM> GetUserFromAccessToken(string accessToken)

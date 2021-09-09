@@ -63,7 +63,7 @@ namespace WebTruyen.API.Repository.Page
                 .OrderBy(x => x.SortOrder)
                 .Last().SortOrder;
 
-            page.Image = request.Image == null ? page.Image : await _storage.SaveFile(request.Image, path);
+            page.Image = request.Image == null ? page.Image : $"api/Pages/image?name={(await _storage.SaveFile(request.Image, path, security: true))}";
             page.SortOrder = request.SortOrder ?? lastOrder + 1;
             page.IdChapter = request.IdChapter;
 
@@ -81,7 +81,7 @@ namespace WebTruyen.API.Repository.Page
             return StatusCodes.Status200OK;
         }
 
-        public async Task<int> PutPages(Guid idChapter, List<IFormFile> images)
+        public async Task<int> PutPages(Guid idChapter, List<IFormFile> images, bool isLock)
         {
             var chapAndComic = (from chap in _context.Chapters
                 where chap.Id == idChapter
@@ -91,18 +91,19 @@ namespace WebTruyen.API.Repository.Page
 
             //đường dẫn thư mục của chapter 
             var path = $@"comic-collection/{chapAndComic.com.Id}/chapter{chapAndComic.chap.Ordinal}";
-            if (_storage.Exists(path))
+            if (_storage.FolderExists(path, security: true))
             {
                 //Xóa các chap cũ
                 //  <> Xóa Hình
-                var resultRemove = await _storage.DeleteFolderAsync(path);
+                var resultRemove = await _storage.DeleteFolderAsync(path, security: true);
 
                 if (resultRemove == StatusCodes.Status500InternalServerError)
                     return StatusCodes.Status500InternalServerError;
+                _storage.CreateDirectory(path, security: true);
             }
             else
             {
-                _storage.CreateDirectory(path);
+                _storage.CreateDirectory(path, security: true);
             }
             
 
@@ -115,7 +116,7 @@ namespace WebTruyen.API.Repository.Page
             var pages = images.Select((t, i) => new Library.Entities.Page()
             {
                 Id = Guid.NewGuid(),
-                Image = _storage.SaveFile(t, path).Result,
+                Image = $@"api/Pages/image?name={_storage.SaveFile(t, path, security: true).Result}",
                 SortOrder = i,
                 IdChapter = idChapter
             }).ToList();
@@ -161,14 +162,14 @@ namespace WebTruyen.API.Repository.Page
             //lấy đường dẫn
             var path = $@"comic-collection/{chapAndComic.com.Id}/chapter{chapAndComic.chap.Ordinal}";
             //Tạo folder cho chapter
-            _storage.CreateDirectory(path);
+            _storage.CreateDirectory(path, security: true);
 
             var lastOrder = _context.Pages.Where(x => x.IdChapter == idChapter).OrderBy(x => x.SortOrder).Last().SortOrder;
 
             var page = new Library.Entities.Page()
             {
                 Id = request.Id ?? Guid.NewGuid(),
-                Image = string.IsNullOrEmpty(request.Link) ? _storage.SaveFile(request.Image, path).Result : request.Link,
+                Image = string.IsNullOrEmpty(request.Link) ? $@"api/Pages/image?name={_storage.SaveFile(request.Image, path, security: true).Result}" : request.Link,
                 SortOrder = request.SortOrder ?? lastOrder + 1,
                 IdChapter = request.IdChapter
             };
@@ -198,7 +199,7 @@ namespace WebTruyen.API.Repository.Page
             //lấy đường dẫn
             var path = $@"comic-collection//{chapAndComic.com.NameAlias}/chapter{chapAndComic.chap.Ordinal}";
             //Tạo folder cho chapter
-            _storage.CreateDirectory(path);
+            _storage.CreateDirectory(path, security: true);
 
             var pages = images.Select((t, i) => new Library.Entities.Page()
             {
@@ -216,10 +217,10 @@ namespace WebTruyen.API.Repository.Page
         }
 
         /// <summary>
-        /// Hình ảnh là ảnh lưu trong server
+        /// Lưu thông tin trang truyện và lưu hình vào thư mục server
         /// </summary>
         /// <param name="idChapter"></param>
-        /// <param name="images"></param>
+        /// <param name="images">Danh sách hình ảnh</param>
         /// <returns></returns>
         public async Task<int> PostPages(Guid idChapter, List<IFormFile> images)
         {
@@ -237,7 +238,7 @@ namespace WebTruyen.API.Repository.Page
             var pages = images.Select((t, i) => new Library.Entities.Page()
             {
                 Id = Guid.NewGuid(),
-                Image = _storage.SaveFile(t, path).Result,
+                Image = $@"api/Pages/image?name={_storage.SaveFile(t, path, security: true).Result}",
                 SortOrder = i,
                 IdChapter = idChapter
             }).ToList();

@@ -6,17 +6,28 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using WebTruyen.Library.Entities.ViewModel;
 using WebTruyen.UI.Admin.Service.ComicService;
+using WebTruyen.UI.Admin.Service.ImageService;
 
 namespace WebTruyen.UI.Admin.Pages.ComicPage
 {
     public partial class Comic
     {
         [Inject] private IComicApiClient _ComicApi { get; set; }
-
+        [Inject] private IImageService _image { get; set; }
         private IEnumerable<ComicVM> _comics;
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            _comics = await _ComicApi.GetComics();
+            await base.OnAfterRenderAsync(firstRender);
+            if (firstRender)
+            {
+                _comics = await _ComicApi.GetComics();
+                foreach (var comic in _comics)
+                {
+                    comic.Thumbnail = await _image.GetImageFromUrl(comic.Thumbnail);
+                    StateHasChanged();
+                }
+            }
+
         }
     }
 }

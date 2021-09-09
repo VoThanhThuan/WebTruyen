@@ -18,6 +18,7 @@ namespace WebTruyen.Library.Entities
                 Name = Name,
                 DateTimeUp = DateTimeUp,
                 Views = Views,
+                IsLock = IsLock,
                 IdComic = IdComic
             };
         }

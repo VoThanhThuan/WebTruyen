@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using WebTruyen.API.Repository.User;
+using WebTruyen.API.Service;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
 using WebTruyen.Library.Entities.Request;
@@ -24,16 +25,19 @@ namespace WebTruyen.API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _user;
+        private readonly IStorageService _storage;
 
-        public UsersController(IUserService context)
+        public UsersController(IUserService context, IStorageService storage)
         {
             _user = context;
+            _storage = storage;
         }
 
         [HttpPost("authenticate")]
         [AllowAnonymous]
         public async Task<IActionResult> Authenticate(LoginRequest request)
         {
+            //_storage.FileExists("thuan");
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -44,6 +48,16 @@ namespace WebTruyen.API.Controllers
                 return BadRequest(result);
             }
             return Ok(result);
+        }
+
+        // GET: api/Users/CheckAuthenticate
+        [HttpGet("CheckAuthenticate")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Authenticate()
+        {
+            var check = User.Identity.IsAuthenticated;
+            if (check) return Ok("User xác thực");
+            return NoContent();
         }
 
         // GET: api/Users
@@ -64,6 +78,11 @@ namespace WebTruyen.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserVM>>> GetUsers()
         {
+            if (HttpContext.User.Identity is ClaimsIdentity identity)
+            {
+                IEnumerable<Claim> claims = identity.Claims;
+
+            }
             return Ok(await _user.GetUsers());
         }
 

@@ -4,8 +4,10 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.Request;
@@ -17,10 +19,17 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
     public class ChapterService : IChapterService
     {
         private readonly HttpClient _http;
+        ProtectedLocalStorage _localStorageService { get; set; }
 
-        public ChapterService(HttpClient http)
+        public ChapterService(HttpClient http, ProtectedLocalStorage localStorageService)
         {
             _http = http;
+            _localStorageService = localStorageService;
+        }
+        private async Task GetSession()
+        {
+            var sessions = (await _localStorageService.GetAsync<string>("Token")).Value;
+            _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
         }
 
         public Task<int> DeleteChapter(Guid id)
@@ -30,6 +39,7 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
 
         public async Task<ChapterVM> GetChapter(Guid id)
         {
+            await GetSession();
             return await _http.GetFromJsonAsync<ChapterVM>($"api/Chapters/{id}");
         }
 
@@ -39,11 +49,15 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
         }
         public async Task<List<ChapterVM>> GetChaptersInComic(Guid idComic)
         {
+            await GetSession();
+
             return await _http.GetFromJsonAsync<List<ChapterVM>>($"api/Chapters/comic?idComic={idComic}");
         }
 
         public async Task<ChapterVM> GetLastChapter(Guid idComic)
         {
+            await GetSession();
+
             var result = await _http.GetAsync($"api/Chapters/lastChapter?idComic={idComic}");
             if (result.IsSuccessStatusCode)
             {
@@ -53,6 +67,8 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
         }
         public async Task<int> PutChapter(Guid id, ChapterVM chapter, List<(byte[] image, string nameFile)> images)
         {
+            await GetSession();
+
             var requestContent = new MultipartFormDataContent();
 
             if (images != null)
@@ -78,6 +94,8 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
 
         public async Task<(HttpStatusCode StatusCode, ChapterVM Content)> PostChapter(ChapterVM chapter, List<(byte[] image, string nameFile)> images)
         {
+            await GetSession();
+
             var requestContent = new MultipartFormDataContent();
 
             if (images != null)
@@ -95,9 +113,12 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
             requestContent.Add(new StringContent(chapter.Name), "Name");
             requestContent.Add(new StringContent(chapter.Ordinal.ToString(CultureInfo.InvariantCulture)), "Ordinal");
             requestContent.Add(new StringContent(chapter.IdComic.ToString()), "IdComic");
+            requestContent.Add(new StringContent(chapter.IsLock.ToString()), "IsLock");
 
             var response = await _http.PostAsync($"/api/Chapters", requestContent);
-            return (response.StatusCode, await response.Content.ReadFromJsonAsync<ChapterVM>());
+            if(response.IsSuccessStatusCode)
+                return (response.StatusCode, await response.Content.ReadFromJsonAsync<ChapterVM>());
+            return (response.StatusCode, null);
         }
     }
 }

@@ -24,13 +24,33 @@ namespace WebTruyen.Library.Entities
                 PhoneNumber = PhoneNumber,
                 Username = UserName,
                 Password = PasswordHash
+        };
+        }
+
+        public async Task<UserVM> ToViewModel(UserManager<Library.Entities.User> userManager)
+        {
+            var user = new UserVM()
+            {
+                Id = Id,
+                Nickname = Nickname,
+                Avatar = Avatar,
+                Dob = Dob,
+                sex = sex,
+                Address = Address,
+                Fanpage = Fanpage,
+                Email = Email,
+                PhoneNumber = PhoneNumber,
+                Username = UserName,
+                Password = PasswordHash
             };
+            user.RoleName = (await userManager.GetRolesAsync(this))[0];
+            return user;
         }
 
         public string Nickname { get; set; } = "";
         public DateTime? Dob { get; set; }
         public string Avatar { get; set; } = "";
-        public bool? sex { get; set; } = true;
+        public bool sex { get; set; } = true;
         public string Address { get; set; } = "";
         public string Fanpage { get; set; } = "";
         //Khóa ngoại

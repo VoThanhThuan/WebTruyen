@@ -23,21 +23,24 @@ namespace WebTruyen.Library.Data
                 var admin = new Role()
                 {
                     Id = ra,
-                    Name = "Admin"
+                    Name = "Admin",
+                    NormalizedName = "ADMIN"
                 };
                 context.Roles.Add(admin);
 
                 var editer = new Role()
                 {
                     Id = re,
-                    Name = "Editer"
+                    Name = "Editer",
+                    NormalizedName = "EDITER"
                 };
                 context.Roles.Add(editer);
 
                 var guest = new Role()
                 {
                     Id = rg,
-                    Name = "Guest"
+                    Name = "Guest",
+                    NormalizedName = "GUEST"
                 };
                 context.Roles.Add(guest);
             }

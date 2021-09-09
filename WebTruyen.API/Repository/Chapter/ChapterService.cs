@@ -58,26 +58,34 @@ namespace WebTruyen.API.Repository.Chapter
             if (chapter is null)
                 return StatusCodes.Status404NotFound;
 
+            //Đường dẫn thư mục chap truyện
+            var path = $@"comic-collection/{comic.Id}/chapter{chapter.Ordinal}";
+
             if (request.Ordinal is not null)
             {
                 if (!Equals(request.Ordinal, chapter.Ordinal))
                 {
-                    //Đường dẫn thư mục chap truyện
-                    var path = $@"comic-collection/{comic.Id}/chapter{chapter.Ordinal}";
                     var pathNew = $@"comic-collection/{comic.Id}/chapter{request.Ordinal}";
-                    if (_storage.Exists(pathNew))
+                    if (_storage.FolderExists(pathNew, security: true))
                     {
                         request.Ordinal += 0.1f;
                         pathNew = $@"comic-collection/{comic.Id}/chapter{request.Ordinal}";
                     }
                     await _page.MoveUrlPages(chapter.Id, $"chapter{chapter.Ordinal}", $"chapter{request.Ordinal}");
-                    _storage.Move(path, pathNew);
+                    _storage.Move(path, pathNew, security: true);
                     chapter.Ordinal = (float)request.Ordinal;
+                    path = pathNew;
                 }
 
-
             }
+
             chapter.Name = string.IsNullOrEmpty(request.Name) ? chapter.Name : request.Name;
+
+            //Tạo file xác định chapter khóa
+            if (chapter.IsLock && !_storage.FileExists($@"{path}/chapter.isLock", security: true))
+            {
+                _storage.CreateFile($@"{path}/chapter.isLock", security: true);
+            }
 
             _context.Entry(chapter).State = EntityState.Modified;
 
@@ -114,6 +122,7 @@ namespace WebTruyen.API.Repository.Chapter
                 Name = request.Name,
                 DateTimeUp = DateTime.Now,
                 Views = 0,
+                IsLock = request.IsLock,
                 IdComic = request.IdComic
             };
 
@@ -124,8 +133,12 @@ namespace WebTruyen.API.Repository.Chapter
             //đường dẫn thư mục cho chap mới
             var path = $@"comic-collection/{comic.Id}/chapter{chapter.Ordinal}";
             //Tạo folder cho chapter
-            _storage.CreateDirectory(path);
-
+            _storage.CreateDirectory(path, security: true);
+            //Tạo file xác định chapter khóa
+            if (chapter.IsLock && !_storage.FileExists($@"{path}/chapter.isLock", security: true))
+            {
+                _storage.CreateFile($@"{path}/chapter.isLock", security: true);
+            }
             return chapter;
         }
 
@@ -137,7 +150,7 @@ namespace WebTruyen.API.Repository.Chapter
             {
                 foreach (var item in listImage)
                 {
-                    await _storage.DeleteFileAsync(item.Image);
+                    await _storage.DeleteFileAsync(item.Image, security: true);
                     _context.Pages.Remove(item);
 
                 }
