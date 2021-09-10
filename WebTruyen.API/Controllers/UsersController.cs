@@ -119,7 +119,7 @@ namespace WebTruyen.API.Controllers
 
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [Authorize(Roles = "Admin")]
         [Consumes("multipart/form-data")]
         public async Task<ActionResult<UserVM>> PostUser([FromForm]UserRequest user)
         {

@@ -15,6 +15,7 @@ namespace WebTruyen.API.Repository.User
         public Task<UserVM> GetUser(Guid id);
         public Task<bool> PutUser(Guid id, UserRequest request);
         public Task<(int apiResult, string mess, UserVM user)> PostUser(UserRequest request);
+        public Task<(int apiResult, string mess, UserVM user)> Register(UserRequest request);
         public Task<int> DeleteUser(Guid id);
 
     }

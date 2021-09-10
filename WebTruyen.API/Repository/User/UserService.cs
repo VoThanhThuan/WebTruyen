@@ -133,6 +133,10 @@ namespace WebTruyen.API.Repository.User
 
             //Role assign
             var role = await _context.Roles.FindAsync(request.IdRole);
+            if (request.IdRole == Guid.Empty || role == null)
+            {
+                role = await _roleManager.FindByNameAsync("Guest");
+            }
 
             await _userManager.AddToRoleAsync(user, role.Name);
 
@@ -140,6 +144,32 @@ namespace WebTruyen.API.Repository.User
             //await _context.SaveChangesAsync();
 
             return (StatusCodes.Status200OK, "Ok",user.ToViewModel());
+        }
+
+        public async Task<(int apiResult, string mess, UserVM user)> Register(UserRequest request)
+        {
+            var checkUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == request.Username);
+            if (checkUser != null)
+                return (StatusCodes.Status409Conflict, "Username đã tồn tại", null);
+            var user = request.ToUser();
+            user.Id = Guid.NewGuid();
+            user.Avatar = await SaveFile(request.Avatar);
+            user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
+            var result = await _userManager.CreateAsync(user);
+            if (!result.Succeeded)
+            {
+                return (StatusCodes.Status409Conflict, "Tạo tài khoản thất bại", null);
+            }
+
+            //Role assign
+            var role = await _roleManager.FindByNameAsync("Guest");
+
+            await _userManager.AddToRoleAsync(user, role.Name);
+
+            //_context.Users.Add(user);
+            //await _context.SaveChangesAsync();
+
+            return (StatusCodes.Status200OK, "Ok", user.ToViewModel());
         }
 
         public async Task<int> DeleteUser(Guid id)

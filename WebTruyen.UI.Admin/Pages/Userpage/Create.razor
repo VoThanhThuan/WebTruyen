@@ -5,6 +5,7 @@
 @using WebTruyen.UI.Admin.RequestClient
 @using WebTruyen.UI.Admin.Service.ImageService
 @using System.IO
+@using Microsoft.Extensions.Logging
 @using WebTruyen.UI.Admin.Service.UserService
 
 <link rel="stylesheet" href="./vendors/Cropprjs/croppr.min.css">
@@ -59,50 +60,57 @@ else if (_element.Apiresult != 0)
                 </div>
             </div>
             <div class="col">
-                <EditForm Model="_userRequest" OnSubmit="Update">
+                <EditForm Model="_userRequest" OnValidSubmit="Update">
+                    <DataAnnotationsValidator></DataAnnotationsValidator>
                     <div class="form-floating mb-3">
-                        <InputText type="text" class="form-control" id="floatingNickName" placeholder="name@example.com" @bind-Value="_userRequest.Nickname" />
+                        <InputText type="text" class="form-control" id="floatingNickName" placeholder="name@example.com" @bind-Value="_userRequest.Nickname"/>
                         <label for="floatingNickName">Nick Name</label>
+                        <ValidationMessage For="() => _userRequest.Nickname"/>
                     </div>
                     <div class="form-floating mb-3">
-                        <InputText type="text" class="form-control" id="floatingUsername" placeholder="Password" @bind-Value="_userRequest.Username" />
+                        <InputText type="text" class="form-control" id="floatingUsername" placeholder="Password" @bind-Value="_userRequest.Username"/>
                         <label for="floatingUsername">Tên Đăng Nhập</label>
+                        <ValidationMessage For="() => _userRequest.Username"/>
                     </div>
                     <div class="form-floating mb-3">
-                        <InputText type="password" class="form-control" id="floatingPassword" placeholder="name@example.com" @bind-Value="_userRequest.Password" />
+                        <InputText type="password" class="form-control" id="floatingPassword" placeholder="name@example.com" @bind-Value="_userRequest.Password"/>
                         <label for="floatingPassword">Mật Khẩu</label>
+                        <ValidationMessage For="() => _userRequest.Password"/>
                     </div>
                     <div class="form-floating mb-3">
-                        <InputText type="password" class="form-control" id="floatingConfirmPassword" placeholder="Password" @bind-Value="_userRequest.ConfirmPassword" />
+                        <InputText type="password" class="form-control" id="floatingConfirmPassword" placeholder="Password" @bind-Value="_userRequest.ConfirmPassword"/>
                         <label for="floatingConfirmPassword">Xác Nhận Mật Khẩu</label>
+                        <ValidationMessage For="() => _userRequest.ConfirmPassword"/>
                     </div>
                     <div class="form-floating mb-3">
-                        <InputDate type="date" class="form-control" id="floatingDob" placeholder="Ngày sinh" @bind-Value="_userRequest.Dob" />
+                        <InputDate type="date" class="form-control" id="floatingDob" placeholder="Ngày sinh" @bind-Value="_userRequest.Dob"/>
                         <label for="floatingDob">Ngày Sinh</label>
+                        <ValidationMessage For="() => _userRequest.Dob"/>
                     </div>
                     <div class="form-floating mb-3">
-                        <select class="form-select" id="floatingSelect" aria-label="Floating label select example" @onchange="(e) => { var v = e.Value.ToString(); _userRequest.sex = string.IsNullOrEmpty(v) || bool.Parse(v); }">
+                        <select class="form-select" id="floatingSelect" aria-label="Floating label select example" @onchange="(e) => { var v = e.Value.ToString();_userRequest.sex = string.IsNullOrEmpty(v) || bool.Parse(v); }">
                             <option value="True">Nam</option>
                             <option value="False">Nữ</option>
                         </select>
                         <label for="floatingSelect">Giới Tính</label>
+                        <ValidationMessage For="() => _userRequest.Nickname"/>
                     </div>
                     <div class="form-floating mb-3">
-                        <InputText type="text" class="form-control" id="floatingAddress" placeholder="Địa Chỉ" @bind-Value="_userRequest.Address" />
+                        <InputText type="text" class="form-control" id="floatingAddress" placeholder="Địa Chỉ" @bind-Value="_userRequest.Address"/>
                         <label for="floatingAddress">Địa Chỉ</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <InputText type="text" class="form-control" id="floatingPhoneNumber" placeholder="Số điện thoại" @bind-Value="_userRequest.PhoneNumber" />
+                        <InputText type="text" class="form-control" id="floatingPhoneNumber" placeholder="Số điện thoại" @bind-Value="_userRequest.PhoneNumber"/>
                         <label for="floatingPhoneNumber">Số Điện Thoại</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <InputText type="text" class="form-control" id="floatingWebsite" placeholder="Website" @bind-Value="_userRequest.Fanpage" />
+                        <InputText type="text" class="form-control" id="floatingWebsite" placeholder="Website" @bind-Value="_userRequest.Fanpage"/>
                         <label for="floatingWebsite">Link Website</label>
                     </div>
 
                     @if (_element.IsSubmit)
                     {
-                        <input type="submit" class="btn btn-primary mt-2" />
+                        <input type="submit" class="btn btn-primary mt-2" value="Save"/>
                     }
                     else
                     {
@@ -154,10 +162,10 @@ else if (_element.Apiresult != 0)
     [Inject] private IUserService _userApi { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
 
-    private UserRequestClient _userRequest = new UserRequestClient();
-    private ViewElement _element = new ViewElement();
+    UserRequestClient _userRequest = new UserRequestClient();
+    ViewElement _element = new ViewElement();
 
-    private IBrowserFile _valueImage = null;
+    IBrowserFile _valueImage = null;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -176,10 +184,10 @@ else if (_element.Apiresult != 0)
     {
         _element.IsSubmit = false;
         StateHasChanged();
-
         var (statusCode, content) = await _userApi.PostUser(_userRequest);
 
         _element.Apiresult = 0;
+        StateHasChanged();
         _element.Apiresult = (int)statusCode;
         if (_element.Apiresult >= 200 && _element.Apiresult < 299)
         {
