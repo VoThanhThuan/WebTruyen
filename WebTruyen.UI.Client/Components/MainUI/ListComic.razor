@@ -1,0 +1,56 @@
+﻿@using WebTruyen.Library.Entities.ViewModel
+@using WebTruyen.UI.Client.Service.ComicService
+<div class="col-lg-8" name="list-truyen">
+    <div class="content p-2 rounded-5">
+        <div class="">
+            <div class="rounded-5 p-2 border-bottom">
+                <a class="navbar-brand" href="#">Truyện mới</a>
+            </div>
+        </div>
+        <div class="m-2">
+            <div class="row row-cols-2 row-cols-xs-1 row-cols-sm-3 row-cols-md-4 g-3 gy-5">
+                
+                @foreach (var comic in _Comics)
+                {
+                    <div class="col">
+                        <div class="card card-info shadow-sm">
+                            <a href="#">
+                                <img src="@comic.Thumbnail" alt="@comic.NameAlias"/>
+                            </a>
+                            <div class="p-1">
+                                <div class="fs-5 title">@comic.Name</div>
+                                <div class="chapnew mt-2">
+                                    <div class="d-flex justify-content-between"><a class="col" href="#">chapter 3</a> <i class="col fw-lighter">1 phút trước</i></div>
+                                    <div class="d-flex justify-content-between"><a class="col" href="#">chapter 2</a> <i class="col fw-lighter">2 phút trước</i></div>
+                                    <div class="d-flex justify-content-between"><a class="col" href="#">chapter 1</a> <i class="col fw-lighter">3 phút trước</i></div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+@code {
+
+    [Inject] IComicApiClient _comicApi { get; set; }
+
+    public List<ComicVM> _Comics { get; set; } = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _Comics = await _comicApi.GetComics();
+            StateHasChanged();
+        }
+    }
+
+}

@@ -46,6 +46,7 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Comics
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<ComicVM>>> GetComics()
         {
             return Ok(await _comic.GetComics());
@@ -53,6 +54,7 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Comics/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ComicVM>> GetComic(Guid id)
         {
             var comic = await _comic.GetComic(id);
@@ -67,6 +69,7 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Comics/detail?nameAlias=Vo-Thanh-Thuan
         [HttpGet("detail")]
+        [AllowAnonymous]
         public async Task<ActionResult<ComicVM>> GetComic([FromQuery]string nameAlias)
         {
             var comic = await _comic.GetComic(nameAlias);

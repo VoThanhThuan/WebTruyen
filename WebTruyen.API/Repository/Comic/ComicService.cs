@@ -27,7 +27,7 @@ namespace WebTruyen.API.Repository.Comic
         }
         public async Task<IEnumerable<ComicVM>> GetComics()
         {
-            return await _context.Comics.Select(x => x.ToViewModel()).ToListAsync();
+            return await _context.Comics.OrderByDescending(x => x.DateUpdate).Select(x => x.ToViewModel()).ToListAsync();
         }
 
         public async Task<ComicVM> GetComic(Guid id)

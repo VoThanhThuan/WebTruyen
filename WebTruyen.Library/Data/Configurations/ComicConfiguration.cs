@@ -13,6 +13,8 @@ namespace WebTruyen.Library.Data.Configurations
         public void Configure(EntityTypeBuilder<Comic> builder)
         {
             builder.ToTable("Comic");
+
+            builder.Property(x => x.DateUpdate).HasDefaultValueSql("GETDATE()");
         }
     }
 }

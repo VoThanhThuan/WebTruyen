@@ -128,7 +128,11 @@ namespace WebTruyen.API.Repository.Chapter
 
             //Add chapter
             _context.Chapters.Add(chapter.ToChapter());
+
+            comic.DateUpdate = DateTime.Now;
+
             await _context.SaveChangesAsync();
+
 
             //đường dẫn thư mục cho chap mới
             var path = $@"comic-collection/{comic.Id}/chapter{chapter.Ordinal}";
@@ -218,6 +222,10 @@ namespace WebTruyen.API.Repository.Chapter
         public async Task<ChapterVM> GetLastChapter(Guid idComic)
         {
             return (_context.Chapters.Where(x => x.IdComic == idComic).OrderBy(x => x.Ordinal).Last())?.ToViewModel();
+        }
+        public async Task<List<ChapterVM>> GetNewChapters(Guid idComic, int amount)
+        {
+            return await _context.Chapters.Where(x => x.IdComic == idComic).OrderByDescending(x => x.DateTimeUp).Take(amount).Select(x => x.ToViewModel()).ToListAsync();
         }
     }
 }

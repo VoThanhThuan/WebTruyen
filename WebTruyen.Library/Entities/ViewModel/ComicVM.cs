@@ -20,7 +20,8 @@ namespace WebTruyen.Library.Entities.ViewModel
                 Status = Status,
                 Views = Views,
                 Description = Description,
-                Thumbnail = Thumbnail
+                Thumbnail = Thumbnail,
+                DateUpdate = DateUpdate
             };
         }
         [Key]
@@ -35,6 +36,8 @@ namespace WebTruyen.Library.Entities.ViewModel
         public int? Views { get; set; } = 0;
         public string Description { get; set; } = "";
         public string Thumbnail { get; set; } = "";
+        public DateTime DateUpdate { get; set; } = DateTime.Now;
+
 
         public List<GenreVM> Genres { get; set; } = new List<GenreVM>();
 

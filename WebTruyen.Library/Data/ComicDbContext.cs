@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.IO;
-using Microsoft.Extensions.Configuration;
 using WebTruyen.Library.Data.Configurations;
 using WebTruyen.Library.Entities;
 

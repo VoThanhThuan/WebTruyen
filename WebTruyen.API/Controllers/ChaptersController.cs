@@ -72,6 +72,20 @@ namespace WebTruyen.API.Controllers
             return Ok(result);
         }
 
+        // GET: api/Chapters?idComic=xxxxx&amount=3
+        [HttpGet("lastChapters")]
+        public async Task<ActionResult<List<ChapterVM>>> GetLastChapters([FromQuery] Guid idComic, [FromQuery] int amount)
+        {
+            var result = await _chapter.GetNewChapters(idComic, amount);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
+
         // PUT: api/Chapters/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutChapter(Guid id, [FromForm]ChapterRequest chapter, [FromForm]List<IFormFile> pages)

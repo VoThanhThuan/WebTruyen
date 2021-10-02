@@ -23,7 +23,8 @@ namespace WebTruyen.Library.Entities
                 Status = Status,
                 Views = Views,
                 Description = Description,
-                Thumbnail = Thumbnail
+                Thumbnail = Thumbnail,
+                DateUpdate = DateUpdate
             };
         }
 
@@ -46,6 +47,7 @@ namespace WebTruyen.Library.Entities
         public int? Views { get; set; } = 0;
         public string Description { get; set; } = "";
         public string Thumbnail { get; set; } = "";
+        public DateTime DateUpdate { get; set; } = DateTime.Now;
 
         //Khoa ngoai
         public virtual List<ComicInGenre> ComicInGenres { get; set; }

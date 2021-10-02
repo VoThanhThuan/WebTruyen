@@ -1,0 +1,31 @@
+﻿@if (_OnDark)
+{
+    <link rel="stylesheet" href="./resources/css/dark.css">
+}
+else
+{
+    <link rel="stylesheet" href="./resources/css/light.css">
+}
+
+<nav id="navbar" class="navbar bg-content border-bottom rounded-5">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" @onclick="OnDarkMode">
+            </div>
+        </div>
+    </div>
+</nav>
+
+@code{
+
+    public bool _OnDark { get; set; } = false;
+
+    void OnDarkMode()
+    {
+        _OnDark = !_OnDark;
+        StateHasChanged();
+    }
+
+}

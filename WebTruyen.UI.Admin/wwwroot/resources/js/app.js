@@ -14,7 +14,6 @@ function imgError(image) {
     image.src = './resources/img/Psyduck-image-404.png';
     return true;
 }
-//onerror = "this.src = './resources/img/LazyLoading.gif'"
 
 function Click(parameters) {
     $(parameters).click();
