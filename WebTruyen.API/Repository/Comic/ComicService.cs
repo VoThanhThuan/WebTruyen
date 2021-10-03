@@ -37,7 +37,7 @@ namespace WebTruyen.API.Repository.Comic
             var genres = new List<GenreVM>();
             foreach (var cig in comicInGenre)
             {
-                var geren = await _context.Genres.FindAsync(cig.IdComic, cig.IdGenre);
+                var geren = await _context.Genres.FindAsync(cig.IdGenre);
                 genres.Add(geren.ToViewModel());
             }
             var comicView = comic?.ToViewModel(genres);

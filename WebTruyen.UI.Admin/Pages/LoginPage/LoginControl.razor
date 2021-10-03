@@ -68,7 +68,8 @@
         if (!string.IsNullOrEmpty(token))
         {
             await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticated(token);
-            _navigationManager.NavigateTo("/");
+            StateHasChanged();
+            _navigationManager.NavigateTo("/", forceLoad: true);
         }
     }
 

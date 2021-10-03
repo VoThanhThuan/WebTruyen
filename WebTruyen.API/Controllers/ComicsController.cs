@@ -52,10 +52,10 @@ namespace WebTruyen.API.Controllers
             return Ok(await _comic.GetComics());
         }
 
-        // GET: api/Comics/5
+        // GET: api/Comics/xxx-xxx-xxx
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<ComicVM>> GetComic(Guid id)
+        public async Task<ActionResult<ComicVM>> GetComic([FromRoute]Guid id)
         {
             var comic = await _comic.GetComic(id);
 

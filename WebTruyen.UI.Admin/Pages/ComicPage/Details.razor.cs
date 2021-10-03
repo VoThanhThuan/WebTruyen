@@ -41,6 +41,8 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
         private ViewElement _element = new ViewElement();
 
         public Guid _idChapter { get; set; }
+        public bool _IsDeleteChapter { get; set; } = false;
+        public int _targetDelete { get; set; } = 0;
 
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -93,7 +95,8 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
         }
         private async void GetChapters()
         {
-            _chapters = await _ChapterApi.GetChaptersInComic(_comic.Id);
+            _chapters = new List<ChapterVM>();
+            _chapters = (await _ChapterApi.GetChaptersInComic(_comic.Id)).OrderByDescending(x => x.Ordinal).ToList();
             StateHasChanged();
 
         }
@@ -101,22 +104,43 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
         private async void GetPages(Guid idChapter)
         {
             _idChapter = idChapter;
-            _pages = await _PageApi.GetPagesInChapter(idChapter);
-            foreach (var page in _pages)
+
+            if (!_IsDeleteChapter)
             {
-                page.Image = await _image.GetImageFromUrl(page.Image);
-                StateHasChanged();
+                _pages = await _PageApi.GetPagesInChapter(idChapter);
+                foreach (var page in _pages)
+                {
+                    page.Image = await _image.GetImageFromUrl(page.Image);
+                    StateHasChanged();
+
+                }
+            }
+            else
+            {
 
             }
+
         }
 
         async Task ResultAlert()
         {
             _element.Apiresult = 0;
-            _element.Apiresult = await _ComicApi.DeleteComic(_comic.Id);
             StateHasChanged();
-            await Task.Delay(500);
-            _navigationManager.NavigateTo("comic");
+            switch (_targetDelete)
+            {
+                case 0:
+                    _element.Apiresult = await _ComicApi.DeleteComic(_comic.Id);
+                    StateHasChanged();
+                    await Task.Delay(500);
+                    _navigationManager.NavigateTo("comic");
+                    break;
+                case 1:
+                    _element.Apiresult = await _ChapterApi.DeleteChapter(_idChapter);
+                    StateHasChanged();
+                    GetChapters();
+                    break;
+            }
+
         }
 
         #endregion
@@ -221,6 +245,28 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
             StateHasChanged();
         }
 
+        void OnDeleteChapter()
+        {
+            _IsDeleteChapter = !_IsDeleteChapter;
+            _targetDelete = 1;
+            if (_IsDeleteChapter)
+            {
+                _element.btnchapter = "btn-primary";
+                _element.data_bs_target = "#POP-alert";
+                _element.data_bs_toggle = "modal";
+            }
+            else
+            {
+                _element.btnchapter = "btn-outline-primary";
+                _element.data_bs_target = "#offcanvasBottom";
+                _element.data_bs_toggle = "offcanvas";
+
+            }
+
+            StateHasChanged();
+
+        }
+
         #endregion
 
 
@@ -236,6 +282,11 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
             public List<(int index, bool check, GenreVM value)> GenreVM { get; set; } = new List<(int index, bool check, GenreVM value)>();
             public string AllGenreChoose { get; set; } = "";
             public string ContentAlert { get; set; } = "";
+
+            //atributte của button chapter
+            public string btnchapter { get; set; } = "btn-outline-primary";
+            public string data_bs_target { get; set; } = "#offcanvasBottom";
+            public string data_bs_toggle { get; set; } = "offcanvas";
 
         }
     }

@@ -152,12 +152,13 @@ namespace WebTruyen.API.Repository.Chapter
             var listImage = _context.Pages.Where(x => x.IdChapter == idChapter);
             if (!listImage.Any())
             {
-                foreach (var item in listImage)
-                {
-                    await _storage.DeleteFileAsync(item.Image, security: true);
-                    _context.Pages.Remove(item);
+                //foreach (var item in listImage)
+                //{
+                //    await _storage.DeleteFileAsync(item.Image, security: true);
+                //    _context.Pages.Remove(item);
 
-                }
+                //}
+                _context.Pages.RemoveRange(listImage);
                 await _context.SaveChangesAsync();
             }
             //xóa report =========================================================================================
@@ -203,9 +204,13 @@ namespace WebTruyen.API.Repository.Chapter
                 return StatusCodes.Status404NotFound;
             }
 
+            //đường dẫn thư mục cho chap 
+            var path = $@"comic-collection/{chapter.IdComic}/chapter{chapter.Ordinal}";
+            //Xóa folder chứa hình của chapter
+            await _storage.DeleteFolderAsync(path, security: true);
+
             //Xóa các bảng kết nối với chapter
             await DeleteForeignKey(chapter.Id);
-
 
             //Xóa chapter =========================================================================================
             _context.Chapters.Remove(chapter);

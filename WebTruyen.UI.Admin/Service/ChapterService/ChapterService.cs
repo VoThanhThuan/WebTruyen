@@ -32,9 +32,10 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
             _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
         }
 
-        public Task<int> DeleteChapter(Guid id)
+        public async Task<int> DeleteChapter(Guid id)
         {
-            throw new NotImplementedException();
+            await GetSession();
+            return (int)(await _http.DeleteAsync($"api/Chapters/{id}")).StatusCode;
         }
 
         public async Task<ChapterVM> GetChapter(Guid id)
@@ -98,27 +99,64 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
 
             var requestContent = new MultipartFormDataContent();
 
-            if (images != null)
-            {
-                foreach (var image in images)
-                {
-                    var bytes = new ByteArrayContent(image.image);
-
-                    requestContent.Add(bytes, "pages", image.nameFile);
-
-                }
-            }
-
             requestContent.Add(new StringContent(chapter.Id.ToString()), "Id");
             requestContent.Add(new StringContent(chapter.Name), "Name");
             requestContent.Add(new StringContent(chapter.Ordinal.ToString(CultureInfo.InvariantCulture)), "Ordinal");
             requestContent.Add(new StringContent(chapter.IdComic.ToString()), "IdComic");
             requestContent.Add(new StringContent(chapter.IsLock.ToString()), "IsLock");
 
-            var response = await _http.PostAsync($"/api/Chapters", requestContent);
-            if(response.IsSuccessStatusCode)
-                return (response.StatusCode, await response.Content.ReadFromJsonAsync<ChapterVM>());
-            return (response.StatusCode, null);
+
+            var response = new HttpResponseMessage();
+            var resultPost = new ChapterVM();
+            if (images != null)
+            {
+                if (images.Count > 40)
+                {
+                    var i = 0;
+                    var j = 0;
+
+                    var bytes = new ByteArrayContent(images[i].image);
+                    requestContent.Add(bytes, "pages", images[i].nameFile);
+
+                    response = await _http.PostAsync($"/api/Chapters", requestContent);
+
+                    if (!response.IsSuccessStatusCode) return (response.StatusCode, resultPost);
+                    requestContent = new MultipartFormDataContent();
+                    resultPost = await response.Content.ReadFromJsonAsync<ChapterVM>();
+                    for (i = 1; i < images.Count; i++)
+                    {
+                        bytes = new ByteArrayContent(images[i].image);
+                        requestContent.Add(bytes, "pages", images[i].nameFile);
+
+                        ++j;
+
+                        if (j < 40) continue;
+                        var resultContinue = await _http.PostAsync($"/api/Chapters/ContinuePostChapter/{resultPost.Id}", requestContent);
+                        j = 0;
+
+                        requestContent = new MultipartFormDataContent();
+
+                        if (!resultContinue.IsSuccessStatusCode)
+                            return (resultContinue.StatusCode, null);
+                    }
+
+                }
+                else
+                {
+                    foreach (var image in images)
+                    {
+                        var bytes = new ByteArrayContent(image.image);
+
+                        requestContent.Add(bytes, "pages", image.nameFile);
+
+                    }
+                    response = await _http.PostAsync($"/api/ContinuePostChapter", requestContent);
+                    resultPost = await response.Content.ReadFromJsonAsync<ChapterVM>();
+                }
+
+            }
+
+            return (response.StatusCode, resultPost);
         }
     }
 }

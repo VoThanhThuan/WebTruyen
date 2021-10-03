@@ -250,6 +250,7 @@ namespace WebTruyen.API.Repository.Page
             return StatusCodes.Status200OK;
         }
 
+
         public async Task<int> DeletePage(Guid id)
         {
             var page = await _context.Pages.FindAsync(id);
@@ -269,6 +270,7 @@ namespace WebTruyen.API.Repository.Page
         {
             return _context.Pages.Any(e => e.Id == id);
         }
+
 
     }
 }

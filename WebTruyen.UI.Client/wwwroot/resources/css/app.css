@@ -1,3 +1,16 @@
+﻿/*Font chữ*/
+@font-face {
+    font-family: "GGSans";
+    src: url(../font/GoogleSansText-Regular.ttf) format("truetype");
+}
+
+* {
+    font-family: "GGSans" !important;
+    font-weight: normal;
+    font-style: normal;
+}
+/* End [Font chữ] */
+
 body {
     background-color: var(--bg);
     color: var(--fg);

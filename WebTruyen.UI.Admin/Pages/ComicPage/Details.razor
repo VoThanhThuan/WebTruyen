@@ -94,7 +94,7 @@ else
                         </ul>
                         <div class="card-body d-flex justify-content-between">
                             <button type="button" class="btn btn-primary" @onclick=OpenUpdate>@_element.TextButtonUpdate</button>
-                            <a href="javascript:void(0)" class="card-link text-danger" data-bs-toggle="modal" data-bs-target="#POP-alert" @onclick='() => _element.ContentAlert = "Bạn Thực Sự Muốn Xóa?"'>Xóa</a>
+                            <a href="javascript:void(0)" class="card-link text-danger" data-bs-toggle="modal" data-bs-target="#POP-alert" @onclick='() => { _element.ContentAlert = "Bạn Thực Sự Muốn Xóa?"; _targetDelete = 0; }'>Xóa</a>
                         </div>
                     </div>
                     <!--End Card info-->
@@ -146,6 +146,10 @@ else
 
                 <div class="col" style="min-width: 18rem;">
                     <a class="btn btn-outline-primary mb-2 m-1" href="./chapter?comic=@_comic.Id"><i class="far fa-plus"></i> Thêm Chap</a>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @onclick="OnDeleteChapter">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Xóa Chap</label>
+                    </div>
                     <div class="flex-wrap">
                         <!--button call offcanvas-bottom -->
                         <!--Chapter -->
@@ -157,7 +161,7 @@ else
                         {
                             foreach (var chapter in _chapters)
                             {
-                                <button type="button" class="btn btn-outline-primary m-1" @onclick="() => GetPages(chapter.Id)" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">Chap @chapter.Ordinal</button>
+                                <button type="button" class="btn m-1 @_element.btnchapter " @onclick="() => GetPages(chapter.Id)" data-bs-toggle="@_element.data_bs_toggle" data-bs-target="@_element.data_bs_target" aria-controls="offcanvasBottom">Chap @chapter.Ordinal</button>
                             }
                         }
 
