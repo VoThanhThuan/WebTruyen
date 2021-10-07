@@ -3,10 +3,54 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebTruyen.Library.Migrations
 {
-    public partial class wt1 : Migration
+    public partial class db1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AppRoleClaim",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppRoleClaim", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppUserClaim",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppUserClaim", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppUserLogin",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProviderKey = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppUserLogin", x => x.UserId);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AppUserRole",
                 columns: table => new
@@ -20,17 +64,33 @@ namespace WebTruyen.Library.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AppUserToken",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppUserToken", x => x.UserId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Comic",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NameAlias = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AnotherNameOfComic = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Author = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    Views = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: true),
+                    Views = table.Column<int>(type: "int", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Thumbnail = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Thumbnail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateUpdate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
                 },
                 constraints: table =>
                 {
@@ -72,9 +132,9 @@ namespace WebTruyen.Library.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Nickname = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Dob = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Dob = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Avatar = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    sex = table.Column<bool>(type: "bit", nullable: true),
+                    sex = table.Column<bool>(type: "bit", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Fanpage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -102,8 +162,11 @@ namespace WebTruyen.Library.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Ordinal = table.Column<float>(type: "real", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DateTimeUp = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Views = table.Column<int>(type: "int", nullable: false),
+                    IsLock = table.Column<bool>(type: "bit", nullable: false),
                     IdComic = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -207,7 +270,8 @@ namespace WebTruyen.Library.Migrations
                 columns: table => new
                 {
                     IdComic = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IdUser = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    IdUser = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LastReadChapter = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -256,12 +320,12 @@ namespace WebTruyen.Library.Migrations
                 {
                     IdUser = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IdChapter = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     ComicId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NewComicAnnouncement", x => new { x.IdUser, x.IdChapter });
+                    table.PrimaryKey("PK_NewComicAnnouncement", x => new { x.IdChapter, x.IdUser });
                     table.ForeignKey(
                         name: "FK_NewComicAnnouncement_Chapter_IdChapter",
                         column: x => x.IdChapter,
@@ -288,7 +352,6 @@ namespace WebTruyen.Library.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsLink = table.Column<bool>(type: "bit", nullable: false),
                     SortOrder = table.Column<int>(type: "int", nullable: false),
                     IdChapter = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -375,9 +438,9 @@ namespace WebTruyen.Library.Migrations
                 column: "ComicId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NewComicAnnouncement_IdChapter",
+                name: "IX_NewComicAnnouncement_IdUser",
                 table: "NewComicAnnouncement",
-                column: "IdChapter");
+                column: "IdUser");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Page_IdChapter",
@@ -398,7 +461,19 @@ namespace WebTruyen.Library.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AppRoleClaim");
+
+            migrationBuilder.DropTable(
+                name: "AppUserClaim");
+
+            migrationBuilder.DropTable(
+                name: "AppUserLogin");
+
+            migrationBuilder.DropTable(
                 name: "AppUserRole");
+
+            migrationBuilder.DropTable(
+                name: "AppUserToken");
 
             migrationBuilder.DropTable(
                 name: "Bookmark");

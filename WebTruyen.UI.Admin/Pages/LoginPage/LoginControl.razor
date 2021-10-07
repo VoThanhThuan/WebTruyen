@@ -17,6 +17,10 @@
             <div class="d-flex justify-content-center align-items-center">
                 <div class="rounded-3 bg-white">
                     <div class="m-5" style="width: 396px;">
+                        @if (!_SignInSuccess)
+                        {
+                            <span class="text-danger">Tài khoản hoặc mật khẩu sai!</span>
+                        }
                         <EditForm Model="@_loginRequest" OnSubmit="@SignIn">
                             <ChildContent Context="another_name">
                                 <div class="form-floating mb-3">
@@ -52,7 +56,7 @@
     private SystemConstants scs = new SystemConstants();
 
     public LoginRequest _loginRequest { get; set; } = new LoginRequest();
-
+    public bool _SignInSuccess { get; set; } = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -70,6 +74,11 @@
             await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticated(token);
             StateHasChanged();
             _navigationManager.NavigateTo("/", forceLoad: true);
+        }
+        else
+        {
+            _SignInSuccess = false;
+            StateHasChanged();
         }
     }
 

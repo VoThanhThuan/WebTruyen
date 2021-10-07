@@ -10,15 +10,15 @@ using WebTruyen.Library.Data;
 namespace WebTruyen.Library.Migrations
 {
     [DbContext(typeof(ComicDbContext))]
-    [Migration("20210804154233_wt7")]
-    partial class wt7
+    [Migration("20211007152201_db1")]
+    partial class db1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.8")
+                .HasAnnotation("ProductVersion", "5.0.10")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -118,23 +118,25 @@ namespace WebTruyen.Library.Migrations
 
             modelBuilder.Entity("WebTruyen.Library.Entities.Announcement", b =>
                 {
-                    b.Property<Guid>("IdUser")
+                    b.Property<Guid>("IdChapter")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("IdChapter")
+                    b.Property<Guid>("IdUser")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("ComicId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<bool>("IsRead")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
-                    b.HasKey("IdUser", "IdChapter");
+                    b.HasKey("IdChapter", "IdUser");
 
                     b.HasIndex("ComicId");
 
-                    b.HasIndex("IdChapter");
+                    b.HasIndex("IdUser");
 
                     b.ToTable("NewComicAnnouncement");
                 });
@@ -196,6 +198,11 @@ namespace WebTruyen.Library.Migrations
 
                     b.Property<string>("Author")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateUpdate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -305,6 +312,9 @@ namespace WebTruyen.Library.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("IdComic")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("LastReadChapter")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("IdUser", "IdComic");
@@ -455,7 +465,7 @@ namespace WebTruyen.Library.Migrations
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("sex")
+                    b.Property<bool>("sex")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");

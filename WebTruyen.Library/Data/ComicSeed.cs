@@ -60,15 +60,17 @@ namespace WebTruyen.Library.Data
                     NormalizedUserName = "ADMIN",
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
-                user.PasswordHash = _passwordHasher.HashPassword(user, "Admin123$");
+                user.PasswordHash = _passwordHasher.HashPassword(user, "admin");
                 context.Users.Add(user);
+                await context.SaveChangesAsync();
 
-                var modelBuilder = new ModelBuilder();
-                modelBuilder.Entity<IdentityUserRole<Guid>>().HasData(new IdentityUserRole<Guid>
+                context.Add(new IdentityUserRole<Guid>
                 {
                     RoleId = ra,
-                    UserId = idu
+                    UserId = idu,
                 });
+                await context.SaveChangesAsync();
+
             }
 
 

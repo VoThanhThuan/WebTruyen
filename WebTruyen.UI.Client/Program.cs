@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Blazored.SessionStorage;
+using WebTruyen.UI.Client.Service.ChapterService;
 using WebTruyen.UI.Client.Service.ComicService;
 
 namespace WebTruyen.UI.Client
@@ -25,6 +26,7 @@ namespace WebTruyen.UI.Client
             builder.Services.AddBlazoredSessionStorage();
 
             builder.Services.AddTransient<IComicApiClient, ComicApiClient>();
+            builder.Services.AddTransient<IChapterApiClient, ChapterApiClient>();
 
             await builder.Build().RunAsync();
         }
