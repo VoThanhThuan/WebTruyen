@@ -9,7 +9,7 @@ namespace WebTruyen.API.Repository.Comic
 {
     public interface IComicService
     {
-        public Task<IEnumerable<ComicVM>> GetComics();
+        public Task<IEnumerable<ComicVM>> GetComics(int skip = 0, int take = 50);
         public Task<ComicVM> GetComic(Guid id);
         public Task<ComicVM> GetComic(string nameAlias);
         public Task<bool> PutComic(Guid id, ComicRequest request);

@@ -1,15 +1,13 @@
-﻿/*Font chữ*/
 @font-face {
     font-family: "GGSans";
-    src: url(../font/GoogleSansText-Regular.ttf) format("truetype");
+    src: url(./font/GoogleSansText-Regular.ttf) format("truetype");
 }
 
-* {
-    font-family: "GGSans" !important;
+html {
+    font-family: "GGSans";
     font-weight: normal;
     font-style: normal;
 }
-/* End [Font chữ] */
 
 body {
     background-color: var(--bg);
@@ -24,9 +22,11 @@ a {
     background-color: transparent;
     text-decoration: none;
 }
-.border-bottom {
-    border-bottom: 1px solid var(--bg-info) !important;
+
+ul {
+    list-style: none;
 }
+
 
 /* nav */
 
@@ -75,9 +75,9 @@ main {
 }
 
 .card-info img {
-    object-fit: cover;
-    border-radius: 0.5rem;
-    width: 100%;
+        object-fit: cover;
+        border-radius: 0.5rem;
+        width: 100%;
 }
 
 .card-info .title {
@@ -101,6 +101,10 @@ main {
     display: -webkit-box;
 }
 
+.info-name {
+    margin-left: 5px;
+}
+
 
 /* End card */
 
@@ -115,10 +119,15 @@ main {
     color: blue;
 }
 
-.chapnew i {
-    font-size: 13px;
-    text-align: right;
-    margin: auto;
+#chapter-content {
+    width: 100%;
+}
+
+#chapter-content img {
+    max-width: 100%;
+    display: block;
+    margin: 0px auto;
+    min-width: 80%;
 }
 
 
@@ -153,6 +162,63 @@ main {
 
 
 /* End Quick class */
+
+
+/* Đặc tính */
+
+.feature-section {
+    margin-bottom: 20px;
+}
+
+.feature-section .series-name {
+    display: block;
+    font-weight: 700;
+    font-size: 26px;
+}
+
+
+/* End Đặc tính */
+
+
+/* List chapter */
+
+ul.list-chapters {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+ul.list-chapters li {
+    padding: 5px 10px;
+    position: relative;
+}
+
+ul.list-chapters li:hover {
+    background-color: var(--bg-hover);
+}
+
+ul.list-chapters li a .chapter-name {
+    padding-right: 86px;
+}
+
+ul.list-chapters li a .chapter-time {
+    font-size: 14px;
+    color: #aaa;
+    position: absolute;
+    right: 10px;
+    top: 4px;
+}
+
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* End List chapter */
 
 
 /* Responsive */
@@ -324,6 +390,14 @@ main {
     .g-xs-5,
     .gy-xs-5 {
         --bs-gutter-y: 3rem;
+    }
+}
+
+@media only screen and (max-width: 787px) {
+    .feature-section .series-cover {
+        width: 140px;
+        display: block;
+        margin: 0 auto;
     }
 }
 

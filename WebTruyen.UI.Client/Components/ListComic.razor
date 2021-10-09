@@ -1,0 +1,106 @@
+﻿@using WebTruyen.Library.Entities.ViewModel
+@using WebTruyen.UI.Client.Service.ChapterService
+@using WebTruyen.UI.Client.Service.ComicService
+<div class="col-lg-8" name="list-truyen">
+    <div class="content p-2 rounded-5">
+        <div class="">
+            <div class="rounded-5 p-2 border-bottom">
+                <a class="navbar-brand" href="#">Truyện mới</a>
+            </div>
+        </div>
+        <div class="m-2">
+            <div class="row row-cols-2 row-cols-xs-1 row-cols-sm-3 row-cols-md-4 g-3 gy-5">
+                
+                @foreach (var item in _listComic)
+                {
+                    <div class="col">
+                        <div class="card card-info shadow-sm">
+                            <a href="/@item.comic.NameAlias">
+                                <img src="@item.comic.Thumbnail" alt="@item.comic.NameAlias"/>
+                            </a>
+                            <div class="p-1">
+                                <div class="fs-5 title">@item.comic.Name</div>
+                                <div class="chapnew mt-2">
+                                    @foreach (var chapter in item.chapters)
+                                    {
+                                        <div class="d-flex justify-content-between">
+                                            <a class="col" href="#">Chapter @chapter.Ordinal</a> 
+                                            <span class="col fw-lighter text-end">@CalculateRelativeTime(chapter.DateTimeUp)</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+@code {
+
+    [Inject] IComicApiClient _comicApi { get; set; }
+    [Inject] IChapterApiClient _chapterApi { get; set; }
+
+    private List<(ComicVM comic, List<ChapterVM> chapters)> _listComic = new List<(ComicVM comic, List<ChapterVM> chapters)>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var comics = await _comicApi.GetComics();
+            foreach (var comic in comics)
+            {
+                var chapters = await _chapterApi.GetChaptersInComic(comic.Id);
+                _listComic.Add((comic, chapters));
+            }
+            StateHasChanged();
+        }
+    }
+
+    string CalculateRelativeTime(DateTime dataTime)
+    {
+        const int SECOND = 1;
+        const int MINUTE = 60 * SECOND;
+        const int HOUR = 60 * MINUTE;
+        const int DAY = 24 * HOUR;
+        const int MONTH = 30 * DAY;
+
+        var ts = DateTime.Now.Subtract(dataTime); 
+        var delta = Math.Abs(ts.TotalSeconds);
+
+        switch (delta)
+        {
+            case < 1 * MINUTE:
+                return ts.Seconds == 1 ? "one second ago" : ts.Seconds + " seconds ago";
+            case < 2 * MINUTE:
+                return "a minute ago";
+            case < 45 * MINUTE:
+                return ts.Minutes + " minutes ago";
+            case < 90 * MINUTE:
+                return "an hour ago";
+            case < 24 * HOUR:
+                return ts.Hours + " hours ago";
+            case < 48 * HOUR:
+                return "yesterday";
+            case < 30 * DAY:
+                return ts.Days + " days ago";
+            case < 12 * MONTH:
+            {
+                var months = Convert.ToInt32(Math.Floor((double)ts.Days / 30));
+                return months <= 1 ? "one month ago" : months + " months ago";
+            }
+            default:
+            {
+                var years = Convert.ToInt32(Math.Floor((double)ts.Days / 365));
+                return years <= 1 ? "one year ago" : years + " years ago";
+            }
+        }
+    }
+
+}

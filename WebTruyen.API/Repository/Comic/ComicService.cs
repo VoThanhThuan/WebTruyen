@@ -25,9 +25,9 @@ namespace WebTruyen.API.Repository.Comic
             _storageService = storageService;
             _chapterService = chapterService;
         }
-        public async Task<IEnumerable<ComicVM>> GetComics()
+        public async Task<IEnumerable<ComicVM>> GetComics(int skip = 0, int take = 50)
         {
-            return await _context.Comics.OrderByDescending(x => x.DateUpdate).Select(x => x.ToViewModel()).ToListAsync();
+            return await _context.Comics.OrderByDescending(x => x.DateUpdate).Skip(skip).Take(50).Select(x => x.ToViewModel()).ToListAsync();
         }
 
         public async Task<ComicVM> GetComic(Guid id)

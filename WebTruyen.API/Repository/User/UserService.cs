@@ -43,9 +43,9 @@ namespace WebTruyen.API.Repository.User
             _roleManager = roleManager;
             _config = config;
         }
-        public async Task<IEnumerable<UserVM>> GetUsers()
+        public async Task<IEnumerable<UserVM>> GetUsers(int skip = 0, int take = 20)
         {
-            var users = await _context.Users.Select(x => x).ToListAsync();
+            var users = await _context.Users.Skip(skip).Take(take).Select(x => x).ToListAsync();
             var uservm = new List<UserVM>();
             foreach (var user in users)
             {

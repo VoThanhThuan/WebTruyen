@@ -9,7 +9,7 @@ namespace WebTruyen.API.Repository.User
 {
     public interface IUserService
     {
-        public Task<IEnumerable<UserVM>> GetUsers();
+        public Task<IEnumerable<UserVM>> GetUsers(int skip = 0, int take = 20);
         public Task<string> Authenticate(LoginRequest request);
         public Task<UserVM> GetUserFromAccessToken(string accessToken);
         public Task<UserVM> GetUser(Guid id);
