@@ -80,11 +80,16 @@ namespace WebTruyen.API.Repository.Chapter
             }
 
             chapter.Name = string.IsNullOrEmpty(request.Name) ? chapter.Name : request.Name;
+            chapter.IsLock = request.IsLock ? request.IsLock : chapter.IsLock;
 
             //Tạo file xác định chapter khóa
-            if (chapter.IsLock && !_storage.FileExists($@"{path}/chapter.isLock", security: true))
+            if (request.IsLock && !_storage.FileExists($@"{path}/chapter.isLock", security: true))
             {
                 _storage.CreateFile($@"{path}/chapter.isLock", security: true);
+            }
+            else
+            {
+               await _storage.DeleteFileAsync($@"{path}/chapter.isLock", security: true);
             }
 
             _context.Entry(chapter).State = EntityState.Modified;

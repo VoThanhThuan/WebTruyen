@@ -48,6 +48,7 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Chapters/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ChapterVM>> GetChapter(Guid id)
         {
             var result = await _chapter.GetChapter(id);

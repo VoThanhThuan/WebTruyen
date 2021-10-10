@@ -53,8 +53,8 @@ namespace WebTruyen.API.Controllers
             if (_storage.FileExists($@"{folder}/chapter.isLock", security: true))
             {
                 if(check)
-                    return PhysicalFile(Path.Combine(_env.ContentRootPath, "MyStaticFiles", "Psyduck-image-lock.png"), "image/jpeg");
-                return PhysicalFile(filePath, "image/jpeg");
+                    return PhysicalFile(filePath, "image/jpeg");
+                return PhysicalFile(Path.Combine(_env.ContentRootPath, "MyStaticFiles", "Psyduck-image-lock.png"), "image/jpeg");
             }
             else
             {

@@ -138,7 +138,7 @@ else
                                 @foreach (var chap in _Chapters)
                                 {
                                     <li>
-                                        <a href="#" target="_blank" title="Chapter 35">
+                                        <a href="/read/@chap.Id" target="_blank" title="Chapter 35">
                                             <div class="chapter-name text-truncate"> Chapter @chap.Ordinal @chap.Name</div>
                                             <div class="chapter-time">@chap.DateTimeUp</div>
                                         </a>
@@ -173,11 +173,13 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender) return;
+        if (firstRender)
+        {
+            Console.WriteLine(ComicName);
+            await LoadComic();
+            await LoadChapters(_Comic.Id);
+        }
 
-        Console.WriteLine(ComicName);
-        await LoadComic();
-        await LoadChapters(_Comic.Id);
 
     }
 

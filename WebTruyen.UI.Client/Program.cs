@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using Blazored.SessionStorage;
 using WebTruyen.UI.Client.Service.ChapterService;
 using WebTruyen.UI.Client.Service.ComicService;
+using WebTruyen.UI.Client.Service.GenreService;
+using WebTruyen.UI.Client.Service.ImageService;
+using WebTruyen.UI.Client.Service.PageService;
 
 namespace WebTruyen.UI.Client
 {
@@ -27,6 +30,9 @@ namespace WebTruyen.UI.Client
 
             builder.Services.AddTransient<IComicApiClient, ComicApiClient>();
             builder.Services.AddTransient<IChapterApiClient, ChapterApiClient>();
+            builder.Services.AddTransient<IPageService, PageService>();
+            builder.Services.AddTransient<IGenreService, GenreService>();
+            builder.Services.AddTransient<IImageService, ImageService>();
 
             await builder.Build().RunAsync();
         }

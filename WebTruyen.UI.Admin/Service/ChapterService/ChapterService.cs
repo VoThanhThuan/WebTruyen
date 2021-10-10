@@ -87,6 +87,7 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
             requestContent.Add(new StringContent(chapter.Name??""), "Name");
             requestContent.Add(new StringContent(chapter.Ordinal.ToString(CultureInfo.InvariantCulture)), "Ordinal");
             requestContent.Add(new StringContent(chapter.IdComic.ToString()), "IdComic");
+            requestContent.Add(new StringContent(chapter.IsLock.ToString()), "IsLock");
 
             var response = await _http.PutAsync($"/api/Chapters/{id}", requestContent);
             return (int)response.StatusCode;
