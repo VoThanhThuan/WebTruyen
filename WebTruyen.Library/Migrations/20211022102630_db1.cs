@@ -229,43 +229,6 @@ namespace WebTruyen.Library.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Comments",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DateTimeUp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Chapter = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IdComic = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IdUser = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ComicId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IdCommentReply = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CommentReplyId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Comments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Comments_Comic_ComicId",
-                        column: x => x.ComicId,
-                        principalTable: "Comic",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Comments_Comments_CommentReplyId",
-                        column: x => x.CommentReplyId,
-                        principalTable: "Comments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Comments_User_UserId",
-                        column: x => x.UserId,
-                        principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "HistoryRead",
                 columns: table => new
                 {
@@ -308,6 +271,48 @@ namespace WebTruyen.Library.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TranslationOfUser_User_IdUser",
+                        column: x => x.IdUser,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Comment",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DateTimeUp = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Level = table.Column<int>(type: "int", nullable: false),
+                    IdCommentReply = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IdComic = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IdChapter = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IdUser = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CommentReplyId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comment", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Comment_Chapter_IdChapter",
+                        column: x => x.IdChapter,
+                        principalTable: "Chapter",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Comment_Comic_IdComic",
+                        column: x => x.IdComic,
+                        principalTable: "Comic",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Comment_Comment_CommentReplyId",
+                        column: x => x.CommentReplyId,
+                        principalTable: "Comment",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Comment_User_IdUser",
                         column: x => x.IdUser,
                         principalTable: "User",
                         principalColumn: "Id",
@@ -413,19 +418,24 @@ namespace WebTruyen.Library.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_ComicId",
-                table: "Comments",
-                column: "ComicId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Comments_CommentReplyId",
-                table: "Comments",
+                name: "IX_Comment_CommentReplyId",
+                table: "Comment",
                 column: "CommentReplyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_UserId",
-                table: "Comments",
-                column: "UserId");
+                name: "IX_Comment_IdChapter",
+                table: "Comment",
+                column: "IdChapter");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comment_IdComic",
+                table: "Comment",
+                column: "IdComic");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comment_IdUser",
+                table: "Comment",
+                column: "IdUser");
 
             migrationBuilder.CreateIndex(
                 name: "IX_HistoryRead_IdComic",
@@ -482,7 +492,7 @@ namespace WebTruyen.Library.Migrations
                 name: "ComicInGenre");
 
             migrationBuilder.DropTable(
-                name: "Comments");
+                name: "Comment");
 
             migrationBuilder.DropTable(
                 name: "HistoryRead");

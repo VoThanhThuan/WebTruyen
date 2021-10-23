@@ -167,6 +167,13 @@ namespace WebTruyen.API.Repository.Comic
                 _context.HistoryReads.RemoveRange(history);
             }
 
+            // Xóa comment
+            var comment = await _context.Comments.Where(x => x.IdComic == id).ToListAsync();
+            if (!comment.Any())
+            {
+                _context.Comments.RemoveRange(comment);
+            }
+
             var path = $@"comic-collection/{comic.Id}";
             //Xóa Comic
             var resultRemove = await _storageService.DeleteFolderAsync(path, security: true);

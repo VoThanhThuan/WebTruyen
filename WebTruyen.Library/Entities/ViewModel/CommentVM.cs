@@ -11,21 +11,26 @@ namespace WebTruyen.Library.Entities.ViewModel
             {
                 Id = Id,
                 DateTimeUp = DateTimeUp,
-                Chapter = Chapter,
+                IdCommentReply = IdCommentReply,
+                Level = Level,
+
                 IdComic = IdComic,
                 IdUser = IdUser,
-                IdCommentReply = IdCommentReply
+                IdChapter = IdChapter
             };
         }
 
         [Key]
         public Guid Id { get; set; }
         public DateTime DateTimeUp { get; set; } = DateTime.Now;
-        public string Chapter { get; set; } = "";
+        public int Level { get; set; } = 0;
+        public Guid? IdCommentReply { get; set; }
 
-        public Guid IdComic { get; set; }
+
+        public Guid? IdChapter { get; set; }
+        public Guid? IdComic { get; set; }
         public Guid IdUser { get; set; }
-        public Guid IdCommentReply { get; set; }
+        public Comment CommentReply { get; set; }
 
     }
 }

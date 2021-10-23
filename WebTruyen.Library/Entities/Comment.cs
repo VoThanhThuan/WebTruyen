@@ -15,24 +15,29 @@ namespace WebTruyen.Library.Entities
             {
                 Id = Id,
                 DateTimeUp = DateTimeUp,
-                Chapter = Chapter,
+                IdCommentReply = IdCommentReply,
+                Level = Level,
+
                 IdComic = IdComic,
                 IdUser = IdUser,
-                IdCommentReply = IdCommentReply
+                IdChapter = IdChapter
             };
         }
 
         [Key]
         public Guid Id { get; set; }
         public DateTime DateTimeUp { get; set; } = DateTime.Now;
-        public string Chapter { get; set; } = "";
+        public int Level { get; set; } = 0;
+        public Guid? IdCommentReply { get; set; }
 
-        public Guid IdComic { get; set; }
+        public Guid? IdComic { get; set; }
+        public Guid? IdChapter { get; set; }
         public Guid IdUser { get; set; }
-        public Comic Comic { get; set; }
-        public virtual User User { get; set; }
 
-        public virtual Guid IdCommentReply { get; set; }
         public virtual Comment CommentReply { get; set; }
+
+        public virtual Comic Comic { get; set; }
+        public virtual Chapter Chapter { get; set; }
+        public virtual User User { get; set; }
     }
 }

@@ -129,27 +129,34 @@
     {
         if (firstRender)
         {
-            _Chapter = await _chapterApi.GetChapter(Guid.Parse(IdChapter));
-            Console.WriteLine($">>>Trạng thái chap lock: {_Chapter.IsLock}");
-
-            _Comic = await _comicApi.GetComic(_Chapter.IdComic);
-            _Chapters = await _chapterApi.GetChaptersInComic(_Comic.Id);
-
-            if (_Chapter.IsLock)
-            {
-                var page = new PageVM()
-                {
-                    Image = "./resources/img/Psyduck-image-404.png"
-                };
-                _Pages.Add(page);
-                StateHasChanged();
-            }
-            else
-            {
-                await GetPages();
-            }
-
+            await GetDataChapter();
         }
+    }
+
+    async Task GetDataChapter()
+    {
+        _Chapter = await _chapterApi.GetChapter(Guid.Parse(IdChapter));
+        Console.WriteLine($">>>Trạng thái chap lock: {_Chapter.IsLock}");
+
+        _Comic = await _comicApi.GetComic(_Chapter.IdComic);
+        _Chapters = await _chapterApi.GetChaptersInComic(_Comic.Id);
+
+        _Pages = new List<PageVM>();
+
+        if (_Chapter.IsLock)
+        {
+            var page = new PageVM()
+            {
+                Image = "./resources/img/Psyduck-image-404.png"
+            };
+            _Pages.Add(page);
+            StateHasChanged();
+        }
+        else
+        {
+            await GetPages();
+        }
+        StateHasChanged();
     }
 
     #region Giao Tiếp Server
@@ -169,9 +176,10 @@
 
     #region Xử lý dữ liệu
 
-    void SelectedChapter(ChangeEventArgs e)
+    async Task SelectedChapter(ChangeEventArgs e)
     {
         _navigationManager.NavigateTo($"{e.Value}");
+        await GetDataChapter();
     }
 
     #endregion

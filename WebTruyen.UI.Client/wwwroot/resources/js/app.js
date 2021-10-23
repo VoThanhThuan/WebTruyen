@@ -16,12 +16,20 @@ function imgError(image) {
 }
 
 var prevScrollpos = window.pageYOffset;
-window.onscroll = function() {
+window.onscroll = function () {
     var currentScrollPos = window.pageYOffset;
     if (prevScrollpos > currentScrollPos) {
-        document.getElementById("navbar").style.top = "0";
+        $("#navbar").style.top = "0";
+        $$(".pop-menu").forEach(function (el) {
+            el.style.opacity = "100";
+            el.style.visibility = "visible";
+        });
     } else {
-        document.getElementById("navbar").style.top = "-60px";
+        $("#navbar").style.top = "-60px";
+        $$(".pop-menu").forEach(function (el) {
+            el.style.opacity = "0";
+            el.style.visibility = "hidden";
+        });
     }
     prevScrollpos = currentScrollPos;
 }

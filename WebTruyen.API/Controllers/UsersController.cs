@@ -53,25 +53,31 @@ namespace WebTruyen.API.Controllers
         // GET: api/Users/CheckAuthenticate
         [HttpGet("CheckAuthenticate")]
         [AllowAnonymous]
-        public async Task<IActionResult> Authenticate()
+        public async Task<IActionResult> CheckAuthenticate()
         {
             var check = User.Identity.IsAuthenticated;
             if (check) return Ok("User xác thực");
             return NoContent();
         }
 
-        // GET: api/Users
-        [HttpPost("GetUserByAccessToken")]
-        public async Task<ActionResult<UserVM>> GetUserByAccessToken([FromBody] string accessToken)
+        // GET: api/GetUserByAccessToken
+        [HttpGet("GetUserByAccessToken")]
+        [AllowAnonymous]
+        public async Task<ActionResult<UserVM>> GetUserByAccessToken()
         {
-            var user = await _user.GetUserFromAccessToken(accessToken);
+
+            var userID = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userID))
+            {
+                return NoContent();
+            }
+            var user = await _user.GetUser(Guid.Parse(userID));
 
             if (user != null)
             {
-                return user;
+                return Ok(user);
             }
-
-            return null;
+            return NoContent();
         }
 
         // GET: api/Users

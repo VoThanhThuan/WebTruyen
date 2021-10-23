@@ -39,6 +39,8 @@ namespace WebTruyen.Library.Data
 
             modelBuilder.ApplyConfiguration(new ReportConfiguration());
 
+            modelBuilder.ApplyConfiguration(new CommentConfiguration());
+
             modelBuilder.ApplyConfiguration(new TranslationOfUserConfiguration());
             modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("AppUserClaim");
             modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("AppUserRole").HasKey(x => new { x.UserId, x.RoleId });

@@ -56,6 +56,7 @@ namespace WebTruyen.Library.Entities
         public virtual List<Bookmark> Bookmarks { get; set; }
         public virtual List<Announcement> NewComicAnnouncements { get; set; }
         public virtual List<HistoryRead> HistoryReads { get; set; }
+        public virtual List<Comment> Comments { get; set; }
 
     }
 }

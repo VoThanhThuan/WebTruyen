@@ -10,7 +10,7 @@ using WebTruyen.Library.Data;
 namespace WebTruyen.Library.Migrations
 {
     [DbContext(typeof(ComicDbContext))]
-    [Migration("20211007152201_db1")]
+    [Migration("20211022102630_db1")]
     partial class db1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -252,39 +252,38 @@ namespace WebTruyen.Library.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Chapter")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ComicId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("CommentReplyId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("DateTimeUp")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("IdComic")
+                    b.Property<Guid?>("IdChapter")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("IdCommentReply")
+                    b.Property<Guid?>("IdComic")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("IdCommentReply")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("IdUser")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ComicId");
-
                     b.HasIndex("CommentReplyId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("IdChapter");
 
-                    b.ToTable("Comments");
+                    b.HasIndex("IdComic");
+
+                    b.HasIndex("IdUser");
+
+                    b.ToTable("Comment");
                 });
 
             modelBuilder.Entity("WebTruyen.Library.Entities.Genre", b =>
@@ -547,17 +546,25 @@ namespace WebTruyen.Library.Migrations
 
             modelBuilder.Entity("WebTruyen.Library.Entities.Comment", b =>
                 {
-                    b.HasOne("WebTruyen.Library.Entities.Comic", "Comic")
-                        .WithMany()
-                        .HasForeignKey("ComicId");
-
                     b.HasOne("WebTruyen.Library.Entities.Comment", "CommentReply")
                         .WithMany()
                         .HasForeignKey("CommentReplyId");
 
+                    b.HasOne("WebTruyen.Library.Entities.Chapter", "Chapter")
+                        .WithMany("Comments")
+                        .HasForeignKey("IdChapter");
+
+                    b.HasOne("WebTruyen.Library.Entities.Comic", "Comic")
+                        .WithMany("Comments")
+                        .HasForeignKey("IdComic");
+
                     b.HasOne("WebTruyen.Library.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+                        .WithMany("Comments")
+                        .HasForeignKey("IdUser")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Chapter");
 
                     b.Navigation("Comic");
 
@@ -636,6 +643,8 @@ namespace WebTruyen.Library.Migrations
 
             modelBuilder.Entity("WebTruyen.Library.Entities.Chapter", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("NewComicAnnouncements");
 
                     b.Navigation("Pages");
@@ -650,6 +659,8 @@ namespace WebTruyen.Library.Migrations
                     b.Navigation("Chapters");
 
                     b.Navigation("ComicInGenres");
+
+                    b.Navigation("Comments");
 
                     b.Navigation("HistoryReads");
 
@@ -666,6 +677,8 @@ namespace WebTruyen.Library.Migrations
             modelBuilder.Entity("WebTruyen.Library.Entities.User", b =>
                 {
                     b.Navigation("Bookmarks");
+
+                    b.Navigation("Comments");
 
                     b.Navigation("HistoryReads");
 

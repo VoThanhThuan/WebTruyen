@@ -37,6 +37,7 @@ namespace WebTruyen.Library.Entities
         public virtual List<Page> Pages { get; set; }
         public virtual List<Report> Reports { get; set; }
         public virtual List<Announcement> NewComicAnnouncements { get; set; }
+        public virtual List<Comment> Comments { get; set; }
 
     }
 }

@@ -80,7 +80,7 @@ namespace WebTruyen.API.Repository.Chapter
             }
 
             chapter.Name = string.IsNullOrEmpty(request.Name) ? chapter.Name : request.Name;
-            chapter.IsLock = request.IsLock ? request.IsLock : chapter.IsLock;
+            chapter.IsLock = request.IsLock ? true : false;
 
             //Tạo file xác định chapter khóa
             if (request.IsLock && !_storage.FileExists($@"{path}/chapter.isLock", security: true))

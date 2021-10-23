@@ -178,7 +178,8 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
             }
             else
             {
-                _genreRequest.Remove(g.value);
+                var genreRemove = _genreRequest.FirstOrDefault(genreVm => genreVm.Id == g.value.Id);
+                _genreRequest.Remove(genreRemove);
 
                 _element.AllGenreChoose = _element.AllGenreChoose.Replace($"{g.value.Name};", "");
                 StateHasChanged();
@@ -233,14 +234,21 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
             var result = await _genreApi.GetGenres();
 
             var index = 0;
-            foreach (var genreRequest in _genreRequest)
+
+
+            foreach (var genre in result)
             {
-                foreach (var genre in result)
+                var isCheck = false;
+
+                foreach (var genreVm in _genreRequest.Where(genreVm => genre.Id == genreVm.Id))
                 {
-                    _element.GenreVM.Add(genre.Id == genreRequest.Id ? (index, true, genre) : (index, false, genre));
-                    index++;
+                    isCheck = true;
                 }
+
+                _element.GenreVM.Add(isCheck ? (index, true, genre) : (index, false, genre));
+                index++;
             }
+
 
             StateHasChanged();
         }

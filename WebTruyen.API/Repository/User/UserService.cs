@@ -219,6 +219,7 @@ namespace WebTruyen.API.Repository.User
             var roles = await _userManager.GetRolesAsync(user); //lấy quyền người dùng
             var claims = new[]
             {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, string.IsNullOrEmpty(user.Email) ? "" : user.Email),
                 new Claim(ClaimTypes.GivenName, user.Nickname),
                 new Claim(ClaimTypes.Role, string.Join(";", roles)),
