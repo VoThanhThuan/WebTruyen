@@ -16,6 +16,8 @@ namespace WebTruyen.Library.Data.Configurations
             builder.ToTable("Comment");
             builder.HasKey(x => new { x.Id });
 
+            builder.Property(x => x.Content).HasMaxLength(500);
+
             builder.HasOne(x => x.Chapter).WithMany(x => x.Comments).HasForeignKey(x => x.IdChapter);
             builder.HasOne(x => x.Comic).WithMany(x => x.Comments).HasForeignKey(x => x.IdComic);
             builder.HasOne(x => x.User).WithMany(x => x.Comments).HasForeignKey(x => x.IdUser);

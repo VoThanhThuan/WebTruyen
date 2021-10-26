@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using WebTruyen.Library.Entities.ApiModel;
+using System.Diagnostics.CodeAnalysis;
 
-namespace WebTruyen.Library.Entities
+namespace WebTruyen.Library.Entities.ApiModel
 {
-    public class Comment
+    public class CommentAM
     {
-        public CommentAM ToApiModel()
+        public Comment ToComment()
         {
-            return new CommentAM()
+            return new Comment()
             {
                 Id = Id,
                 DateTimeUp = DateTimeUp,
@@ -27,21 +25,18 @@ namespace WebTruyen.Library.Entities
         [Key]
         public Guid Id { get; set; }
         public DateTime DateTimeUp { get; set; } = DateTime.Now;
-
         [Range(0, 3)]
         public int Level { get; set; } = 0;
         public Guid? IdCommentReply { get; set; }
 
-        public string Content { get; set; } = "";
+        [Required]
+        [NotNull]
+        public string Content { get; set; }
 
-        public Guid? IdComic { get; set; }
         public Guid? IdChapter { get; set; }
+        public Guid? IdComic { get; set; }
         public Guid IdUser { get; set; }
 
-        public virtual List<Comment> CommentReply { get; set; } = null;
-
-        public virtual Comic Comic { get; set; }
-        public virtual Chapter Chapter { get; set; }
-        public virtual User User { get; set; }
+        public int TotalCommentChild { get; set; } = 0;
     }
 }

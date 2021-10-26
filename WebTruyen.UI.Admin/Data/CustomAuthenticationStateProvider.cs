@@ -15,7 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using WebTruyen.Library.Entities.Request;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.UI.Admin.Service.UserService;
 
 namespace WebTruyen.UI.Admin.Data
@@ -113,7 +113,7 @@ namespace WebTruyen.UI.Admin.Data
             return principal;
         }
 
-        //public async Task<UserVM> GetUserByAccessTokenAsync(string accessToken)
+        //public async Task<UserAM> GetUserByAccessTokenAsync(string accessToken)
         //{
         //    string serializedRefreshRequest = JsonSerializer.Serialize(accessToken);
 
@@ -128,7 +128,7 @@ namespace WebTruyen.UI.Admin.Data
         //    var responseStatusCode = response.StatusCode;
         //    var responseBody = await response.Content.ReadAsStringAsync();
 
-        //    var returnedUser = JsonSerializer.Deserialize<UserVM>(responseBody);
+        //    var returnedUser = JsonSerializer.Deserialize<UserAM>(responseBody);
 
         //    return await Task.FromResult(returnedUser);
         //}

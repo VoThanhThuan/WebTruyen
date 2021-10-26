@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Repository.Genre;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -25,14 +25,14 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Genres
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GenreVM>>> GetGenres()
+        public async Task<ActionResult<IEnumerable<GenreAM>>> GetGenres()
         {
             return Ok(await _genre.GetGenres());
         }
 
         // GET: api/Genres/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<GenreVM>> GetGenre(int id)
+        public async Task<ActionResult<GenreAM>> GetGenre(int id)
         {
             var result = await _genre.GetGenre(id);
 
@@ -47,7 +47,7 @@ namespace WebTruyen.API.Controllers
         // PUT: api/Genres/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGenre(int id, GenreVM genre)
+        public async Task<IActionResult> PutGenre(int id, GenreAM genre)
         {
             if (id != genre.Id)
             {
@@ -65,7 +65,7 @@ namespace WebTruyen.API.Controllers
         // POST: api/Genres
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Genre>> PostGenre(GenreVM genre)
+        public async Task<ActionResult<Genre>> PostGenre(GenreAM genre)
         {
             await _genre.PostGenre(genre);
 

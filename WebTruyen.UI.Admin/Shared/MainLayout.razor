@@ -48,7 +48,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Console.WriteLine($">>>firstRender: {firstRender}");
+        //Console.WriteLine($">>>firstRender: {firstRender}");
         if (firstRender)
         {
             var http = new HttpClient() { BaseAddress = BaseAddressDefault.Address };

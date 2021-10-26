@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.Library.Entities
 {
     public class Announcement
     {
-        public AnnouncementVM ToViewModel()
+        public AnnouncementAM ToApiModel()
         {
-            return new AnnouncementVM()
+            return new AnnouncementAM()
             {
                 IsRead = IsRead,
                 IdUser = IdUser,

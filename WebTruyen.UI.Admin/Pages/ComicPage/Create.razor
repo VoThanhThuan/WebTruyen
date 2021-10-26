@@ -1,6 +1,6 @@
 ﻿@page "/comic/create"
 @using WebTruyen.UI.Admin.Service.ComicService
-@using WebTruyen.Library.Entities.ViewModel
+@using WebTruyen.Library.Entities.ApiModel;
 @using WebTruyen.Library.Enums
 @using WebTruyen.UI.Admin.Components;
 @using WebTruyen.UI.Admin.RequestClient
@@ -149,9 +149,9 @@ else if (_element.Apiresult != 0)
             </div>
             <div class="modal-body">
                 <div class="d-flex flex-wrap">
-                    @if (_element.GenreVM.Any())
+                    @if (_element.GenreAM.Any())
                     {
-                        foreach (var genre in _element.GenreVM)
+                        foreach (var genre in _element.GenreAM)
                         {
                             <div class="form-check form-switch border border-1 rounded-pill m-1">
                                 <div class="m-1">
@@ -192,7 +192,7 @@ else if (_element.Apiresult != 0)
 
     private ComicRequestClient _comicRequest = new ComicRequestClient();
     private ViewElement _element = new ViewElement();
-    private List<GenreVM> _genreRequest = new List<GenreVM>();
+    private List<GenreAM> _genreRequest = new List<GenreAM>();
 
     public Guid _idChapter { get; set; }
 
@@ -227,14 +227,14 @@ else if (_element.Apiresult != 0)
 
     async void OpenGenre()
     {
-        if (_element.GenreVM.Any()) return;
+        if (_element.GenreAM.Any()) return;
         var result = await _genreApi.GetGenres();
 
         var index = 0;
 
         foreach (var genre in result)
         {
-            _element.GenreVM.Add((index, false, genre));
+            _element.GenreAM.Add((index, false, genre));
             index++;
         }
 
@@ -281,9 +281,9 @@ else if (_element.Apiresult != 0)
         StateHasChanged();
     }
 
-    void AddGenre((int index, bool check, GenreVM value) genre)
+    void AddGenre((int index, bool check, GenreAM value) genre)
     {
-        var g = _element.GenreVM[genre.index];
+        var g = _element.GenreAM[genre.index];
         g.check = !g.check;
         if (g.check)
         {
@@ -299,7 +299,7 @@ else if (_element.Apiresult != 0)
             _element.AllGenreChoose = _element.AllGenreChoose.Replace($"{g.value.Name};", "");
             StateHasChanged();
         }
-        _element.GenreVM[genre.index] = g;
+        _element.GenreAM[genre.index] = g;
     }
 
     #endregion
@@ -314,7 +314,7 @@ else if (_element.Apiresult != 0)
         public string ThumbnailComic { get; set; } = "";
         public int Apiresult { get; set; } = 0;
         public string AllGenreChoose { get; set; } = "";
-        public List<(int index, bool check, GenreVM value)> GenreVM { get; set; } = new List<(int index, bool check, GenreVM value)>();
+        public List<(int index, bool check, GenreAM value)> GenreAM { get; set; } = new List<(int index, bool check, GenreAM value)>();
 
     }
 

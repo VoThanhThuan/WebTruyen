@@ -3,10 +3,9 @@
 @using WebTruyen.UI.Admin.Service.PageService
 @using WebTruyen.UI.Admin.Service.ChapterService
 @using Microsoft.AspNetCore.WebUtilities
-@using WebTruyen.Library.Entities.ViewModel
-@using System.Threading
-@using System.Timers
 @using System.Net
+@using Microsoft.AspNetCore.Components
+@using WebTruyen.Library.Entities.ApiModel
 
 <div>
     <!-- alert -->
@@ -58,14 +57,14 @@
                         </h3>
 
                         <div class="row">
-                            <EditForm Model="@_chapterVm" OnSubmit="@Upload">
+                            <EditForm Model="@_ChapterAM" OnSubmit="@Upload">
                                 <div class="row g-2">
                                     <div class="form-floating mb-3">
-                                        <InputNumber @bind-Value="_chapterVm.Ordinal" type="number" class="form-control" id="floatingInput" placeholder="0" />
+                                        <InputNumber @bind-Value="_ChapterAM.Ordinal" type="number" class="form-control" id="floatingInput" placeholder="0" />
                                         <label for="floatingInput">Số Chap</label>
                                     </div>
                                     <div class="form-floating mb-3">
-                                        <InputText @bind-Value="_chapterVm.Name" type="text" class="form-control" id="floatingInput" placeholder="Tên Chap" />
+                                        <InputText @bind-Value="_ChapterAM.Name" type="text" class="form-control" id="floatingInput" placeholder="Tên Chap" />
                                         <label for="floatingInput">Tên Chap</label>
                                     </div>
 
@@ -97,7 +96,7 @@
                                     }
 
                                     <div class="form-check form-switch d-inline-flex">
-                                        <InputCheckbox class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind-Value="_chapterVm.IsLock"/>
+                                        <InputCheckbox class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind-Value="_ChapterAM.IsLock"/>
                                         <label class="form-check-label" for="flexSwitchCheckDefault">Bật nếu muốn khóa chap này lại</label>
                                     </div>
                                 </div>
@@ -150,9 +149,9 @@
     [Inject] IImageService _image { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
 
-    ChapterVM _chapterVm = new ChapterVM();
+    ChapterAM _ChapterAM = new ChapterAM();
     ViewElement _element = new ViewElement();
-    List<PageVM> _Pages { get; set; } = new List<PageVM>();
+    List<PageAM> _Pages { get; set; } = new List<PageAM>();
 
     List<(byte[] image, string nameFile)> _imageValues = new List<(byte[] image, string nameFile)>();
 
@@ -162,7 +161,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _chapterVm.IdComic = Guid.Empty;
+        _ChapterAM.IdComic = Guid.Empty;
 
         await NavigateToComponent();
 
@@ -197,7 +196,7 @@
         _element.Apiresult = 0;
         if (!_isUpdate)
         {
-            var result = await _ChapterApi.PostChapter(_chapterVm, _imageValues);;
+            var result = await _ChapterApi.PostChapter(_ChapterAM, _imageValues);;
             _element.Apiresult = (int) result.StatusCode;
             StateHasChanged();
             await Task.Delay(500);
@@ -206,7 +205,7 @@
         }
         else
         {
-            _element.Apiresult = await _ChapterApi.PutChapter(Guid.Parse(idChaper), _chapterVm, _imageValues);
+            _element.Apiresult = await _ChapterApi.PutChapter(Guid.Parse(idChaper), _ChapterAM, _imageValues);
             StateHasChanged();
             await Task.Delay(500);
             if (_element.Apiresult == (int)HttpStatusCode.OK)
@@ -219,7 +218,7 @@
         if (e == null) return;
         if (e.FileCount > 100) return;
 
-        _Pages = new List<PageVM>();
+        _Pages = new List<PageAM>();
 
         var imageDataUrl = _image.ImagesToString(e.GetMultipleFiles(100));
 
@@ -232,7 +231,7 @@
         {
             if (!string.IsNullOrEmpty(image.stringValue))
             {
-                _Pages.Add(new PageVM() { Image = image.stringValue });
+                _Pages.Add(new PageAM() { Image = image.stringValue });
                 //Cập nhât UI
                 StateHasChanged();
                 _imageValues.Add(image.image);
@@ -250,17 +249,17 @@
         // Phân tích query
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("comic", out var comic))
         {
-            _chapterVm.IdComic = Guid.Parse((ReadOnlySpan<char>)comic.First());
+            _ChapterAM.IdComic = Guid.Parse((ReadOnlySpan<char>)comic.First());
         }
 
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("idChaper", out var chapter))
         {
             idChaper = chapter.First();
-            _chapterVm = await _ChapterApi.GetChapter(Guid.Parse(idChaper));
+            _ChapterAM = await _ChapterApi.GetChapter(Guid.Parse(idChaper));
         }
 
         //chuyển trang nếu query comic rỗng
-        if (_chapterVm.IdComic == Guid.Empty)
+        if (_ChapterAM.IdComic == Guid.Empty)
         {
             _navigationManager.NavigateTo("comic");
             return;
@@ -268,8 +267,8 @@
         //nếu idChapter rỗng nghĩa là đang tạo chapter mới // tự động đánh số thứ tự chap
         if (string.IsNullOrEmpty(idChaper))
         {
-            var result = await _ChapterApi.GetLastChapter(_chapterVm.IdComic);
-            _chapterVm.Ordinal = result?.Ordinal + 1 ?? 0;
+            var result = await _ChapterApi.GetLastChapter(_ChapterAM.IdComic);
+            _ChapterAM.Ordinal = result?.Ordinal + 1 ?? 0;
             _isUpdate = false;
             StateHasChanged();
         }

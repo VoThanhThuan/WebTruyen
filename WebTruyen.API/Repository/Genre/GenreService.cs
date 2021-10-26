@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.Library.Data;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Repository.Genre
 {
@@ -17,19 +17,19 @@ namespace WebTruyen.API.Repository.Genre
             _context = context;
         }
 
-        public async Task<IEnumerable<GenreVM>> GetGenres()
+        public async Task<IEnumerable<GenreAM>> GetGenres()
         {
-            return await _context.Genres.Select(x => x.ToViewModel()).ToListAsync();
+            return await _context.Genres.Select(x => x.ToApiModel()).ToListAsync();
         }
 
-        public async Task<GenreVM> GetGenre(int id)
+        public async Task<GenreAM> GetGenre(int id)
         {
             var genre = await _context.Genres.FindAsync(id);
 
-            return genre?.ToViewModel();
+            return genre?.ToApiModel();
         }
 
-        public async Task<bool> PutGenre(int id, GenreVM request)
+        public async Task<bool> PutGenre(int id, GenreAM request)
         {
             _context.Entry(request.ToGenre()).State = EntityState.Modified;
 
@@ -52,7 +52,7 @@ namespace WebTruyen.API.Repository.Genre
             return true;
         }
 
-        public async Task<bool> PostGenre(GenreVM request)
+        public async Task<bool> PostGenre(GenreAM request)
         {
             _context.Genres.Add(request.ToGenre());
             await _context.SaveChangesAsync();

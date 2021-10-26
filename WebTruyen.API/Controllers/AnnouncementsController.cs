@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Repository.Announcement;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -25,14 +25,14 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/NewComicAnnouncements
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AnnouncementVM>>> GetAnnouncements()
+        public async Task<ActionResult<IEnumerable<AnnouncementAM>>> GetAnnouncements()
         {
             return Ok(await _announcement.GetAnnouncements());
         }
 
         // GET: api/NewComicAnnouncements/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<AnnouncementVM>> GetAnnouncement(Guid id)
+        public async Task<ActionResult<AnnouncementAM>> GetAnnouncement(Guid id)
         {
             var newComicAnnouncement = await _announcement.GetAnnouncement(id);
 
@@ -47,7 +47,7 @@ namespace WebTruyen.API.Controllers
         // PUT: api/NewComicAnnouncements/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAnnouncement(Guid id, AnnouncementVM announcement)
+        public async Task<IActionResult> PutAnnouncement(Guid id, AnnouncementAM announcement)
         {
             if (id != announcement.IdUser)
             {
@@ -64,7 +64,7 @@ namespace WebTruyen.API.Controllers
         // POST: api/NewComicAnnouncements
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Announcement>> PostAnnouncement(AnnouncementVM announcement)
+        public async Task<ActionResult<Announcement>> PostAnnouncement(AnnouncementAM announcement)
         {
             var result = await _announcement.PostAnnouncement(announcement);
             if (!result)

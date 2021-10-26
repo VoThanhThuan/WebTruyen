@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace WebTruyen.Library.Entities.ViewModel
+namespace WebTruyen.Library.Entities.ApiModel
 {
-    public class BookmarkVM
+    public class BookmarkAM
     {
         public Bookmark ToBookmark()
         {

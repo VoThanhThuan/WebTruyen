@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.UI.Admin.RequestClient
 {
     public class UserRequestClient
     {
-        public void ConverRequest(UserVM user)
+        public void ConverRequest(UserAM user)
         {
             this.Id = user.Id;
             this.Nickname = user.Nickname;

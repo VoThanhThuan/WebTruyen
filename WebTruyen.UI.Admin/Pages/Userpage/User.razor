@@ -2,7 +2,7 @@
 
 @using WebTruyen.UI.Admin.RequestClient
 @using WebTruyen.UI.Admin.Service.UserService
-@using WebTruyen.Library.Entities.ViewModel
+@using WebTruyen.Library.Entities.ApiModel;
 @using WebTruyen.UI.Admin.Components;
 @using WebTruyen.UI.Admin.Service.ImageService
 <h3>User</h3>
@@ -13,7 +13,7 @@
 
 
             <a href="user/create" class="btn btn-info text-decoration-none text-dark"><i class="far fa-plus"></i>Thêm Người Dùng</a>
-            @if (_userVM == null)
+            @if (_UserAM == null)
             {
                 <Loading></Loading>
             }
@@ -38,7 +38,7 @@
 
                         @{
                             var index = 0;
-                            foreach (var user in _userVM)
+                            foreach (var user in _UserAM)
                             {
                                 <tr>
                                     <th scope="row">@(index++)</th>
@@ -69,14 +69,14 @@
     [Inject] private IImageService _Image { get; set; }
 
     private List<UserRequestClient> _userRequest;
-    private List<UserVM> _userVM;
+    private List<UserAM> _UserAM;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
-            _userVM = await _UserApi.GetUsers();
+            _UserAM = await _UserApi.GetUsers();
             StateHasChanged();
 
         }

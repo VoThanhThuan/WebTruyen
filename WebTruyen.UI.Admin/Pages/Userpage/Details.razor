@@ -6,7 +6,7 @@
 @using SixLabors.ImageSharp
 @using SixLabors.ImageSharp.Processing
 @using WebTruyen.Library.Entities
-@using WebTruyen.Library.Entities.ViewModel
+@using WebTruyen.Library.Entities.ApiModel;
 @using WebTruyen.UI.Admin.Service.ImageService
 @using WebTruyen.UI.Admin.Service.UserService
 @using WebTruyen.UI.Admin.RequestClient
@@ -18,7 +18,7 @@
 
 <h3>Details</h3>
 
-@if (_userVM == null)
+@if (_UserAM == null)
 {
     <Loading></Loading>
 }
@@ -70,17 +70,17 @@ else
                     <div class="m-2">
                         <!--Card info-->
                         <div class="card @_element.AnimationScale" style="min-width: 18rem; z-index: 1">
-                            <img src="@_element.Avatar" class="card-img-top mx-auto lazy-loading" alt="@_userVM.Nickname" style="width: 18rem;">
+                            <img src="@_element.Avatar" class="card-img-top mx-auto lazy-loading" alt="@_UserAM.Nickname" style="width: 18rem;">
                             <div class="card-body">
-                                <h5 class="card-title fw-bold">@_userVM.Nickname</h5>
-                                <p class="card-text">@_userVM.Username</p>
+                                <h5 class="card-title fw-bold">@_UserAM.Nickname</h5>
+                                <p class="card-text">@_UserAM.Username</p>
                             </div>
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item"><span class="fw-bold">Giới Tính:</span>@_userVM.sex</li>
-                                <li class="list-group-item"><span class="fw-bold">Ngày Sinh: </span>@_userVM.Dob</li>
-                                <li class="list-group-item"><span class="fw-bold">Email: </span>@_userVM.Email</li>
-                                <li class="list-group-item"><span class="fw-bold">Địa Chỉ: </span>@_userVM.Address</li>
-                                <li class="list-group-item"><span class="fw-bold">Website: </span>@_userVM.Fanpage</li>
+                                <li class="list-group-item"><span class="fw-bold">Giới Tính:</span>@_UserAM.sex</li>
+                                <li class="list-group-item"><span class="fw-bold">Ngày Sinh: </span>@_UserAM.Dob</li>
+                                <li class="list-group-item"><span class="fw-bold">Email: </span>@_UserAM.Email</li>
+                                <li class="list-group-item"><span class="fw-bold">Địa Chỉ: </span>@_UserAM.Address</li>
+                                <li class="list-group-item"><span class="fw-bold">Website: </span>@_UserAM.Fanpage</li>
                             </ul>
                             <div class="card-body d-flex justify-content-between">
                                 <button type="button" class="btn btn-primary" @onclick=OpenUpdate>@_element.TextButtonUpdate</button>
@@ -149,7 +149,7 @@ else
                                                 <option selected>Chọn Quyền Cho Tài Khoản</option>
                                                 @foreach (var role in _roleVM)
                                                 {
-                                                    if (_userVM.RoleName == role.Name)
+                                                    if (_UserAM.RoleName == role.Name)
                                                     {
                                                         <option value="@role.Id" selected>@role.Name</option>
                                                     }
@@ -228,7 +228,7 @@ else
         public string _username { get; set; } = "";
         public Guid _idUser { get; set; } = Guid.Empty;
 
-        private UserVM _userVM = new UserVM();
+        private UserAM _UserAM = new UserAM();
         private List<Role> _roleVM = new List<Role>();
         private UserRequestClient _userRequest = new UserRequestClient();
         private ViewElement _element = new ViewElement();
@@ -249,17 +249,17 @@ else
             {
                 if (_idUser == Guid.Empty)
                     return;
-                _userVM = await _userApi.GetUser(_idUser);
-                if (_userVM is null)
+                _UserAM = await _userApi.GetUser(_idUser);
+                if (_UserAM is null)
                 {
                     _navigationManager.NavigateTo("/user");
                     return;
                 }
-                _userRequest.ConverRequest(_userVM);
+                _userRequest.ConverRequest(_UserAM);
 
                 _roleVM = await _roleApi.GetRoles();
 
-                _element.Avatar = _userVM.Avatar;
+                _element.Avatar = _UserAM.Avatar;
                 StateHasChanged();
             }
 
@@ -277,7 +277,7 @@ else
             _element.IsSubmit = false;
             StateHasChanged();
 
-            var result = await _userApi.PutUser(_userVM.Id, _userRequest);
+            var result = await _userApi.PutUser(_UserAM.Id, _userRequest);
             _element.Apiresult = 0;
             _element.Apiresult = (int)result;
             if (_element.Apiresult >= 200 && _element.Apiresult < 299)

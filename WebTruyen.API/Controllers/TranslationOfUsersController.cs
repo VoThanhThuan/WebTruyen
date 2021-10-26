@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Repository.TranslationOfUser;
 using WebTruyen.Library.Data;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -24,14 +24,14 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/TranslationOfUsers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TranslationOfUserVM>>> GetTranslationOfUsers()
+        public async Task<ActionResult<IEnumerable<TranslationOfUserAM>>> GetTranslationOfUsers()
         {
             return Ok(await _translation.GetTranslationOfUsers());
         }
 
         // GET: api/TranslationOfUsers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TranslationOfUserVM>> GetTranslationOfUser(Guid id)
+        public async Task<ActionResult<TranslationOfUserAM>> GetTranslationOfUser(Guid id)
         {
             var translationOfUser = await _translation.GetTranslationOfUser(id);
 
@@ -44,7 +44,7 @@ namespace WebTruyen.API.Controllers
         // PUT: api/TranslationOfUsers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTranslationOfUser(Guid id, TranslationOfUserVM translationOfUser)
+        public async Task<IActionResult> PutTranslationOfUser(Guid id, TranslationOfUserAM translationOfUser)
         {
             if (id != translationOfUser.IdUser)
             {
@@ -61,7 +61,7 @@ namespace WebTruyen.API.Controllers
         // POST: api/TranslationOfUsers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TranslationOfUserVM>> PostTranslationOfUser(TranslationOfUserVM translationOfUser)
+        public async Task<ActionResult<TranslationOfUserAM>> PostTranslationOfUser(TranslationOfUserAM translationOfUser)
         {
             var result = await _translation.PostTranslationOfUser(translationOfUser);
             if (!result)

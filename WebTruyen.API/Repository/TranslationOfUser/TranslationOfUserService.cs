@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.Library.Data;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Repository.TranslationOfUser
 {
@@ -16,19 +16,19 @@ namespace WebTruyen.API.Repository.TranslationOfUser
         {
             _context = context;
         }
-        public async Task<IEnumerable<TranslationOfUserVM>> GetTranslationOfUsers()
+        public async Task<IEnumerable<TranslationOfUserAM>> GetTranslationOfUsers()
         {
-            return await _context.TranslationOfUsers.Select(x => x.ToViewModel()).ToListAsync();
+            return await _context.TranslationOfUsers.Select(x => x.ToApiModel()).ToListAsync();
         }
 
-        public async Task<TranslationOfUserVM> GetTranslationOfUser(Guid id)
+        public async Task<TranslationOfUserAM> GetTranslationOfUser(Guid id)
         {
             var translationOfUser = await _context.TranslationOfUsers.FindAsync(id);
 
-            return translationOfUser?.ToViewModel();
+            return translationOfUser?.ToApiModel();
         }
 
-        public async Task<bool> PutTranslationOfUser(Guid id, TranslationOfUserVM request)
+        public async Task<bool> PutTranslationOfUser(Guid id, TranslationOfUserAM request)
         {
             _context.Entry(request.ToTranslationOfUser()).State = EntityState.Modified;
 
@@ -46,7 +46,7 @@ namespace WebTruyen.API.Repository.TranslationOfUser
             return true;
         }
 
-        public async Task<bool> PostTranslationOfUser(TranslationOfUserVM request)
+        public async Task<bool> PostTranslationOfUser(TranslationOfUserAM request)
         {
             _context.TranslationOfUsers.Add(request.ToTranslationOfUser());
             try

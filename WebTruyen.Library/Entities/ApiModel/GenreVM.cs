@@ -5,9 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebTruyen.Library.Entities.ViewModel
+namespace WebTruyen.Library.Entities.ApiModel
 {
-    public class GenreVM
+    public class GenreAM
     {
         public Genre ToGenre()
         {

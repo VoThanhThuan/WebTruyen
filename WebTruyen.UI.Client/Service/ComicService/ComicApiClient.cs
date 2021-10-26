@@ -9,7 +9,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Blazored.SessionStorage;
 using WebTruyen.Library.Entities.Request;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.UI.Client.Service.ComicService
 {
@@ -31,16 +31,16 @@ namespace WebTruyen.UI.Client.Service.ComicService
             _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
         }
 
-        public async Task<List<ComicVM>> GetComics()
+        public async Task<List<ComicAM>> GetComics()
         {
-            var result = await _http.GetFromJsonAsync<List<ComicVM>>("/api/Comics");
+            var result = await _http.GetFromJsonAsync<List<ComicAM>>("/api/Comics");
             var comic = result?.Select(x => { x.Thumbnail = $"{_http.BaseAddress}{x.Thumbnail}"; return x; }).ToList();
             return comic;
         }
 
-        public async Task<ComicVM> GetComic(Guid id)
+        public async Task<ComicAM> GetComic(Guid id)
         {
-            var result = await _http.GetFromJsonAsync<ComicVM>($"/api/Comics/{id}");
+            var result = await _http.GetFromJsonAsync<ComicAM>($"/api/Comics/{id}");
             if (result != null)
             {
                 result.Thumbnail = $"{_http.BaseAddress}{result.Thumbnail}";
@@ -48,9 +48,9 @@ namespace WebTruyen.UI.Client.Service.ComicService
             return result;
         }
 
-        public async Task<ComicVM> GetComic(string nameAlias)
+        public async Task<ComicAM> GetComic(string nameAlias)
         {
-            var result = await _http.GetFromJsonAsync<ComicVM>($"/api/Comics/detail?nameAlias={nameAlias}");
+            var result = await _http.GetFromJsonAsync<ComicAM>($"/api/Comics/detail?nameAlias={nameAlias}");
             if (result != null)
             {
                 result.Thumbnail = $"{_http.BaseAddress}{result.Thumbnail}";

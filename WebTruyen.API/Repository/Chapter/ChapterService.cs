@@ -9,7 +9,7 @@ using WebTruyen.API.Repository.Page;
 using WebTruyen.API.Service;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.Request;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.Library.Enums;
 
 namespace WebTruyen.API.Repository.Chapter
@@ -26,24 +26,24 @@ namespace WebTruyen.API.Repository.Chapter
             _page = page;
             _storage = storageService;
         }
-        public async Task<IEnumerable<ChapterVM>> GetChapters()
+        public async Task<IEnumerable<ChapterAM>> GetChapters()
         {
-            return await _context.Chapters.Select(x => x.ToViewModel()).ToListAsync();
+            return await _context.Chapters.Select(x => x.ToApiModel()).ToListAsync();
         }
 
-        public async Task<ChapterVM> GetChapter(Guid id)
+        public async Task<ChapterAM> GetChapter(Guid id)
         {
             var chapter = await _context.Chapters.FindAsync(id);
             //chapter.Views += 1;
             _context.Entry(chapter).State = EntityState.Modified;
-            return chapter?.ToViewModel();
+            return chapter?.ToApiModel();
         }
 
-        public async Task<List<ChapterVM>> GetChaptersInComic(Guid idComic)
+        public async Task<List<ChapterAM>> GetChaptersInComic(Guid idComic)
         {
             var chapter = await _context.Chapters
                 .Where(x => x.IdComic == idComic)
-                .Select(x => x.ToViewModel())
+                .Select(x => x.ToApiModel())
                 .ToListAsync();
             return chapter;
         }
@@ -114,13 +114,13 @@ namespace WebTruyen.API.Repository.Chapter
             return StatusCodes.Status200OK;
         }
 
-        public async Task<ChapterVM> PostChapter(ChapterRequest request)
+        public async Task<ChapterAM> PostChapter(ChapterRequest request)
         {
             var comic = await _context.Comics.FindAsync(request.IdComic);
             if (comic is null)
                 return null;
 
-            var chapter = new ChapterVM()
+            var chapter = new ChapterAM()
             {
                 Id = Guid.NewGuid(),
                 Ordinal = request.Ordinal??1,
@@ -229,13 +229,13 @@ namespace WebTruyen.API.Repository.Chapter
             return _context.Chapters.Any(e => e.Id == id);
         }
 
-        public async Task<ChapterVM> GetLastChapter(Guid idComic)
+        public async Task<ChapterAM> GetLastChapter(Guid idComic)
         {
-            return (_context.Chapters.Where(x => x.IdComic == idComic).OrderBy(x => x.Ordinal).Last())?.ToViewModel();
+            return (_context.Chapters.Where(x => x.IdComic == idComic).OrderBy(x => x.Ordinal).Last())?.ToApiModel();
         }
-        public async Task<List<ChapterVM>> GetNewChapters(Guid idComic, int amount)
+        public async Task<List<ChapterAM>> GetNewChapters(Guid idComic, int amount)
         {
-            return await _context.Chapters.Where(x => x.IdComic == idComic).OrderByDescending(x => x.DateTimeUp).Take(amount).Select(x => x.ToViewModel()).ToListAsync();
+            return await _context.Chapters.Where(x => x.IdComic == idComic).OrderByDescending(x => x.DateTimeUp).Take(amount).Select(x => x.ToApiModel()).ToListAsync();
         }
     }
 }

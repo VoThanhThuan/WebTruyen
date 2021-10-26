@@ -4,19 +4,19 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using WebTruyen.Library.Entities.Request;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.UI.Admin.RequestClient;
 
 namespace WebTruyen.UI.Admin.Service.UserService
 {
     public interface IUserService
     {
-        public Task<List<UserVM>> GetUsers();
+        public Task<List<UserAM>> GetUsers();
         public Task<string> Authenticate(LoginRequest request);
-        public Task<UserVM> GetUserByAccessTokenAsync(string accessToken);
-        public Task<UserVM> GetUser(Guid id);
+        public Task<UserAM> GetUserByAccessTokenAsync(string accessToken);
+        public Task<UserAM> GetUser(Guid id);
         public Task<int> PutUser(Guid id, UserRequestClient request);
-        public Task<(HttpStatusCode StatusCode, UserVM)> PostUser(UserRequestClient request);
+        public Task<(HttpStatusCode StatusCode, UserAM)> PostUser(UserRequestClient request);
         public Task<int> DeleteUser(Guid id);
     }
 }

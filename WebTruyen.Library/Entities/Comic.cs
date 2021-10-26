@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.Library.Enums;
 
 namespace WebTruyen.Library.Entities
@@ -11,9 +11,9 @@ namespace WebTruyen.Library.Entities
     public class Comic
     {
         
-        public ComicVM ToViewModel()
+        public ComicAM ToApiModel()
         {
-            return new ComicVM()
+            return new ComicAM()
             {
                 Id = Id,
                 Name = Name,
@@ -28,9 +28,9 @@ namespace WebTruyen.Library.Entities
             };
         }
 
-        public ComicVM ToViewModel(List<GenreVM> genres)
+        public ComicAM ToApiModel(List<GenreAM> genres)
         {
-            var view = ToViewModel();
+            var view = ToApiModel();
             view.Genres = genres;
             return view;
         }

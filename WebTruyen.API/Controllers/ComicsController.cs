@@ -13,7 +13,7 @@ using WebTruyen.API.Repository.ComicInGenre;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
 using WebTruyen.Library.Entities.Request;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -47,7 +47,7 @@ namespace WebTruyen.API.Controllers
         // GET: api/Comics
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<ComicVM>>> GetComics()
+        public async Task<ActionResult<IEnumerable<ComicAM>>> GetComics()
         {
             return Ok(await _comic.GetComics());
         }
@@ -55,7 +55,7 @@ namespace WebTruyen.API.Controllers
         // GET: api/Comics/xxx-xxx-xxx
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<ComicVM>> GetComic([FromRoute]Guid id)
+        public async Task<ActionResult<ComicAM>> GetComic([FromRoute]Guid id)
         {
             var comic = await _comic.GetComic(id);
 
@@ -70,7 +70,7 @@ namespace WebTruyen.API.Controllers
         // GET: api/Comics/detail?nameAlias=Vo-Thanh-Thuan
         [HttpGet("detail")]
         [AllowAnonymous]
-        public async Task<ActionResult<ComicVM>> GetComic([FromQuery]string nameAlias)
+        public async Task<ActionResult<ComicAM>> GetComic([FromQuery]string nameAlias)
         {
             var comic = await _comic.GetComic(nameAlias);
 
@@ -95,7 +95,7 @@ namespace WebTruyen.API.Controllers
             if (!result)
                 return NotFound();
 
-            var cig = genres.Select(genre => new ComicInGenreVM() {IdComic = id, IdGenre = genre}).ToList();
+            var cig = genres.Select(genre => new ComicInGenreAM() {IdComic = id, IdGenre = genre}).ToList();
 
             result = await _comicInGenre.PutComicInGenres(id, cig);
 
@@ -108,11 +108,11 @@ namespace WebTruyen.API.Controllers
         // POST: api/Comics
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ComicVM>> PostComic([FromForm] ComicRequest request, [FromForm] List<int> genres)
+        public async Task<ActionResult<ComicAM>> PostComic([FromForm] ComicRequest request, [FromForm] List<int> genres)
         {
             var comic = await _comic.PostComic(request);
 
-            var cig = genres.Select(genre => new ComicInGenreVM() { IdComic = comic.Id, IdGenre = genre }).ToList();
+            var cig = genres.Select(genre => new ComicInGenreAM() { IdComic = comic.Id, IdGenre = genre }).ToList();
 
             var result = await _comicInGenre.PutComicInGenres(comic.Id, cig);
 

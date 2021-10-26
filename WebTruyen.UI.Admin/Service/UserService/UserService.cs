@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using SixLabors.ImageSharp;
 using WebTruyen.Library.Entities.Request;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.UI.Admin.RequestClient;
 
 namespace WebTruyen.UI.Admin.Service.UserService
@@ -52,7 +52,7 @@ namespace WebTruyen.UI.Admin.Service.UserService
             return null;
         }
 
-        public async Task<UserVM> GetUserByAccessTokenAsync(string accessToken)
+        public async Task<UserAM> GetUserByAccessTokenAsync(string accessToken)
         {
             var json = JsonSerializer.Serialize(accessToken);
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
@@ -60,24 +60,24 @@ namespace WebTruyen.UI.Admin.Service.UserService
             var response = await _http.PostAsync(@"/api/Users/GetUserByAccessToken", httpContent);
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<UserVM>();
+                return await response.Content.ReadFromJsonAsync<UserAM>();
             }
 
             return null;
         }
 
-        public async Task<List<UserVM>> GetUsers()
+        public async Task<List<UserAM>> GetUsers()
         {
             await GetSession();
-            var result = await _http.GetFromJsonAsync<List<UserVM>>("/api/Users");
+            var result = await _http.GetFromJsonAsync<List<UserAM>>("/api/Users");
             var users = result?.Select(x => { x.Avatar = $"{_http.BaseAddress}{x.Avatar}"; return x; }).ToList();
             return users;
         }
 
-        public async Task<UserVM> GetUser(Guid id)
+        public async Task<UserAM> GetUser(Guid id)
         {
             await GetSession();
-            var result = await _http.GetFromJsonAsync<UserVM>($"/api/Users/{id}");
+            var result = await _http.GetFromJsonAsync<UserAM>($"/api/Users/{id}");
             if (result == null) return null;
             result.Avatar = $"{_http.BaseAddress}{result.Avatar}";
             return result;
@@ -115,7 +115,7 @@ namespace WebTruyen.UI.Admin.Service.UserService
             return (int)response.StatusCode;
         }
 
-        public async Task<(HttpStatusCode StatusCode, UserVM)> PostUser(UserRequestClient request)
+        public async Task<(HttpStatusCode StatusCode, UserAM)> PostUser(UserRequestClient request)
         {
             await GetSession();
             var requestContent = new MultipartFormDataContent();
@@ -154,7 +154,7 @@ namespace WebTruyen.UI.Admin.Service.UserService
             var response = await _http.PostAsync($"/api/Users/", requestContent);
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                return (response.StatusCode, await response.Content.ReadFromJsonAsync<UserVM>());
+                return (response.StatusCode, await response.Content.ReadFromJsonAsync<UserAM>());
 
             }
             else

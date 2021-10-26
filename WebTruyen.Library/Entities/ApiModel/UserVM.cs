@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using WebTruyen.Library.Entities.Request;
 
-namespace WebTruyen.Library.Entities.ViewModel
+namespace WebTruyen.Library.Entities.ApiModel
 {
-    public class UserVM
+    public class UserAM
     {
         public User ToUser()
         {
@@ -25,7 +25,6 @@ namespace WebTruyen.Library.Entities.ViewModel
                 Email = Email,
                 PhoneNumber = PhoneNumber,
                 UserName = Username,
-                PasswordHash = Password,
             };
         }
 
@@ -59,8 +58,6 @@ namespace WebTruyen.Library.Entities.ViewModel
         public string PhoneNumber { get; set; } = "";
         public string Username { get; set; }
 
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
         public Guid IdRole { get; set; }
         public string RoleName { get; set; }
 

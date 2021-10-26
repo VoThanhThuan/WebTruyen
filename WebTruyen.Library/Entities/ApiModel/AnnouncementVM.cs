@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebTruyen.Library.Entities.ViewModel
+namespace WebTruyen.Library.Entities.ApiModel
 {
-    public class AnnouncementVM
+    public class AnnouncementAM
     {
         public Announcement ToNewComicAnnouncement()
         {

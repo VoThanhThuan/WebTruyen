@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Repository.Report;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -25,14 +25,14 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Reports
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ReportVM>>> GetReport()
+        public async Task<ActionResult<IEnumerable<ReportAM>>> GetReport()
         {
             return Ok(await _report.GetReport());
         }
 
         // GET: api/Reports/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ReportVM>> GetReport(Guid id)
+        public async Task<ActionResult<ReportAM>> GetReport(Guid id)
         {
             var report = await _report.GetReport(id);
 
@@ -47,7 +47,7 @@ namespace WebTruyen.API.Controllers
         // PUT: api/Reports/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutReport(Guid id, ReportVM report)
+        public async Task<IActionResult> PutReport(Guid id, ReportAM report)
         {
             if (id != report.IdUser)
             {
@@ -65,7 +65,7 @@ namespace WebTruyen.API.Controllers
         // POST: api/Reports
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Report>> PostReport(ReportVM report)
+        public async Task<ActionResult<Report>> PostReport(ReportAM report)
         {
             var result = await _report.PostReport(report);
             if (!result)

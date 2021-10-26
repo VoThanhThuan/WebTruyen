@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.Request;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.Library.Enums;
 
 namespace WebTruyen.UI.Client.Service.ChapterService
@@ -34,37 +34,37 @@ namespace WebTruyen.UI.Client.Service.ChapterService
             _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
         }
 
-        public async Task<List<ChapterVM>> GetChapters()
+        public async Task<List<ChapterAM>> GetChapters()
         {
-            return await _http.GetFromJsonAsync<List<ChapterVM>>("/api/Chapters");
+            return await _http.GetFromJsonAsync<List<ChapterAM>>("/api/Chapters");
         }
 
-        public async Task<ChapterVM> GetChapter(Guid id)
+        public async Task<ChapterAM> GetChapter(Guid id)
         {
-            var chapter = await _http.GetFromJsonAsync<ChapterVM>($"/api/Chapters/{id}");
+            var chapter = await _http.GetFromJsonAsync<ChapterAM>($"/api/Chapters/{id}");
             return chapter;
         }
 
-        public async Task<List<ChapterVM>> GetChaptersInComic(Guid idComic)
+        public async Task<List<ChapterAM>> GetChaptersInComic(Guid idComic)
         {
             // api/Chapters/comic?idComic=
-            var chapter = await _http.GetFromJsonAsync<List<ChapterVM>>($"/api/Chapters/comic?idComic={idComic}");
+            var chapter = await _http.GetFromJsonAsync<List<ChapterAM>>($"/api/Chapters/comic?idComic={idComic}");
 
             return chapter;
         }
 
 
-        public async Task<ChapterVM> GetLastChapter(Guid idComic)
+        public async Task<ChapterAM> GetLastChapter(Guid idComic)
         {
             //api/Chapters/
-            var chapter = await _http.GetFromJsonAsync<ChapterVM>($"/api/Chapters");
+            var chapter = await _http.GetFromJsonAsync<ChapterAM>($"/api/Chapters");
 
             return chapter;
         }
-        public async Task<List<ChapterVM>> GetNewChapters(Guid idComic, int amount)
+        public async Task<List<ChapterAM>> GetNewChapters(Guid idComic, int amount)
         {
             //api/Chapters?idComic=xxxxx&amount=3
-            var chapter = await _http.GetFromJsonAsync<List<ChapterVM>>($"/api/Chapters?idComic={idComic}&amount={amount}");
+            var chapter = await _http.GetFromJsonAsync<List<ChapterAM>>($"/api/Chapters?idComic={idComic}&amount={amount}");
 
             return chapter;
 

@@ -1,9 +1,10 @@
 ﻿@using Blazored.SessionStorage
 @using WebTruyen.Library.Entities.Request
-@using WebTruyen.Library.Entities.ViewModel
+@using WebTruyen.Library.Entities.ApiModel;
 @using WebTruyen.UI.Client.Service.UserService
 @using Blazored.LocalStorage
 @using System.Threading
+@using System.Text.Json
 @if (_element.OnDark)
 {
     <link rel="stylesheet" href="./resources/css/dark.css">
@@ -93,7 +94,7 @@ else
                             <div class="content mt-1 m-1">
                                 <div class="card-info p-2 mt-2">
                                     <div class="form-check form-switch">
-                                        Dảk Mode<input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" @onclick="OnDarkMode">
+                                        Dảk Mode<input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" @onclick="() => OnDarkMode(_element.OnDark)">
                                     </div>
                                 </div>
                                 <div class="card-info p-2 mt-2">
@@ -118,7 +119,7 @@ else
                             <div class="content mt-1 m-1">
                                 <div class="card-info p-2 mt-2">
                                     <div class="form-check form-switch">
-                                        Dảk Mode<input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" @onclick="OnDarkMode">
+                                        Dảk Mode<input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" @onclick="()=>OnDarkMode(_element.OnDark)">
                                     </div>
                                 </div>
                                 <EditForm Model="LoginRequest" OnValidSubmit="SignIn">
@@ -201,6 +202,7 @@ else
     [Inject] IUserService _userApi { get; set; }
     [Inject] ISessionStorageService _sessionStorage { get; set; }
     [Inject] ILocalStorageService _localStorage { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -208,6 +210,8 @@ else
         if (firstRender)
         {
             var token = await _localStorage.GetItemAsStringAsync("Token");
+            var isdark = await _localStorage.GetItemAsStringAsync("dark");
+            OnDarkMode(isdark != "1");
             if (!string.IsNullOrEmpty(token))
             {
                 await GetUserByToken(token);
@@ -221,9 +225,10 @@ else
 
 
     #region Xử lý giao diện
-    void OnDarkMode()
+    void OnDarkMode(bool isDark)
     {
-        _element.OnDark = !_element.OnDark;
+        _element.OnDark = !isDark;
+        _localStorage.SetItemAsStringAsync("dark", _element.OnDark ? "1" : "0");
         StateHasChanged();
     }
 
@@ -268,8 +273,9 @@ else
         _sessionStorage.ClearAsync();
         _localStorage.ClearAsync();
         _element.IsSignIn = false;
-        _element.User = new UserVM();
+        _element.User = new UserAM();
         StateHasChanged();
+
     }
 
     #endregion
@@ -289,9 +295,8 @@ else
 
             await _localStorage.SetItemAsStringAsync("Token", token);
             await _sessionStorage.SetItemAsStringAsync("Token", token);
-
-            await GetUserByToken(token);
-
+            //await GetUserByToken(token);
+            _navigationManager.NavigateTo(_navigationManager.Uri, forceLoad: true);
             StateHasChanged();
         }
     }
@@ -303,7 +308,11 @@ else
         {
             _element.IsSignIn = true;
             _element.User = user;
+
+            var jsonUser = JsonSerializer.Serialize(user);
+            await _localStorage.SetItemAsStringAsync("Token", token);
             await _sessionStorage.SetItemAsStringAsync("Token", token);
+            await _sessionStorage.SetItemAsStringAsync("user_webtruyen", jsonUser);
         }
         else
         {
@@ -325,7 +334,7 @@ else
         public bool pop_user { get; set; } = false;
         public bool pop_background_click { get; set; } = false;
 
-        public UserVM User { get; set; } = new UserVM();
+        public UserAM User { get; set; } = new UserAM();
 
     }
 

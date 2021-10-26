@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Repository.HistoryRead;
 using WebTruyen.Library.Data;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -24,14 +24,14 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/HistoryReads
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HistoryReadVM>>> GetHistoryReads()
+        public async Task<ActionResult<IEnumerable<HistoryReadAM>>> GetHistoryReads()
         {
             return Ok(await _historyRead.GetHistoryReads());
         }
 
         // GET: api/HistoryReads/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<HistoryReadVM>> GetHistoryRead(Guid id)
+        public async Task<ActionResult<HistoryReadAM>> GetHistoryRead(Guid id)
         {
             var historyRead = await _historyRead.GetHistoryRead(id);
 
@@ -46,7 +46,7 @@ namespace WebTruyen.API.Controllers
         // PUT: api/HistoryReads/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutHistoryRead(Guid id, HistoryReadVM historyRead)
+        public async Task<IActionResult> PutHistoryRead(Guid id, HistoryReadAM historyRead)
         {
             if (id != historyRead.IdUser)
             {
@@ -64,7 +64,7 @@ namespace WebTruyen.API.Controllers
         // POST: api/HistoryReads
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<HistoryReadVM>> PostHistoryRead(HistoryReadVM historyRead)
+        public async Task<ActionResult<HistoryReadAM>> PostHistoryRead(HistoryReadAM historyRead)
         {
             var result = await _historyRead.PostHistoryRead(historyRead);
             if (!result)

@@ -11,8 +11,8 @@ using WebTruyen.API.Repository.Chapter;
 using WebTruyen.API.Repository.Page;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
+using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.Library.Entities.Request;
-using WebTruyen.Library.Entities.ViewModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -33,7 +33,7 @@ namespace WebTruyen.API.Controllers
         // GET: api/Chapters
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<ChapterVM>>> GetChapters()
+        public async Task<ActionResult<IEnumerable<ChapterAM>>> GetChapters()
         {
             return Ok(await _chapter.GetChapters());
         }
@@ -41,7 +41,7 @@ namespace WebTruyen.API.Controllers
         // GET: api/Chapters/comic?idComic=xxx-xxx-xxx-xxx
         [HttpGet("comic")]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<ChapterVM>>> GetChaptersInComic([FromQuery]Guid idComic)
+        public async Task<ActionResult<IEnumerable<ChapterAM>>> GetChaptersInComic([FromQuery]Guid idComic)
         {
             return Ok(await _chapter.GetChaptersInComic(idComic));
         }
@@ -49,7 +49,7 @@ namespace WebTruyen.API.Controllers
         // GET: api/Chapters/5
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<ChapterVM>> GetChapter(Guid id)
+        public async Task<ActionResult<ChapterAM>> GetChapter(Guid id)
         {
             var result = await _chapter.GetChapter(id);
 
@@ -64,7 +64,7 @@ namespace WebTruyen.API.Controllers
         // GET: api/Chapters/
         [HttpGet("lastChapter")]
         [AllowAnonymous]
-        public async Task<ActionResult<ChapterVM>> GetLastChapter([FromQuery]Guid idComic)
+        public async Task<ActionResult<ChapterAM>> GetLastChapter([FromQuery]Guid idComic)
         {
             var result = await _chapter.GetLastChapter(idComic);
 
@@ -79,7 +79,7 @@ namespace WebTruyen.API.Controllers
         // GET: api/Chapters?idComic=xxxxx&amount=3
         [HttpGet("lastChapters")]
         [AllowAnonymous]
-        public async Task<ActionResult<List<ChapterVM>>> GetLastChapters([FromQuery] Guid idComic, [FromQuery] int amount)
+        public async Task<ActionResult<List<ChapterAM>>> GetLastChapters([FromQuery] Guid idComic, [FromQuery] int amount)
         {
             var result = await _chapter.GetNewChapters(idComic, amount);
 
@@ -118,7 +118,7 @@ namespace WebTruyen.API.Controllers
         [RequestSizeLimit(100L * 1024L * 1024L)]
         [RequestFormLimits(MultipartBodyLengthLimit = 100L * 1024L * 1024L)]
         [HttpPost]
-        public async Task<ActionResult<ChapterVM>> PostChapter([FromForm]ChapterRequest chapter, [FromForm]List<IFormFile> pages)
+        public async Task<ActionResult<ChapterAM>> PostChapter([FromForm]ChapterRequest chapter, [FromForm]List<IFormFile> pages)
         {
             if (pages.Count < 1)
                 return BadRequest("Không có hình ảnh");
@@ -136,7 +136,7 @@ namespace WebTruyen.API.Controllers
 
         // POST: api/Chapters/ContinuePostChapter/idChapter
         [HttpPost("ContinuePostChapter/{idChapter}")]
-        public async Task<ActionResult<ChapterVM>> PostChapterContinue([FromRoute] Guid idChapter, [FromForm] List<IFormFile> pages)
+        public async Task<ActionResult<ChapterAM>> PostChapterContinue([FromRoute] Guid idChapter, [FromForm] List<IFormFile> pages)
         {
             if (pages.Count < 1)
                 return BadRequest("Không có hình ảnh");

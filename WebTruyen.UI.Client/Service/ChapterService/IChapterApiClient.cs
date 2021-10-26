@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebTruyen.Library.Entities.Request;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.UI.Client.Service.ChapterService
 {
     public interface IChapterApiClient
     {
-        public Task<List<ChapterVM>> GetChapters();
-        public Task<ChapterVM> GetChapter(Guid id);
-        public Task<ChapterVM> GetLastChapter(Guid idComic);
-        public Task<List<ChapterVM>> GetNewChapters(Guid idComic, int amount);
+        public Task<List<ChapterAM>> GetChapters();
+        public Task<ChapterAM> GetChapter(Guid id);
+        public Task<ChapterAM> GetLastChapter(Guid idComic);
+        public Task<List<ChapterAM>> GetNewChapters(Guid idComic, int amount);
 
-        public Task<List<ChapterVM>> GetChaptersInComic(Guid idComic);
+        public Task<List<ChapterAM>> GetChaptersInComic(Guid idComic);
 
 
     }

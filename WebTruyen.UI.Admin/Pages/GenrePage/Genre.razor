@@ -1,5 +1,5 @@
 ﻿@page "/genre"
-@using WebTruyen.Library.Entities.ViewModel
+@using WebTruyen.Library.Entities.ApiModel;
 @using Microsoft.Data.SqlClient
 @using WebTruyen.UI.Admin.Service.GenreService
 
@@ -98,8 +98,8 @@ else if (_element.Apiresult != 0)
     string value;
     bool _isUpdate = false;
     ViewElement _element = new ViewElement();
-    GenreVM _genreRequest = new GenreVM();
-    List<GenreVM> _genres = new List<GenreVM>();
+    GenreAM _genreRequest = new GenreAM();
+    List<GenreAM> _genres = new List<GenreAM>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -129,7 +129,7 @@ else if (_element.Apiresult != 0)
         await JS.InvokeVoidAsync("Click", "#close-ask-modal");
     }
 
-    async Task FillDataUpdate(GenreVM genre)
+    async Task FillDataUpdate(GenreAM genre)
     {
         _genreRequest = genre;
 
@@ -155,6 +155,6 @@ else if (_element.Apiresult != 0)
     {
         public string txtButtonAdd { get; set; } = "Thêm";
         public int Apiresult { get; set; } = 0;
-        public GenreVM genreDelete = new GenreVM();
+        public GenreAM genreDelete = new GenreAM();
     }
 }

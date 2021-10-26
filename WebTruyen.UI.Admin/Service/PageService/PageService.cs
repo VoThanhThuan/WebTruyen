@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using WebTruyen.Library.Entities.Request;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.UI.Admin.Service.PageService
 {
@@ -19,27 +19,27 @@ namespace WebTruyen.UI.Admin.Service.PageService
             _http = http;
         }
 
-        public Task<List<PageVM>> GetPages()
+        public Task<List<PageAM>> GetPages()
         {
             throw new NotImplementedException();
         }
 
-        public Task<PageVM> GetPage(Guid id)
+        public Task<PageAM> GetPage(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<List<PageVM>> GetPagesInChapter(Guid idChapter)
+        public async Task<List<PageAM>> GetPagesInChapter(Guid idChapter)
         {
-            var result = await _http.GetFromJsonAsync<List<PageVM>>($"api/Pages/chapter?idChapter={idChapter}");
+            var result = await _http.GetFromJsonAsync<List<PageAM>>($"api/Pages/chapter?idChapter={idChapter}");
             var chapters = result?.Select(x => { x.Image = $"{_http.BaseAddress}{x.Image}"; return x; }).ToList();
 
             return chapters;
         }
 
-        public async IAsyncEnumerable<PageVM> GetPagesInChapterYeild(Guid idChapter)
+        public async IAsyncEnumerable<PageAM> GetPagesInChapterYeild(Guid idChapter)
         {
-            var result = await _http.GetFromJsonAsync<List<PageVM>>($"api/Pages/chapter?idChapter={idChapter}");
+            var result = await _http.GetFromJsonAsync<List<PageAM>>($"api/Pages/chapter?idChapter={idChapter}");
 
             foreach (var page in result)
             {
@@ -58,7 +58,7 @@ namespace WebTruyen.UI.Admin.Service.PageService
             throw new NotImplementedException();
         }
 
-        public Task<PageVM> PostPage(Guid idChapter, PageRequest request)
+        public Task<PageAM> PostPage(Guid idChapter, PageRequest request)
         {
             throw new NotImplementedException();
         }

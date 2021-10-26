@@ -15,7 +15,7 @@ using Microsoft.Net.Http.Headers;
 using WebTruyen.API.Service;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.Request;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Repository.User
 {
@@ -43,21 +43,21 @@ namespace WebTruyen.API.Repository.User
             _roleManager = roleManager;
             _config = config;
         }
-        public async Task<IEnumerable<UserVM>> GetUsers(int skip = 0, int take = 20)
+        public async Task<IEnumerable<UserAM>> GetUsers(int skip = 0, int take = 20)
         {
             var users = await _context.Users.Skip(skip).Take(take).Select(x => x).ToListAsync();
-            var uservm = new List<UserVM>();
+            var UserAM = new List<UserAM>();
             foreach (var user in users)
             {
-                uservm.Add(await user.ToViewModel(_userManager));
+                UserAM.Add(await user.ToApiModel(_userManager));
             }
-            return uservm;
+            return UserAM;
         }
 
-        public async Task<UserVM> GetUser(Guid id)
+        public async Task<UserAM> GetUser(Guid id)
         {
             var user = await _context.Users.FindAsync(id);
-            return await user.ToViewModel(_userManager);
+            return await user.ToApiModel(_userManager);
         }
 
         public async Task<bool> PutUser(Guid id, UserRequest request)
@@ -116,7 +116,7 @@ namespace WebTruyen.API.Repository.User
             return true;
         }
 
-        public async Task<(int apiResult, string mess, UserVM user)> PostUser(UserRequest request)
+        public async Task<(int apiResult, string mess, UserAM user)> PostUser(UserRequest request)
         {
             var checkUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == request.Username);
             if (checkUser != null)
@@ -143,10 +143,10 @@ namespace WebTruyen.API.Repository.User
             //_context.Users.Add(user);
             //await _context.SaveChangesAsync();
 
-            return (StatusCodes.Status200OK, "Ok",user.ToViewModel());
+            return (StatusCodes.Status200OK, "Ok",user.ToApiModel());
         }
 
-        public async Task<(int apiResult, string mess, UserVM user)> Register(UserRequest request)
+        public async Task<(int apiResult, string mess, UserAM user)> Register(UserRequest request)
         {
             var checkUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == request.Username);
             if (checkUser != null)
@@ -169,7 +169,7 @@ namespace WebTruyen.API.Repository.User
             //_context.Users.Add(user);
             //await _context.SaveChangesAsync();
 
-            return (StatusCodes.Status200OK, "Ok", user.ToViewModel());
+            return (StatusCodes.Status200OK, "Ok", user.ToApiModel());
         }
 
         public async Task<int> DeleteUser(Guid id)
@@ -248,7 +248,7 @@ namespace WebTruyen.API.Repository.User
             return "";
         }
 
-        public async Task<UserVM> GetUserFromAccessToken(string accessToken)
+        public async Task<UserAM> GetUserFromAccessToken(string accessToken)
         {
 
             var token = accessToken;

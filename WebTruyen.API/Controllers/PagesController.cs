@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using WebTruyen.API.Repository.Page;
 using WebTruyen.API.Service;
 using WebTruyen.Library.Entities.Request;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -33,7 +33,7 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Pages
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PageVM>>> GetPages()
+        public async Task<ActionResult<IEnumerable<PageAM>>> GetPages()
         {
             return Ok(await _page.GetPages());
         }
@@ -64,14 +64,14 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Pages/chapter?idChapter=69
         [HttpGet("chapter")]
-        public async Task<ActionResult<IEnumerable<PageVM>>> GetPagesInChapter([FromQuery]Guid idChapter)
+        public async Task<ActionResult<IEnumerable<PageAM>>> GetPagesInChapter([FromQuery]Guid idChapter)
         {
             return Ok(await _page.GetPagesInChapter(idChapter));
         }
 
         // GET: api/Pages/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<PageVM>> GetPage(Guid id)
+        public async Task<ActionResult<PageAM>> GetPage(Guid id)
         {
             var page = await _page.GetPage(id);
             if (page == null)

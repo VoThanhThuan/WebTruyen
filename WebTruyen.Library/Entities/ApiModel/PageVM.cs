@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebTruyen.Library.Entities.ViewModel
+namespace WebTruyen.Library.Entities.ApiModel
 {
-    public class PageVM
+    public class PageAM
     {
         public Page ToPage()
         {

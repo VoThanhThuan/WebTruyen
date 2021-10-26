@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Repository.Comment;
 using WebTruyen.Library.Data;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.Request;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -24,16 +26,44 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Comments
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CommentVM>>> GetComments()
+        public async Task<ActionResult<IEnumerable<CommentAM>>> GetComments()
         {
             return Ok(await _comment.GetComments());
         }
 
         // GET: api/Comments/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CommentVM>> GetComment(Guid id)
+        public async Task<ActionResult<CommentAM>> GetComment(Guid id)
         {
             var comment = await _comment.GetComment(id);
+
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            return comment;
+        }
+
+
+        // GET: api/Comments/GetCommentInComic?idComic=&skip=&take=
+        [HttpGet("GetCommentInComic")]
+        public async Task<ActionResult<List<CommentAM>>> GetCommentInComic(Guid idComic, int skip = 0, int take = 10)
+        {
+            var comment = await _comment.GetCommentInComic(idComic, skip, take);
+
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            return comment;
+        }
+        // GET: api/Comments/GetCommentInComic?idComic=&skip=&take=
+        [HttpGet("GetCommentInChapter")]
+        public async Task<ActionResult<List<CommentAM>>> GetCommentInChapter(Guid idComic, int skip = 0, int take = 10)
+        {
+            var comment = await _comment.GetCommentInChapter(idComic, skip, take);
 
             if (comment == null)
             {
@@ -46,7 +76,8 @@ namespace WebTruyen.API.Controllers
         // PUT: api/Comments/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutComment(Guid id, CommentVM comment)
+        [Authorize]
+        public async Task<IActionResult> PutComment(Guid id, CommentAM comment)
         {
             if (id != comment.Id)
             {
@@ -55,8 +86,8 @@ namespace WebTruyen.API.Controllers
 
             var result = await _comment.PutComment(id, comment);
 
-            if (!result)
-                return NotFound();
+            if (!result.isSuccess)
+                return NotFound(result.messages);
 
             return NoContent();
         }
@@ -64,15 +95,23 @@ namespace WebTruyen.API.Controllers
         // POST: api/Comments
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<CommentVM>> PostComment(CommentVM comment)
+        [Authorize]
+        public async Task<ActionResult<CommentAM>> PostComment(CommentRequest comment)
         {
-            await _comment.PostComment(comment);
+            if (comment.IdComic == Guid.Empty && comment.IdChapter == Guid.Empty)
+                return BadRequest("Id Comic không được null");
+            if (comment.IdCommentReply == null && comment.Level > 0)
+                return BadRequest("Level lớn hơn 1 thì IdCommentReply không dược null");
+            var result = await _comment.PostComment(comment);
+            if (!result.isSuccess)
+                return BadRequest(result.messages);
 
             return CreatedAtAction("GetComment", new { id = comment.Id }, comment);
         }
 
         // DELETE: api/Comments/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteComment(Guid id)
         {
             var result = await _comment.DeleteComment(id);

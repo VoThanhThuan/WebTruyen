@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace WebTruyen.Library.Entities.ViewModel
+namespace WebTruyen.Library.Entities.ApiModel
 {
-    public class ComicInGenreVM
+    public class ComicInGenreAM
     {
         public ComicInGenre ToComicInGenre()
         {

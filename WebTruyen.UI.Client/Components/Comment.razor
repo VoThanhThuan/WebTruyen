@@ -1,13 +1,227 @@
-﻿<div class="comment-section ">
+﻿@using WebTruyen.Library.Entities.ApiModel;
+@using Blazored.SessionStorage
+@using System.Text.Json
+@using WebTruyen.Library.Entities.Request
+@using WebTruyen.Library.Entities.ViewModel
+@using WebTruyen.UI.Client.Service.CommentService
+@using WebTruyen.UI.Client.Service.UserService
+<div class="comment-section ">
     <div class="content p-2 rounded-5 ">
-        <div class=" ">
-            <div class="rounded-5 p-2 border-bottom ">
-                <a class="navbar-brand " href="# "><i class="fad fa-comments "></i> Bình Luận</a>
+        <div class="rounded-5 p-2 border-bottom ">
+            <a id="comment" class="navbar-brand " href="# "><i class="fad fa-comments"></i> Bình Luận</a>
+        </div>
+        <div class="content">
+            <div class="rounded-5 p-2 border-bottom">
+                <div class="row">
+                    <div class="col-auto">
+                        <img src="truyen.jpg" alt="avatar" class="avatar-md rounded-circle ">
+                    </div>
+                    <div class="mb-3 col">
+                        <EditForm model="_CommentRequest" OnValidSubmit="PostNewComent">
+                            <label for="exampleFormControlTextarea1" class="form-label">Để lại bình luận của bạn ở đây</label>
+                            <InputTextArea class="form-control" rows="2" maxlength="500" @bind-Value="_CommentRequest.Content"></InputTextArea>
+                            @if (!_isSignIn)
+                            {
+                                <span>Bạn cần đăng nhập để bình luận</span>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-primary mt-1">Bình Loạn</button>
+                                <span>(Bình luận không quá 500 ký tự)</span>
+                                if (_element.ErrorComment.isError)
+                                {
+                                    <span class="text-danger">Lỗi: @_element.ErrorComment.Messages</span>
+                                }
+                            }
+                        </EditForm>
+                    </div>
+                </div>
             </div>
+
+
+            @foreach (var comment in _ListComment)
+            {
+                <div class="comment mt-2 ">
+                    <div class="mt-1">
+                        <div class="row border-bottom">
+                            <div class="col-auto">
+                                <img src="@comment.User.Avatar" alt="avatar" class="avatar-md rounded-circle ">
+                            </div>
+                            <div class="mb-1 col">
+                                <p><span class="fs-5 fw-normal">@comment.User.Nickname</span> <span class="fw-light text-muted"> @comment.DateTimeUp</span> </p>
+                                <span>@comment.Content</span>
+                            </div>
+                            <div class="btn-reply">
+                                <span><i class="fad fa-reply"></i>Trả lời</span>
+                                <span><i class="fad fa-pen"></i>Chỉnh sửa</span>
+                                <span class="remove"><i class="fad fa-trash"></i>Xóa</span>
+                            </div>
+                        </div>
+                        @*@foreach (var child in comment.CommentReply)
+                        {
+                            <div class="comment-child">
+                                <div class="row border-bottom mt-2">
+                                    <div class="col-auto">
+                                        <img src="@child.User.Avatar" alt="avatar" class="avatar-md rounded-circle ">
+                                    </div>
+                                    <div class="mb-1 col">
+                                        <p><span class="fs-5 fw-normal">@child.User.Nickname</span> <span class="fw-light text-muted"> 1 ngày trước</span> </p>
+                                        <span>@child.Content</span>
+                                    </div>
+                                    <div class="btn-reply">
+                                        <span><i class="fad fa-reply"></i>Trả lời</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        }*@
+                    </div>
+                </div>
+            }
+
+
         </div>
     </div>
 </div>
 
 @code {
+
+    #region Initialization
+
+
+
+    [Parameter]
+    public string _IdComic { get; set; } = null;
+    [Parameter]
+    public string _IdChapter { get; set; } = null;
+
+
+    [Inject] ISessionStorageService _sessionStorage { get; set; }
+    [Inject] ICommentService _commentApi { get; set; }
+    [Inject] IUserService _userApi { get; set; }
+
+
+    public bool _isSignIn { get; set; } = false;
+    private PositionPage _wherePage { get; set; }
+
+    public CommentRequest _CommentRequest { get; set; } = new();
+    public List<CommentVM> _ListComment { get; set; } = new();
+    public UserAM _UserAM { get; set; } = null;
+    public Element _element { get; set; } = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (!string.IsNullOrEmpty(_IdComic))
+            {
+                Console.WriteLine($">>> comment in Comic");
+                _CommentRequest.IdComic = Guid.Parse(_IdComic);
+                _wherePage = PositionPage.Comic;
+            }
+            if (!string.IsNullOrEmpty(_IdChapter))
+            {
+                Console.WriteLine($">>> comment in Chapter");
+                _CommentRequest.IdChapter = Guid.Parse(_IdChapter);
+                _wherePage = PositionPage.Chapter;
+
+            }
+            await CheckUser();
+            await GetComments();
+        }
+
+    }
+    #endregion
+
+    #region Xử lý giao diện
+
+    async Task CheckUser()
+    {
+        var jsonUser = await _sessionStorage.GetItemAsStringAsync("user_webtruyen");
+        Console.WriteLine($"jsonUser:>>> {jsonUser}");
+        if (string.IsNullOrEmpty(jsonUser))
+            return;
+        _isSignIn = true;
+        _UserAM = JsonSerializer.Deserialize<UserAM>(jsonUser);
+        StateHasChanged();
+    }
+
+    #endregion
+
+    #region Giao tiếp server
+
+    async Task PostNewComent()
+    {
+        if (!_isSignIn) return;
+        _CommentRequest.Level = 0;
+        _CommentRequest.IdUser = _UserAM.Id;
+        _CommentRequest.IdComic = Guid.Parse(_IdComic);
+        if (!string.IsNullOrEmpty(_IdChapter))
+            _CommentRequest.IdChapter = Guid.Parse(_IdChapter);
+        var result = await _commentApi.PostComment(_CommentRequest);
+        if (!result.isSuccess)
+        {
+            _element.ErrorComment = (true, result.value);
+            StateHasChanged();
+        }
+        //Load lại ds comment
+    }
+
+    async Task GetComments()
+    {
+        if (_wherePage == PositionPage.Comic)
+        {
+            _ListComment = await _commentApi.GetCommentInComic(Guid.Parse(_IdComic), _element.Take, _element.Skip);
+        }
+        else
+        {
+            _ListComment = await _commentApi.GetCommentInChapter(Guid.Parse(_IdComic), _element.Take, _element.Skip);
+        }
+        Console.WriteLine($"_ListComment >>> {_ListComment.Count}");
+        foreach (var comment in _ListComment)
+        {
+            Console.WriteLine($"IdUser >>> {comment.IdUser}");
+            var user = await GetUser(comment.IdUser);
+            if(user == null) continue;
+            Console.WriteLine($">>> {user.Nickname}");
+            comment.User = user;
+            //foreach (var child in comment.CommentReply)
+            //{
+            //    var cmtc = await GetUser(child.IdUser);
+            //    child = cmtc;
+            //    StateHasChanged();
+            //}
+            StateHasChanged();
+        }
+        StateHasChanged();
+
+    }
+
+    async Task DeleteComent()
+    {
+
+    }
+
+    async Task<UserAM> GetUser(Guid idUser)
+    {
+        if (idUser == Guid.Empty) return null;
+        var user = await _userApi.GetUser(idUser);
+        return user;
+    }
+
+    #endregion
+
+    enum PositionPage
+    {
+        Comic,
+        Chapter
+    }
+
+    public class Element
+    {
+        public (bool isError, string Messages) ErrorComment { get; set; } = (false, "");
+        public int Take { get; set; } = 10;
+        public int Skip { get; set; } = 0;
+    }
 
 }

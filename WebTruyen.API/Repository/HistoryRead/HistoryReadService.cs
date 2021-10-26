@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.Library.Data;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Repository.HistoryRead
 {
@@ -16,19 +16,19 @@ namespace WebTruyen.API.Repository.HistoryRead
         {
             _context = context;
         }
-        public async Task<IEnumerable<HistoryReadVM>> GetHistoryReads()
+        public async Task<IEnumerable<HistoryReadAM>> GetHistoryReads()
         {
-            return await _context.HistoryReads.Select(x => x.ToViewModel()).ToListAsync();
+            return await _context.HistoryReads.Select(x => x.ToApiModel()).ToListAsync();
         }
 
-        public async Task<HistoryReadVM> GetHistoryRead(Guid id)
+        public async Task<HistoryReadAM> GetHistoryRead(Guid id)
         {
             var historyRead = await _context.HistoryReads.FindAsync(id);
 
-            return historyRead?.ToViewModel();
+            return historyRead?.ToApiModel();
         }
 
-        public async Task<bool> PutHistoryRead(Guid id, HistoryReadVM request)
+        public async Task<bool> PutHistoryRead(Guid id, HistoryReadAM request)
         {
             _context.Entry(request.ToHistoryRead()).State = EntityState.Modified;
 
@@ -51,7 +51,7 @@ namespace WebTruyen.API.Repository.HistoryRead
             return true;
         }
 
-        public async Task<bool> PostHistoryRead(HistoryReadVM request)
+        public async Task<bool> PostHistoryRead(HistoryReadAM request)
         {
             _context.HistoryReads.Add(request.ToHistoryRead());
             try

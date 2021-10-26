@@ -12,6 +12,7 @@ html {
 body {
     background-color: var(--bg);
     color: var(--fg);
+    background-repeat: repeat;
 }
 
 p {
@@ -26,10 +27,20 @@ a {
 ul {
     list-style: none;
 }
-
+/*Sửa boostrap*/
 .text {
     color: var(--fg);
 }
+
+.border-bottom {
+    border-bottom-color: var(--bg-info) !important;
+}
+.form-select {
+    background-color: var(--bg-info);
+    color: var(--fg);
+}
+/*End [Sửa boostrap]*/
+
 /* nav */
 
 #navbar {
@@ -300,6 +311,34 @@ ul.list-chapters {
 }
 
 /*End [Cursor]*/
+
+/* Comment */
+.comment span {
+    word-wrap: break-word;
+}
+
+.comment span.remove {
+    color: red;
+}
+
+.comment-child {
+    padding: 0;
+    margin: 0 0 0 60px;
+    flex-shrink: 1;
+}
+
+.comment .btn-reply {
+    display: flex;
+    justify-content: flex-end;
+    color: blue;
+    align-items: center;
+    cursor: pointer;
+}
+
+.comment .btn-reply span {
+    margin: 0 10px;
+}
+/* End [Comment] */
 
 /* Responsive */
 

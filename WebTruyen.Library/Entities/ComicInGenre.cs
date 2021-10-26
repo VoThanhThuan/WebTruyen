@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.Library.Entities
 {
     public class ComicInGenre
     {
-        public ComicInGenreVM ToViewModel()
+        public ComicInGenreAM ToApiModel()
         {
-            return new ComicInGenreVM()
+            return new ComicInGenreAM()
             {
                 IdComic = IdComic,
                 IdGenre = IdGenre

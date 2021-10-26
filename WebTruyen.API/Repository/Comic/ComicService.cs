@@ -9,7 +9,7 @@ using WebTruyen.API.Repository.Chapter;
 using WebTruyen.API.Service;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.Request;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Repository.Comic
 {
@@ -25,38 +25,38 @@ namespace WebTruyen.API.Repository.Comic
             _storageService = storageService;
             _chapterService = chapterService;
         }
-        public async Task<IEnumerable<ComicVM>> GetComics(int skip = 0, int take = 50)
+        public async Task<IEnumerable<ComicAM>> GetComics(int skip = 0, int take = 50)
         {
-            return await _context.Comics.OrderByDescending(x => x.DateUpdate).Skip(skip).Take(50).Select(x => x.ToViewModel()).ToListAsync();
+            return await _context.Comics.OrderByDescending(x => x.DateUpdate).Skip(skip).Take(50).Select(x => x.ToApiModel()).ToListAsync();
         }
 
-        public async Task<ComicVM> GetComic(Guid id)
+        public async Task<ComicAM> GetComic(Guid id)
         {
             var comic = await _context.Comics.FindAsync(id);
             var comicInGenre = await _context.ComicInGenres.Where(x => x.IdComic == comic.Id).ToListAsync();
-            var genres = new List<GenreVM>();
+            var genres = new List<GenreAM>();
             foreach (var cig in comicInGenre)
             {
                 var geren = await _context.Genres.FindAsync(cig.IdGenre);
-                genres.Add(geren.ToViewModel());
+                genres.Add(geren.ToApiModel());
             }
-            var comicView = comic?.ToViewModel(genres);
+            var comicView = comic?.ToApiModel(genres);
 
             return comicView;
         }
 
-        public async Task<ComicVM> GetComic(string nameAlias)
+        public async Task<ComicAM> GetComic(string nameAlias)
         {
             var comic = await _context.Comics.FirstOrDefaultAsync(x => x.NameAlias == nameAlias);
 
             var comicInGenre = await _context.ComicInGenres.Where(x => x.IdComic == comic.Id).ToListAsync();
-            var genres = new List<GenreVM>();
+            var genres = new List<GenreAM>();
             foreach (var cig in comicInGenre)
             {
                 var geren = await _context.Genres.FindAsync(cig.IdGenre);
-                genres.Add(geren.ToViewModel());
+                genres.Add(geren.ToApiModel());
             }
-            var comicView = comic?.ToViewModel(genres);
+            var comicView = comic?.ToApiModel(genres);
             return comicView;
         }
 
@@ -105,7 +105,7 @@ namespace WebTruyen.API.Repository.Comic
             return true;
         }
 
-        public async Task<ComicVM> PostComic(ComicRequest request)
+        public async Task<ComicAM> PostComic(ComicRequest request)
         {
             var comic = request.ToComic();
             comic.Id = Guid.NewGuid();
@@ -124,7 +124,7 @@ namespace WebTruyen.API.Repository.Comic
             _context.Comics.Add(comic);
             await _context.SaveChangesAsync();
 
-            return comic.ToViewModel();
+            return comic.ToApiModel();
 
         }
 

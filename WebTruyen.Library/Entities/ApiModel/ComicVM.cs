@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using WebTruyen.Library.Enums;
 
-namespace WebTruyen.Library.Entities.ViewModel
+namespace WebTruyen.Library.Entities.ApiModel
 {
-    public class ComicVM
+    public class ComicAM
     {
         public Comic ToComic()
         {
@@ -39,7 +39,7 @@ namespace WebTruyen.Library.Entities.ViewModel
         public DateTime DateUpdate { get; set; } = DateTime.Now;
 
 
-        public List<GenreVM> Genres { get; set; } = new List<GenreVM>();
+        public List<GenreAM> Genres { get; set; } = new List<GenreAM>();
 
     }
 }

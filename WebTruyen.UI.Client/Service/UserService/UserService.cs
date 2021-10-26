@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Blazored.SessionStorage;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -9,12 +9,8 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Blazored.SessionStorage;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using WebTruyen.Library.Entities.Request;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.UI.Client.Service.UserService
 {
@@ -50,31 +46,31 @@ namespace WebTruyen.UI.Client.Service.UserService
             return null;
         }
 
-        public async Task<UserVM> GetUserByAccessTokenAsync(string accessToken)
+        public async Task<UserAM> GetUserByAccessTokenAsync(string accessToken)
         {
             _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             var response = await _http.GetAsync(@"/api/Users/GetUserByAccessToken");
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                return await response.Content.ReadFromJsonAsync<UserVM>();
+                return await response.Content.ReadFromJsonAsync<UserAM>();
             }
 
             return null;
         }
 
-        public async Task<List<UserVM>> GetUsers()
+        public async Task<List<UserAM>> GetUsers()
         {
             await GetSession();
-            var result = await _http.GetFromJsonAsync<List<UserVM>>("/api/Users");
+            var result = await _http.GetFromJsonAsync<List<UserAM>>($"/api/GetCommentInComic?");
             var users = result?.Select(x => { x.Avatar = $"{_http.BaseAddress}{x.Avatar}"; return x; }).ToList();
             return users;
         }
 
-        public async Task<UserVM> GetUser(Guid id)
+        public async Task<UserAM> GetUser(Guid id)
         {
             await GetSession();
-            var result = await _http.GetFromJsonAsync<UserVM>($"/api/Users/{id}");
+            var result = await _http.GetFromJsonAsync<UserAM>($"/api/Users/{id}");
             if (result == null) return null;
             result.Avatar = $"{_http.BaseAddress}{result.Avatar}";
             return result;

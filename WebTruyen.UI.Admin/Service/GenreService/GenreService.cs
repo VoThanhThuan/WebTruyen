@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.UI.Admin.Service.GenreService
 {
@@ -17,24 +17,24 @@ namespace WebTruyen.UI.Admin.Service.GenreService
         {
             _http = http;
         }
-        public async Task<List<GenreVM>> GetGenres()
+        public async Task<List<GenreAM>> GetGenres()
         {
-            var result = await _http.GetFromJsonAsync<List<GenreVM>>("/api/Genres");
+            var result = await _http.GetFromJsonAsync<List<GenreAM>>("/api/Genres");
             return result;
         }
 
-        public Task<GenreVM> GetGenre(int id)
+        public Task<GenreAM> GetGenre(int id)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<int> PutGenre(int id, GenreVM request)
+        public async Task<int> PutGenre(int id, GenreAM request)
         {
             var response = await _http.PutAsJsonAsync($"/api/Genres/{id}", request);
             return (int)response.StatusCode;
         }
 
-        public async Task<int> PostGenre(GenreVM request)
+        public async Task<int> PostGenre(GenreAM request)
         {
             var response = await _http.PostAsJsonAsync($"/api/Genres", request);
             return (int)response.StatusCode;

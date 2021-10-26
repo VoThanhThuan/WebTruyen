@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.WebUtilities;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.UI.Admin.RequestClient;
 using WebTruyen.UI.Admin.Service.ChapterService;
 using WebTruyen.UI.Admin.Service.ComicService;
@@ -32,11 +32,11 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
 
         [Inject] NavigationManager _navigationManager { get; set; }
 
-        private ComicVM _comic = new ComicVM();
+        private ComicAM _comic = new ComicAM();
         private ComicRequestClient _comicRequest = new ComicRequestClient();
-        private List<ChapterVM> _chapters = new List<ChapterVM>();
-        private List<PageVM> _pages = new List<PageVM>();
-        private List<GenreVM> _genreRequest = new List<GenreVM>();
+        private List<ChapterAM> _chapters = new List<ChapterAM>();
+        private List<PageAM> _pages = new List<PageAM>();
+        private List<GenreAM> _genreRequest = new List<GenreAM>();
 
         private ViewElement _element = new ViewElement();
 
@@ -95,7 +95,7 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
         }
         private async void GetChapters()
         {
-            _chapters = new List<ChapterVM>();
+            _chapters = new List<ChapterAM>();
             _chapters = (await _ChapterApi.GetChaptersInComic(_comic.Id)).OrderByDescending(x => x.Ordinal).ToList();
             StateHasChanged();
 
@@ -165,9 +165,9 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
             StateHasChanged();
         }
 
-        void AddGenre((int index, bool check, GenreVM value) genre)
+        void AddGenre((int index, bool check, GenreAM value) genre)
         {
-            var g = _element.GenreVM[genre.index];
+            var g = _element.GenreAM[genre.index];
             g.check = !g.check;
             if (g.check)
             {
@@ -178,13 +178,13 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
             }
             else
             {
-                var genreRemove = _genreRequest.FirstOrDefault(genreVm => genreVm.Id == g.value.Id);
+                var genreRemove = _genreRequest.FirstOrDefault(GenreAM => GenreAM.Id == g.value.Id);
                 _genreRequest.Remove(genreRemove);
 
                 _element.AllGenreChoose = _element.AllGenreChoose.Replace($"{g.value.Name};", "");
                 StateHasChanged();
             }
-            _element.GenreVM[genre.index] = g;
+            _element.GenreAM[genre.index] = g;
         }
 
         void NavigateToComponent()
@@ -230,7 +230,7 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
 
         async void OpenGenre()
         {
-            if (_element.GenreVM.Any()) return;
+            if (_element.GenreAM.Any()) return;
             var result = await _genreApi.GetGenres();
 
             var index = 0;
@@ -240,12 +240,12 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
             {
                 var isCheck = false;
 
-                foreach (var genreVm in _genreRequest.Where(genreVm => genre.Id == genreVm.Id))
+                foreach (var GenreAM in _genreRequest.Where(GenreAM => genre.Id == GenreAM.Id))
                 {
                     isCheck = true;
                 }
 
-                _element.GenreVM.Add(isCheck ? (index, true, genre) : (index, false, genre));
+                _element.GenreAM.Add(isCheck ? (index, true, genre) : (index, false, genre));
                 index++;
             }
 
@@ -287,7 +287,7 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
             public string ThumbnailComic { get; set; } = "";
             public int Apiresult { get; set; } = 0;
 
-            public List<(int index, bool check, GenreVM value)> GenreVM { get; set; } = new List<(int index, bool check, GenreVM value)>();
+            public List<(int index, bool check, GenreAM value)> GenreAM { get; set; } = new List<(int index, bool check, GenreAM value)>();
             public string AllGenreChoose { get; set; } = "";
             public string ContentAlert { get; set; } = "";
 

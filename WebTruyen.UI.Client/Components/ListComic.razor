@@ -1,4 +1,4 @@
-﻿@using WebTruyen.Library.Entities.ViewModel
+﻿@using WebTruyen.Library.Entities.ApiModel;
 @using WebTruyen.UI.Client.Service.ChapterService
 @using WebTruyen.UI.Client.Service.ComicService
 <div class="col-lg-8" name="list-truyen">
@@ -47,7 +47,7 @@
     [Inject] IComicApiClient _comicApi { get; set; }
     [Inject] IChapterApiClient _chapterApi { get; set; }
 
-    private List<(ComicVM comic, List<ChapterVM> chapters)> _listComic = new List<(ComicVM comic, List<ChapterVM> chapters)>();
+    private List<(ComicAM comic, List<ChapterAM> chapters)> _listComic = new List<(ComicAM comic, List<ChapterAM> chapters)>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

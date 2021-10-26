@@ -2,9 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace WebTruyen.Library.Entities.ViewModel
+namespace WebTruyen.Library.Entities.ApiModel
 {
-    public class ChapterVM
+    public class ChapterAM
     {
         public Chapter ToChapter()
         {

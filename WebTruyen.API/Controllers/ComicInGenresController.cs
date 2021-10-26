@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Repository.ComicInGenre;
 using WebTruyen.Library.Data;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -24,14 +24,14 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/ComicInGenres
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ComicInGenreVM>>> GetComicInGenres()
+        public async Task<ActionResult<IEnumerable<ComicInGenreAM>>> GetComicInGenres()
         {
             return Ok(await _comicInGenre.GetComicInGenres());
         }
 
         // GET: api/ComicInGenres/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ComicInGenreVM>> GetComicInGenre(int id)
+        public async Task<ActionResult<ComicInGenreAM>> GetComicInGenre(int id)
         {
             var comicInGenre = await _comicInGenre.GetComicInGenre(id);
 
@@ -46,7 +46,7 @@ namespace WebTruyen.API.Controllers
         // PUT: api/ComicInGenres/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutComicInGenre(int id, ComicInGenreVM comicInGenre)
+        public async Task<IActionResult> PutComicInGenre(int id, ComicInGenreAM comicInGenre)
         {
             if (id != comicInGenre.IdGenre)
             {
@@ -66,7 +66,7 @@ namespace WebTruyen.API.Controllers
         // POST: api/ComicInGenres
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ComicInGenreVM>> PostComicInGenre(ComicInGenreVM comicInGenre)
+        public async Task<ActionResult<ComicInGenreAM>> PostComicInGenre(ComicInGenreAM comicInGenre)
         {
             var result = await _comicInGenre.PostComicInGenre(comicInGenre);
             

@@ -33,3 +33,11 @@ window.onscroll = function () {
     }
     prevScrollpos = currentScrollPos;
 }
+
+document.addEventListener('click', function (e) {
+    if (e.target && e.target.id == 'goto_comment') {
+        $("#comment").scrollIntoView({
+            behavior: "smooth"
+        });
+    }
+});

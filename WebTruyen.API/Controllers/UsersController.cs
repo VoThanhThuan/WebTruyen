@@ -15,7 +15,7 @@ using WebTruyen.API.Service;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
 using WebTruyen.Library.Entities.Request;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -63,7 +63,7 @@ namespace WebTruyen.API.Controllers
         // GET: api/GetUserByAccessToken
         [HttpGet("GetUserByAccessToken")]
         [AllowAnonymous]
-        public async Task<ActionResult<UserVM>> GetUserByAccessToken()
+        public async Task<ActionResult<UserAM>> GetUserByAccessToken()
         {
 
             var userID = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.NameIdentifier)?.Value;
@@ -82,7 +82,7 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserVM>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserAM>>> GetUsers()
         {
             if (HttpContext.User.Identity is ClaimsIdentity identity)
             {
@@ -94,7 +94,8 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserVM>> GetUser(Guid id)
+        [AllowAnonymous]
+        public async Task<ActionResult<UserAM>> GetUser(Guid id)
         {
             var user = await _user.GetUser(id);
 
@@ -127,7 +128,7 @@ namespace WebTruyen.API.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize(Roles = "Admin")]
         [Consumes("multipart/form-data")]
-        public async Task<ActionResult<UserVM>> PostUser([FromForm]UserRequest user)
+        public async Task<ActionResult<UserAM>> PostUser([FromForm]UserRequest user)
         {
             if (user.Password != user.ConfirmPassword)
                 return BadRequest();

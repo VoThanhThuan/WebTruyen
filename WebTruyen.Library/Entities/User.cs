@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.Library.Entities
 {
     public class User : IdentityUser<Guid>
     {
-        public UserVM ToViewModel()
+        public UserAM ToApiModel()
         {
-            return new UserVM()
+            return new UserAM()
             {
                 Id = Id,
                 Nickname = Nickname,
@@ -23,13 +23,12 @@ namespace WebTruyen.Library.Entities
                 Email = Email,
                 PhoneNumber = PhoneNumber,
                 Username = UserName,
-                Password = PasswordHash
-        };
+            };
         }
 
-        public async Task<UserVM> ToViewModel(UserManager<Library.Entities.User> userManager)
+        public async Task<UserAM> ToApiModel(UserManager<Library.Entities.User> userManager)
         {
-            var user = new UserVM()
+            var user = new UserAM()
             {
                 Id = Id,
                 Nickname = Nickname,
@@ -40,8 +39,7 @@ namespace WebTruyen.Library.Entities
                 Fanpage = Fanpage,
                 Email = Email,
                 PhoneNumber = PhoneNumber,
-                Username = UserName,
-                Password = PasswordHash
+                Username = UserName
             };
             user.RoleName = (await userManager.GetRolesAsync(this))[0];
             return user;

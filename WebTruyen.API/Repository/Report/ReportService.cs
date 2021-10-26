@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.Library.Data;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Repository.Report
 {
@@ -16,19 +16,19 @@ namespace WebTruyen.API.Repository.Report
         {
             _context = context;
         }
-        public async Task<IEnumerable<ReportVM>> GetReport()
+        public async Task<IEnumerable<ReportAM>> GetReport()
         {
-            return await _context.Report.Select(x => x.ToViewModel()).ToListAsync();
+            return await _context.Report.Select(x => x.ToApiModel()).ToListAsync();
         }
 
-        public async Task<ReportVM> GetReport(Guid id)
+        public async Task<ReportAM> GetReport(Guid id)
         {
             var report = await _context.Report.FindAsync(id);
 
-            return report?.ToViewModel();
+            return report?.ToApiModel();
         }
 
-        public async Task<bool> PutReport(Guid id, ReportVM request)
+        public async Task<bool> PutReport(Guid id, ReportAM request)
         {
             _context.Entry(request.ToReport()).State = EntityState.Modified;
 
@@ -51,7 +51,7 @@ namespace WebTruyen.API.Repository.Report
             return true;
         }
 
-        public async Task<bool> PostReport(ReportVM request)
+        public async Task<bool> PostReport(ReportAM request)
         {
             _context.Report.Add(request.ToReport());
             try

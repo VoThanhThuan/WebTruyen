@@ -4,18 +4,18 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using WebTruyen.Library.Entities.Request;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.UI.Admin.Service.ChapterService
 {
     public interface IChapterService
     {
-        public Task<IEnumerable<ChapterVM>> GetChapters();
-        public Task<ChapterVM> GetChapter(Guid id);
-        public Task<ChapterVM> GetLastChapter(Guid idComic);
-        public Task<List<ChapterVM>> GetChaptersInComic(Guid idComic);
-        public Task<int> PutChapter(Guid id, ChapterVM chapter, List<(byte[] image, string nameFile)> images);
-        public Task<(HttpStatusCode StatusCode, ChapterVM Content)> PostChapter(ChapterVM chapter, List<(byte[] image, string nameFile)> images);
+        public Task<IEnumerable<ChapterAM>> GetChapters();
+        public Task<ChapterAM> GetChapter(Guid id);
+        public Task<ChapterAM> GetLastChapter(Guid idComic);
+        public Task<List<ChapterAM>> GetChaptersInComic(Guid idComic);
+        public Task<int> PutChapter(Guid id, ChapterAM chapter, List<(byte[] image, string nameFile)> images);
+        public Task<(HttpStatusCode StatusCode, ChapterAM Content)> PostChapter(ChapterAM chapter, List<(byte[] image, string nameFile)> images);
         public Task<int> DeleteChapter(Guid id);
 
     }

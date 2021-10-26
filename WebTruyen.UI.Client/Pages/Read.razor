@@ -2,7 +2,7 @@
 @using WebTruyen.UI.Client.Service.ComicService
 @using WebTruyen.UI.Client.Service.ChapterService
 @using WebTruyen.UI.Client.Service.PageService
-@using WebTruyen.Library.Entities.ViewModel
+@using WebTruyen.Library.Entities.ApiModel;
 @using WebTruyen.Library.Entities
 @using Microsoft.Data.SqlClient
 @using WebTruyen.UI.Client.Service.ImageService
@@ -78,7 +78,7 @@
                     </div>
                     <div class="d-flex justify-content-center">
                         <button type="button" class="btn btn-danger m-1">Báo Lỗi</button>
-                        <button type="button" class="btn btn-primary m-1">Bình Luận</button>
+                        <a id="goto_comment" class="btn btn-primary m-1">Bình Luận</a>
                     </div>
                 </div>
             </div>
@@ -102,7 +102,7 @@
             </div>
             <!-- End [Danh sách chap truyện] -->
             <!-- Comment -->
-            <Comment></Comment>
+            <Comment _IdChapter="@IdChapter"></Comment>
             <!-- End [Comment] -->
         </div>
     </div>
@@ -119,10 +119,10 @@
     [Inject] IImageService _imageApi { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
 
-    public ComicVM _Comic { get; set; } = new ComicVM();
-    public ChapterVM _Chapter { get; set; } = new ChapterVM();
-    public List<ChapterVM> _Chapters { get; set; } = new List<ChapterVM>();
-    public List<PageVM> _Pages { get; set; } = new List<PageVM>();
+    public ComicAM _Comic { get; set; } = new();
+    public ChapterAM _Chapter { get; set; } = new();
+    public List<ChapterAM> _Chapters { get; set; } = new();
+    public List<PageAM> _Pages { get; set; } = new();
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -141,11 +141,11 @@
         _Comic = await _comicApi.GetComic(_Chapter.IdComic);
         _Chapters = await _chapterApi.GetChaptersInComic(_Comic.Id);
 
-        _Pages = new List<PageVM>();
+        _Pages = new List<PageAM>();
 
         if (_Chapter.IsLock)
         {
-            var page = new PageVM()
+            var page = new PageAM()
             {
                 Image = "./resources/img/Psyduck-image-404.png"
             };

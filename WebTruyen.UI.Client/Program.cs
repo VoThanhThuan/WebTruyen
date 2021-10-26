@@ -11,6 +11,7 @@ using Blazored.LocalStorage;
 using Blazored.SessionStorage;
 using WebTruyen.UI.Client.Service.ChapterService;
 using WebTruyen.UI.Client.Service.ComicService;
+using WebTruyen.UI.Client.Service.CommentService;
 using WebTruyen.UI.Client.Service.GenreService;
 using WebTruyen.UI.Client.Service.ImageService;
 using WebTruyen.UI.Client.Service.PageService;
@@ -37,6 +38,7 @@ namespace WebTruyen.UI.Client
             builder.Services.AddTransient<IGenreService, GenreService>();
             builder.Services.AddTransient<IImageService, ImageService>();
             builder.Services.AddTransient<IUserService, UserService>();
+            builder.Services.AddTransient<ICommentService, CommentService>();
 
             await builder.Build().RunAsync();
         }

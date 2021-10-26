@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.Library.Entities
 {
     public class Report
     {
-        public ReportVM ToViewModel()
+        public ReportAM ToApiModel()
         {
-            return new ReportVM()
+            return new ReportAM()
             {
                 Content = Content,
                 IdChapter = IdChapter,

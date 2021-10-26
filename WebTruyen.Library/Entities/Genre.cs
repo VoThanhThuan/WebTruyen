@@ -4,15 +4,15 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.Library.Entities
 {
     public class Genre
     {
-        public GenreVM ToViewModel()
+        public GenreAM ToApiModel()
         {
-            return new GenreVM()
+            return new GenreAM()
             {
                 Id = Id,
                 Name = Name,

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.Library.Data;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Repository.Announcement
 {
@@ -17,19 +17,19 @@ namespace WebTruyen.API.Repository.Announcement
             _context = context;
         }
 
-        public async Task<IEnumerable<AnnouncementVM>> GetAnnouncements()
+        public async Task<IEnumerable<AnnouncementAM>> GetAnnouncements()
         {
-            return await _context.NewComicAnnouncements.Select(x => x.ToViewModel()).ToListAsync();
+            return await _context.NewComicAnnouncements.Select(x => x.ToApiModel()).ToListAsync();
         }
 
-        public async Task<AnnouncementVM> GetAnnouncement(Guid id)
+        public async Task<AnnouncementAM> GetAnnouncement(Guid id)
         {
             var newComicAnnouncement = await _context.NewComicAnnouncements.FindAsync(id);
 
-            return newComicAnnouncement?.ToViewModel();
+            return newComicAnnouncement?.ToApiModel();
         }
 
-        public async Task<bool> PutAnnouncement(Guid id, AnnouncementVM request)
+        public async Task<bool> PutAnnouncement(Guid id, AnnouncementAM request)
         {
             _context.Entry(request.ToNewComicAnnouncement()).State = EntityState.Modified;
 
@@ -52,7 +52,7 @@ namespace WebTruyen.API.Repository.Announcement
             return true;
         }
 
-        public async Task<bool> PostAnnouncement(AnnouncementVM request)
+        public async Task<bool> PostAnnouncement(AnnouncementAM request)
         {
             _context.NewComicAnnouncements.Add(request.ToNewComicAnnouncement());
             try

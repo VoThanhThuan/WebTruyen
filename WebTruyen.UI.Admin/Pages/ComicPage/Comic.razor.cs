@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.UI.Admin.Service.ComicService;
 using WebTruyen.UI.Admin.Service.ImageService;
 
@@ -14,7 +14,7 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
     {
         [Inject] private IComicApiClient _ComicApi { get; set; }
         [Inject] private IImageService _image { get; set; }
-        private IEnumerable<ComicVM> _comics;
+        private IEnumerable<ComicAM> _comics;
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             await base.OnAfterRenderAsync(firstRender);

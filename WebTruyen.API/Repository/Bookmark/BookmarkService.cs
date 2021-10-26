@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.Library.Data;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.Library.Enums;
 
 namespace WebTruyen.API.Repository.Bookmark
@@ -18,19 +18,19 @@ namespace WebTruyen.API.Repository.Bookmark
             _context = context;
         }
 
-        public async Task<IEnumerable<BookmarkVM>> GetBookmarks()
+        public async Task<IEnumerable<BookmarkAM>> GetBookmarks()
         {
-            return await _context.Bookmarks.Select(x => x.ToViewModel()).ToListAsync();
+            return await _context.Bookmarks.Select(x => x.ToApiModel()).ToListAsync();
         }
 
-        public async Task<BookmarkVM> GetBookmark(Guid id)
+        public async Task<BookmarkAM> GetBookmark(Guid id)
         {
             var bookmark = await _context.Bookmarks.FindAsync(id);
 
-            return bookmark?.ToViewModel();
+            return bookmark?.ToApiModel();
         }
 
-        public async Task<bool> PutBookmark(Guid id, BookmarkVM bookmark)
+        public async Task<bool> PutBookmark(Guid id, BookmarkAM bookmark)
         {
 
             _context.Entry(bookmark.ToBookmark()).State = EntityState.Modified;
@@ -54,7 +54,7 @@ namespace WebTruyen.API.Repository.Bookmark
             return true;
         }
 
-        public async Task<bool> PostBookmark(BookmarkVM bookmark)
+        public async Task<bool> PostBookmark(BookmarkAM bookmark)
         {
             _context.Bookmarks.Add(bookmark.ToBookmark());
             try

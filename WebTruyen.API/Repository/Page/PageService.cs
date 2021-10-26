@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Service;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.Request;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Repository.Page
 {
@@ -24,25 +24,25 @@ namespace WebTruyen.API.Repository.Page
             _storage = storage;
         }
 
-        public async Task<IEnumerable<PageVM>> GetPages()
+        public async Task<IEnumerable<PageAM>> GetPages()
         {
             var pages = _context.Pages.Select(x => x).ToList();
-            return await _context.Pages.OrderBy(x => x.SortOrder).Select(x => x.ToViewModel()).ToListAsync();
+            return await _context.Pages.OrderBy(x => x.SortOrder).Select(x => x.ToApiModel()).ToListAsync();
         }
 
-        public async Task<PageVM> GetPage(Guid id)
+        public async Task<PageAM> GetPage(Guid id)
         {
             var page = await _context.Pages.FindAsync(id);
 
-            return page?.ToViewModel();
+            return page?.ToApiModel();
         }
 
-        public async Task<IEnumerable<PageVM>> GetPagesInChapter(Guid idChapter)
+        public async Task<IEnumerable<PageAM>> GetPagesInChapter(Guid idChapter)
         {
             var pages = await _context.Pages
                 .Where(x => x.IdChapter == idChapter)
                 .OrderBy(x => x.SortOrder)
-                .Select(x => x.ToViewModel())
+                .Select(x => x.ToApiModel())
                 .ToListAsync();
 
             return pages;
@@ -151,7 +151,7 @@ namespace WebTruyen.API.Repository.Page
                 
         }
 
-        public async Task<PageVM> PostPage(Guid idChapter, PageRequest request)
+        public async Task<PageAM> PostPage(Guid idChapter, PageRequest request)
         {
             var chapAndComic = (from chap in _context.Chapters
                 where chap.Id == idChapter
@@ -178,7 +178,7 @@ namespace WebTruyen.API.Repository.Page
 
             await _context.SaveChangesAsync();
 
-            return page.ToViewModel();
+            return page.ToApiModel();
         }
 
 

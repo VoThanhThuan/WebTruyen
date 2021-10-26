@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Repository.Bookmark;
 using WebTruyen.Library.Data;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -24,14 +24,14 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Bookmarks
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookmarkVM>>> GetBookmarks()
+        public async Task<ActionResult<IEnumerable<BookmarkAM>>> GetBookmarks()
         {
             return Ok(await _bookmark.GetBookmarks());
         }
 
         // GET: api/Bookmarks/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookmarkVM>> GetBookmark(Guid id)
+        public async Task<ActionResult<BookmarkAM>> GetBookmark(Guid id)
         {
             var result = await _bookmark.GetBookmark(id);
 
@@ -46,7 +46,7 @@ namespace WebTruyen.API.Controllers
         // PUT: api/Bookmarks/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBookmark(Guid id, BookmarkVM bookmark)
+        public async Task<IActionResult> PutBookmark(Guid id, BookmarkAM bookmark)
         {
             if (id != bookmark.IdUser)
             {
@@ -66,7 +66,7 @@ namespace WebTruyen.API.Controllers
         // POST: api/Bookmarks
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<BookmarkVM>> PostBookmark(BookmarkVM bookmark)
+        public async Task<ActionResult<BookmarkAM>> PostBookmark(BookmarkAM bookmark)
         {
             var result = await _bookmark.PostBookmark(bookmark);
             if (result == false)

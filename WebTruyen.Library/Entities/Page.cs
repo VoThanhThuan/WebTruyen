@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.Library.Entities
 {
     public class Page
     {
-        public PageVM ToViewModel()
+        public PageAM ToApiModel()
         {
-            return new PageVM()
+            return new PageAM()
             {
                 Id = Id,
                 Image = Image,

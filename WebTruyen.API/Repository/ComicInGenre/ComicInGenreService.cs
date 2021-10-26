@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.Library.Data;
-using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.API.Repository.ComicInGenre
 {
@@ -17,19 +17,19 @@ namespace WebTruyen.API.Repository.ComicInGenre
             _context = context;
         }
 
-        public async Task<IEnumerable<ComicInGenreVM>> GetComicInGenres()
+        public async Task<IEnumerable<ComicInGenreAM>> GetComicInGenres()
         {
-            return await _context.ComicInGenres.Select(x => x.ToViewModel()).ToListAsync();
+            return await _context.ComicInGenres.Select(x => x.ToApiModel()).ToListAsync();
         }
 
-        public async Task<ComicInGenreVM> GetComicInGenre(int id)
+        public async Task<ComicInGenreAM> GetComicInGenre(int id)
         {
             var comicInGenre = await _context.ComicInGenres.FindAsync(id);
 
-            return comicInGenre?.ToViewModel();
+            return comicInGenre?.ToApiModel();
         }
 
-        public async Task<bool> PutComicInGenre(int id, ComicInGenreVM request)
+        public async Task<bool> PutComicInGenre(int id, ComicInGenreAM request)
         {
             _context.Entry(request.ToComicInGenre()).State = EntityState.Modified;
 
@@ -52,7 +52,7 @@ namespace WebTruyen.API.Repository.ComicInGenre
             return true;
         }
 
-        public async Task<bool> PutComicInGenres(Guid idComic, List<ComicInGenreVM> request)
+        public async Task<bool> PutComicInGenres(Guid idComic, List<ComicInGenreAM> request)
         {
             if (!request.Any()) return false;
             var comic = await _context.ComicInGenres.Where(x => x.IdComic == idComic).ToListAsync();
@@ -70,7 +70,7 @@ namespace WebTruyen.API.Repository.ComicInGenre
             return true;
         }
 
-        public async Task<bool> PostComicInGenre(ComicInGenreVM request)
+        public async Task<bool> PostComicInGenre(ComicInGenreAM request)
         {
             _context.ComicInGenres.Add(request.ToComicInGenre());
             try
