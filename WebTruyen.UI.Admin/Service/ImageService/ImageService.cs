@@ -57,7 +57,7 @@ namespace WebTruyen.UI.Admin.Service.ImageService
         public async Task<string> GetImageFromUrl(string url)
         {
             GetSession();
-            Console.WriteLine($">>> url: {url}");
+            Console.WriteLine($">>> GetImageFromUrl: {url}");
             var result = await _http.GetByteArrayAsync(url);
             return ByteToString(result);
         }

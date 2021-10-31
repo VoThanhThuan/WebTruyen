@@ -50,6 +50,25 @@ namespace WebTruyen.API
                 .AddEntityFrameworkStores<ComicDbContext>()
                 .AddDefaultTokenProviders();
 
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder =>
+                    {
+                        builder.SetIsOriginAllowed(origin => true);
+                        builder.AllowAnyMethod();
+                        builder.AllowAnyHeader();
+                        builder.AllowCredentials();
+                        //builder.WithOrigins("https://localhost:5001", "https://localhost:5002", "https://localhost:5003")
+                        //    .AllowAnyHeader()
+                        //    .AllowAnyMethod()
+                        //    .AllowCredentials();
+
+                    });
+            });
+
+
             services.AddControllers();
             services.AddTransient<IStorageService, FileService>();
             services.AddTransient<IAnnouncementService, AnnouncementService>();
@@ -132,17 +151,7 @@ namespace WebTruyen.API
                         IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes)
                     };
                 });
-            services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy",
-                    builder =>
-                    {
-                        builder.SetIsOriginAllowed((host) => true);
-                        builder.AllowAnyMethod();
-                        builder.AllowAnyHeader();
-                        builder.AllowCredentials();
-                    });
-            });
+
 
         }
 
@@ -164,6 +173,7 @@ namespace WebTruyen.API
             app.UseAuthentication();
 
             app.UseRouting();
+
             app.UseCors("CorsPolicy");
 
             app.UseAuthorization();

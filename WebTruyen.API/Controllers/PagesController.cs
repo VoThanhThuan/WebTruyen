@@ -8,6 +8,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using WebTruyen.API.Repository.Page;
 using WebTruyen.API.Service;
 using WebTruyen.Library.Entities.Request;
@@ -40,25 +41,31 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Pages/image
         [HttpGet]
+        [HttpPost]
         [Route("image")]
-        public IActionResult GetImage([FromQuery] string name, [FromHeader] string authorization)
+        [EnableCors]
+        public IActionResult GetImage([FromQuery] string name)
         {
             //var principal = User as ClaimsPrincipal;
             var check = User.Identity.IsAuthenticated;
             
-            var filePath = Path.Combine(
+             var filePath = Path.Combine(
                 _env.ContentRootPath, "MyStaticFiles", name);
+
+            var normalizedPath= Path.GetFullPath(new Uri(filePath).LocalPath)
+                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                .ToUpperInvariant();
 
             var folder = Path.GetDirectoryName(name);
             if (_storage.FileExists($@"{folder}/chapter.isLock", security: true))
             {
                 if(check)
-                    return PhysicalFile(filePath, "image/jpeg");
+                    return PhysicalFile(normalizedPath, "image/jpeg");
                 return PhysicalFile(Path.Combine(_env.ContentRootPath, "MyStaticFiles", "Psyduck-image-lock.png"), "image/jpeg");
             }
             else
             {
-                return PhysicalFile(filePath, "image/jpeg");
+                return PhysicalFile(normalizedPath, "image/jpeg");
             }
         }
 

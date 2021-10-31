@@ -6,6 +6,7 @@
 @using WebTruyen.Library.Entities
 @using Microsoft.Data.SqlClient
 @using WebTruyen.UI.Client.Service.ImageService
+@using Blazored.SessionStorage
 
 
 <main>
@@ -40,156 +41,167 @@
                                         <p class="fs-3 text-center text-danger">
                                             @if (_Chapter.IsLock)
                                             {
-                                                <p>Chương Này Hiện Tại Đang Bị Khóa</p>
-                                            }
-                                        </p>
+                                            <p>Chương Này Hiện Tại Đang Bị Khóa</p>
+                                        }
+                                            </p>
+                                        </div>
+
+                                        <h2></h2>
+                                        <div class="row">
+                                            <a class="btn btn-primary col-auto" href="#">
+                                                <i class="fas fa-angle-double-left"></i>
+                                            </a>
+                                            <select class="form-select border-0 border-bottom col ms-4 me-4" aria-label="" @onchange="SelectedChapter">
+                                                @foreach (var chap in _Chapters)
+                                                {
+                                                    @if (chap.Id == _Chapter.Id)
+                                                    {
+                                                        <option value="/read/@chap.Id" selected>Chapter @chap.Ordinal @chap.Name</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="/read/@chap.Id">Chapter @chap.Ordinal @chap.Name</option>
+                                                    }
+                                                }
+                                            </select>
+                                            <a class="btn btn-primary col-auto" href="#">
+                                                <i class="fas fa-angle-double-right"></i>
+                                            </a>
+                                        </div>
                                     </div>
 
-                                    <h2></h2>
-                                    <div class="row">
-                                        <a class="btn btn-primary col-auto" href="#">
-                                            <i class="fas fa-angle-double-left"></i>
-                                        </a>
-                                        <select class="form-select border-0 border-bottom col ms-4 me-4" aria-label="" @onchange="SelectedChapter">
-                                            @foreach (var chap in _Chapters)
-                                            {
-                                                @if (chap.Id == _Chapter.Id)
-                                                {
-                                                    <option value="/read/@chap.Id" selected>Chapter @chap.Ordinal @chap.Name</option>
-                                                }
-                                                else
-                                                {
-                                                    <option value="/read/@chap.Id">Chapter @chap.Ordinal @chap.Name</option>
-                                                }
-                                            }
-                                        </select>
-                                        <a class="btn btn-primary col-auto" href="#">
-                                            <i class="fas fa-angle-double-right"></i>
-                                        </a>
-                                    </div>
+
                                 </div>
+                                <div class="listchap-section">
 
-
-                            </div>
-                            <div class="listchap-section">
-
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="d-flex justify-content-center">
-                        <button type="button" class="btn btn-danger m-1">Báo Lỗi</button>
-                        <a id="goto_comment" class="btn btn-primary m-1">Bình Luận</a>
-                    </div>
-                </div>
-            </div>
-            <!-- End [Thông tin truyện] -->
-            <!-- Danh sách chap truyện -->
-            <div class="listchap-section mb-4">
-                <div class="content p-2 rounded-5">
-                    <div id="chapter-content">
-                        <!-- Hình ảnh -->
-                        @foreach (var item in _Pages)
-                        {
-                            <img src="@item.Image" alt="@item.Id">
-                        }
-
-                        <!-- End [Hình truyện] -->
-                    </div>
-
-                    <div>
+                        <div class="d-flex justify-content-center">
+                            <button type="button" class="btn btn-danger m-1">Báo Lỗi</button>
+                            <a id="goto_comment" class="btn btn-primary m-1">Bình Luận</a>
+                        </div>
                     </div>
                 </div>
+                <!-- End [Thông tin truyện] -->
+                <!-- Danh sách chap truyện -->
+                <div class="listchap-section mb-4">
+                    <div class="content p-2 rounded-5">
+                        <div id="chapter-content">
+                            <!-- Hình ảnh -->
+                            @foreach (var item in _Pages)
+                            {
+                                <img src="@item.Image" alt="@item.Id">
+                            }
+
+                            <!-- End [Hình truyện] -->
+                        </div>
+
+                        <div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End [Danh sách chap truyện] -->
+                <!-- Comment -->
+                <Comment _IdChapter="@IdChapter"></Comment>
+                <!-- End [Comment] -->
             </div>
-            <!-- End [Danh sách chap truyện] -->
-            <!-- Comment -->
-            <Comment _IdChapter="@IdChapter"></Comment>
-            <!-- End [Comment] -->
         </div>
-    </div>
-</main>
+    </main>
 
 
 
-@code {
-    [Parameter] public string IdChapter { get; set; }
+    @code {
+        [Parameter] public string IdChapter { get; set; }
 
-    [Inject] IComicApiClient _comicApi { get; set; }
-    [Inject] IChapterApiClient _chapterApi { get; set; }
-    [Inject] IPageService _pageService { get; set; }
-    [Inject] IImageService _imageApi { get; set; }
-    [Inject] NavigationManager _navigationManager { get; set; }
+        [Inject] IComicApiClient _comicApi { get; set; }
+        [Inject] IChapterApiClient _chapterApi { get; set; }
+        [Inject] IPageService _pageService { get; set; }
+        [Inject] IImageService _imageApi { get; set; }
+        [Inject] ISessionStorageService _sessionStorage { get; set; }
+        [Inject] NavigationManager _navigationManager { get; set; }
 
-    public ComicAM _Comic { get; set; } = new();
-    public ChapterAM _Chapter { get; set; } = new();
-    public List<ChapterAM> _Chapters { get; set; } = new();
-    public List<PageAM> _Pages { get; set; } = new();
+        public ComicAM _Comic { get; set; } = new();
+        public ChapterAM _Chapter { get; set; } = new();
+        public List<ChapterAM> _Chapters { get; set; } = new();
+        public List<PageAM> _Pages { get; set; } = new();
 
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            await GetDataChapter();
-        }
-    }
-
-    async Task GetDataChapter()
-    {
-        _Chapter = await _chapterApi.GetChapter(Guid.Parse(IdChapter));
-        Console.WriteLine($">>>Trạng thái chap lock: {_Chapter.IsLock}");
-
-        _Comic = await _comicApi.GetComic(_Chapter.IdComic);
-        _Chapters = await _chapterApi.GetChaptersInComic(_Comic.Id);
-
-        _Pages = new List<PageAM>();
-
-        if (_Chapter.IsLock)
-        {
-            var page = new PageAM()
+            if (firstRender)
             {
-                Image = "./resources/img/Psyduck-image-404.png"
-            };
-            _Pages.Add(page);
-            StateHasChanged();
-        }
-        else
-        {
-            await GetPages();
-        }
-        StateHasChanged();
-    }
-
-    #region Giao Tiếp Server
-
-    async Task GetPages()
-    {
-        var pages = await _pageService.GetPagesInChapter(_Chapter.Id);
-        if (_Chapter.IsLock)
-        {
-            foreach (var page in pages)
-            {
-                page.Image = await _imageApi.GetImageFromUrl(page.Image);
-                _Pages.Add(page);
-                StateHasChanged();
+                await GetDataChapter();
             }
         }
-        else
+
+        async Task GetDataChapter()
         {
-            _Pages = pages;
+            _Chapter = await _chapterApi.GetChapter(Guid.Parse(IdChapter));
+            Console.WriteLine($">>>Trạng thái chap lock: {_Chapter.IsLock}");
+
+            _Comic = await _comicApi.GetComic(_Chapter.IdComic);
+            _Chapters = await _chapterApi.GetChaptersInComic(_Comic.Id);
+
+            _Pages = new List<PageAM>();
+
+            if (_Chapter.IsLock)
+            {
+                var token = await _sessionStorage.GetItemAsStringAsync("Token");
+                //Console.WriteLine($">>Token: {token}");
+                if (string.IsNullOrEmpty(token))
+                {
+                    var page = new PageAM()
+                    {
+                        Image = "./resources/img/Psyduck-image-404.png"
+                    };
+                    _Pages.Add(page);
+
+                    StateHasChanged();
+                }
+                else
+                {
+                    await GetPages();
+                }
+            }
+            else
+            {
+                await GetPages();
+            }
             StateHasChanged();
         }
 
+        #region Giao Tiếp Server
+
+        async Task GetPages()
+        {
+            var pages = await _pageService.GetPagesInChapter(_Chapter.Id);
+            if (_Chapter.IsLock)
+            {
+                foreach (var page in pages)
+                {
+                    page.Image = await _imageApi.GetImageFromUrl(page.Image);
+                    _Pages.Add(page);
+                    StateHasChanged();
+                }
+            }
+            else
+            {
+                _Pages = pages;
+                StateHasChanged();
+            }
+
+        }
+
+        #endregion
+
+        #region Xử lý dữ liệu
+
+        async Task SelectedChapter(ChangeEventArgs e)
+        {
+            _navigationManager.NavigateTo($"{e.Value}");
+            await GetDataChapter();
+        }
+
+        #endregion
     }
-
-    #endregion
-
-    #region Xử lý dữ liệu
-
-    async Task SelectedChapter(ChangeEventArgs e)
-    {
-        _navigationManager.NavigateTo($"{e.Value}");
-        await GetDataChapter();
-    }
-
-    #endregion
-}

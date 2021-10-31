@@ -21,6 +21,7 @@ using WebTruyen.UI.Admin.Service.RoleService;
 using WebTruyen.UI.Admin.Service.UserService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Net.Http.Headers;
 using WebTruyen.UI.Admin.Service;
 
 namespace WebTruyen.UI.Admin
@@ -121,6 +122,8 @@ namespace WebTruyen.UI.Admin
             app.UseCookiePolicy();
 
             app.UseSession();
+
+
 
             app.UseEndpoints(endpoints =>
             {

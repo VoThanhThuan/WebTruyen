@@ -175,7 +175,7 @@
         }
         else
         {
-            _ListComment = await _commentApi.GetCommentInChapter(Guid.Parse(_IdComic), _element.Take, _element.Skip);
+            _ListComment = await _commentApi.GetCommentInChapter(Guid.Parse(_IdChapter), _element.Take, _element.Skip);
         }
         Console.WriteLine($"_ListComment >>> {_ListComment.Count}");
         foreach (var comment in _ListComment)

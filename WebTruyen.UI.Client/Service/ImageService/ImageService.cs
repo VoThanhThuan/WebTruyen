@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.WebAssembly.Http;
 
 namespace WebTruyen.UI.Client.Service.ImageService
 {
@@ -24,6 +25,7 @@ namespace WebTruyen.UI.Client.Service.ImageService
         private async void GetSession()
         {
             var sessions = (await _sessionStorage.GetItemAsync<string>("Token"));
+
             _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
         }
 
@@ -52,19 +54,24 @@ namespace WebTruyen.UI.Client.Service.ImageService
 
         public string ByteToString(byte[] value)
         {
+
             return $"data:image/jpg;base64,{Convert.ToBase64String(value)}";
         }
 
         public async Task<string> GetImageFromUrl(string url)
         {
             GetSession();
-            var result = await _http.GetAsync(url);
+
+            var content = new StringContent(url);
+            var result = await _http.PostAsync(url, content);
+            //Console.WriteLine($">>> GetImageFromUrl: reusult: {result}");
             if (result.IsSuccessStatusCode)
             {
                 return ByteToString(await result.Content.ReadAsByteArrayAsync());
             }
             //var result = await _http.GetByteArrayAsync(url);
-            return "./resources/img/Psyduck-image-404.png";
+            //return "./resources/img/Psyduck-image-404.png";
+            return url;
         }
 
         public async IAsyncEnumerable<byte[]> ImagesToByte(IReadOnlyList<IBrowserFile> imgs)

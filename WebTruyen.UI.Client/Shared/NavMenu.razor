@@ -308,6 +308,7 @@ else
         var user = await _userApi.GetUserByAccessTokenAsync(token);
         if (user is not null)
         {
+            //Console.WriteLine($">>> GetUserByToken: check user: ok");
             _element.IsSignIn = true;
             _element.User = user;
 
