@@ -57,7 +57,7 @@ namespace WebTruyen.UI.Admin.Service.ImageService
         public async Task<string> GetImageFromUrl(string url)
         {
             GetSession();
-
+            Console.WriteLine($">>> url: {url}");
             var result = await _http.GetByteArrayAsync(url);
             return ByteToString(result);
         }
@@ -74,22 +74,22 @@ namespace WebTruyen.UI.Admin.Service.ImageService
             GC.Collect();
         }
 
-        public async IAsyncEnumerable<((byte[] data, string fileName) image, string stringValue)> ImagesToString(
+        public async IAsyncEnumerable<((byte[] data, string fileName, string contentType) image, string stringValue)> ImagesToString(
             IReadOnlyList<IBrowserFile> imgs)
         {
             foreach (var img in imgs)
             {
                 if (img.Size > 2048000L)
-                    yield return (imge: (data: null, fileName: null), stringValue: null);
+                    yield return (imge: (data: null, fileName: null, contentType: null), stringValue: null);
                 var buffer = new byte[img.Size];
                 await using var br = img.OpenReadStream(maxAllowedSize: 2048000L);
                 await br.ReadAsync(buffer);
                 br.Close();
-                var format = img.ContentType; //lấy định dạng file
+                var contentType = img.ContentType; //lấy định dạng file
 
-                var dataString = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+                var dataString = $"data:{contentType};base64,{Convert.ToBase64String(buffer)}";
 
-                var value = (imge: (data: buffer, fileName: img.Name), stringValue: dataString);
+                var value = (imge: (data: buffer, fileName: img.Name, contentType), stringValue: dataString);
 
                 yield return value;
             }

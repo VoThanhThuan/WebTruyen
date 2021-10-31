@@ -82,9 +82,11 @@ namespace WebTruyen.API.Repository.Comic
             var path = $"comic-collection/{comic.Id}";
             if (request.Thumbnail != null)
             {
-                if(comic.Thumbnail != null)
+                if (comic.Thumbnail != null && _storageService.ImageIsValid(request.Thumbnail))
+                {
                     await _storageService.DeleteFileAsync(comic.Thumbnail, security: true);
-                comic.Thumbnail = $@"api/Pages/image?name={await _storageService.SaveFile(request.Thumbnail, path, security: true)}";
+                    comic.Thumbnail = $@"api/Pages/image?name={await _storageService.SaveFile(request.Thumbnail, path, security: true)}";
+                }
             }
             try
             {
@@ -119,7 +121,8 @@ namespace WebTruyen.API.Repository.Comic
             if (!folder.Exists)
                 return null;
 
-            comic.Thumbnail = $@"api/Pages/image?name={await _storageService.SaveFile(request.Thumbnail, path, security: true)}";
+            if (comic.Thumbnail != null && _storageService.ImageIsValid(request.Thumbnail))
+                comic.Thumbnail = $@"api/Pages/image?name={await _storageService.SaveFile(request.Thumbnail, path, security: true)}";
 
             _context.Comics.Add(comic);
             await _context.SaveChangesAsync();

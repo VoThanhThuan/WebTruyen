@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.Request;
@@ -66,7 +67,7 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
             }
             return null;
         }
-        public async Task<int> PutChapter(Guid id, ChapterAM chapter, List<(byte[] image, string nameFile)> images)
+        public async Task<int> PutChapter(Guid id, ChapterAM chapter, List<(byte[] image, string nameFile, string contentType)> images)
         {
             await GetSession();
 
@@ -77,6 +78,7 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
                 foreach (var image in images)
                 {
                     var bytes = new ByteArrayContent(image.image);
+                    bytes.Headers.ContentType = new MediaTypeHeaderValue(image.contentType);
 
                     requestContent.Add(bytes, "pages", image.nameFile);
 
@@ -94,11 +96,12 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
         }
 
 
-        public async Task<(HttpStatusCode StatusCode, ChapterAM Content)> PostChapter(ChapterAM chapter, List<(byte[] image, string nameFile)> images)
+        public async Task<(HttpStatusCode StatusCode, ChapterAM Content)> PostChapter(ChapterAM chapter, List<(byte[] image, string nameFile, string contentType)> images)
         {
             await GetSession();
 
             var requestContent = new MultipartFormDataContent();
+            //requestContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
 
             requestContent.Add(new StringContent(chapter.Id.ToString()), "Id");
             requestContent.Add(new StringContent(chapter.Name), "Name");
@@ -117,13 +120,15 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
                     var j = 0;
 
                     var bytes = new ByteArrayContent(images[i].image);
+                    bytes.Headers.ContentType = new MediaTypeHeaderValue(images[0].contentType);
                     requestContent.Add(bytes, "pages", images[i].nameFile);
 
                     response = await _http.PostAsync($"/api/Chapters", requestContent);
 
                     if (!response.IsSuccessStatusCode) return (response.StatusCode, resultPost);
-                    requestContent = new MultipartFormDataContent();
                     resultPost = await response.Content.ReadFromJsonAsync<ChapterAM>();
+                    requestContent = new MultipartFormDataContent();
+
                     for (i = 1; i < images.Count; i++)
                     {
                         bytes = new ByteArrayContent(images[i].image);
@@ -147,11 +152,12 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
                     foreach (var image in images)
                     {
                         var bytes = new ByteArrayContent(image.image);
+                        bytes.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
 
                         requestContent.Add(bytes, "pages", image.nameFile);
 
                     }
-                    response = await _http.PostAsync($"/api/ContinuePostChapter", requestContent);
+                    response = await _http.PostAsync($"/api/Chapters", requestContent);
                     resultPost = await response.Content.ReadFromJsonAsync<ChapterAM>();
                 }
 

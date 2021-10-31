@@ -107,13 +107,18 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
 
             if (!_IsDeleteChapter)
             {
+                var chaper = _chapters.FirstOrDefault(x => x.Id == idChapter);
                 _pages = await _PageApi.GetPagesInChapter(idChapter);
-                foreach (var page in _pages)
+                if (chaper.IsLock)
                 {
-                    page.Image = await _image.GetImageFromUrl(page.Image);
-                    StateHasChanged();
+                    foreach (var page in _pages)
+                    {
+                        page.Image = await _image.GetImageFromUrl(page.Image);
+                        StateHasChanged();
 
+                    }
                 }
+                StateHasChanged();
             }
             else
             {

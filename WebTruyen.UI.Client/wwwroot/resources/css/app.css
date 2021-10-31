@@ -65,6 +65,7 @@ ul {
     width: auto;
     max-width: 584px;
     flex: 0 1 728px;
+    position: relative;
 }
 
 .search-content {
@@ -276,8 +277,8 @@ ul.list-chapters {
 
 
 .pop-menu {
-    position: fixed;
-    top: 60px;
+    position: absolute;
+    top: 50px;
     border-radius: 0.5rem;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 9999;
@@ -291,7 +292,7 @@ ul.list-chapters {
 .pop-menu-center {
     left: 50%;
     transform: translateX(-50%);
-    width: 33.33%;
+    width: 100%;
 }
 
 .background-click {
@@ -557,9 +558,7 @@ ul.list-chapters {
 }
 
 @media only screen and (max-width: 576px) {
-    .pop-menu {
-        top: 120px;
-    }
+
 }
 
 @media only screen and (max-width: 787px) {
@@ -571,9 +570,6 @@ ul.list-chapters {
 }
 
 @media only screen and (max-width: 992px) {
-    .pop-menu-center {
-        width: 66.66666667%;
-    }
 
     .search-bar {
         width: 100%;

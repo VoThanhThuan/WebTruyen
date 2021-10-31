@@ -108,7 +108,10 @@ namespace WebTruyen.API.Controllers
 
             var result = await _page.PostPage(idChapter, requests);
 
-            return CreatedAtAction("GetPage", new { id = result.Id }, requests);
+            if (!result.isSuccess)
+                return BadRequest(result.messages);
+
+            return CreatedAtAction("GetPage", new { id = result.page.Id }, requests);
         }
 
         // DELETE: api/Pages/5

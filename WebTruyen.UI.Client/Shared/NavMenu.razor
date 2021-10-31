@@ -53,6 +53,38 @@ else
                         </div>
 
                     </div>
+
+                    @if (_element.pop_grene)
+                    {
+                        <div class="pop-menu pop-menu-center">
+                            <div class="d-flex">
+                                <div class="card rounded-5 bg-content" name="info">
+                                    <div class="p-2">
+                                        <div class="rounded-5 p-2 border-bottom">
+                                            <a class="navbar-brand" href="#">Thông Tin</a>
+                                        </div>
+
+                                        <div class="d-flex flex-wrap justify-content-evenly">
+                                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
+                                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
+                                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
+                                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
+                                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
+                                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
+                                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
+                                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
+                                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    }
+
+
                 </div>
 
             </form>
@@ -65,126 +97,96 @@ else
                 {
                     <button class="btn btn-primary" style="white-space: nowrap;" @onclick="OpenUserMenu">Đăng Nhập</button>
                 }
+                @if (_element.pop_user)
+                {
+                    <div class="pop-menu pop-menu-right">
+                        <div class="d-flex">
+                            <div class="card rounded-5 bg-content" name="info">
+                                <div class="p-2">
+                                    <div class="rounded-5 p-2 border-bottom">
+                                        <a class="navbar-brand" href="#">Thông Tin</a>
+                                    </div>
+                                    @if (_element.IsSignIn)
+                                    {
+                                        <div class="mt-2">
+                                            <div class="row card-info m-1 mb-3 p-2">
+                                                <div class="col-auto m-auto p-0">
+                                                    <img class="avatar-md rounded-circle" src="@_element.User.Avatar" alt="avatar">
+                                                </div>
+                                                <div class="col d-flex align-items-center">
+                                                    <div class="fs-2">@_element.User.Nickname</div>
+                                                </div>
+                                            </div>
+                                            <div class="content mt-1 m-1">
+                                                <div class="card-info p-2 mt-2">
+                                                    <div class="form-check form-switch">
+                                                        Dảk Mode<input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" @onclick="() => OnDarkMode(_element.OnDark)">
+                                                    </div>
+                                                </div>
+                                                <div class="card-info p-2 mt-2">
+                                                    Truyện đang theo dõi
+                                                </div>
+                                                <div class="card-info p-2 mt-2">
+                                                    Cài đặt tài khoản
+                                                </div>
+                                                <a href="#" class="text">
+                                                    <div class="card-info p-2 mt-2" @onclick="SignOut">
+                                                        Đăng Xuất
+                                                    </div>
+                                                </a>
+                                            </div>
+
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        <div class="mt-2">
+                                            <div class="content mt-1 m-1">
+                                                <div class="card-info p-2 mt-2">
+                                                    <div class="form-check form-switch">
+                                                        Dảk Mode<input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" @onclick="()=>OnDarkMode(_element.OnDark)">
+                                                    </div>
+                                                </div>
+                                                <EditForm Model="LoginRequest" OnValidSubmit="SignIn">
+                                                    <div class="card-info p-2 mt-2">
+                                                        <div class="form-floating">
+                                                            <InputText @bind-Value="LoginRequest.Username" class="form-control" id="floatingInput" placeholder="Username"></InputText>
+                                                            <label for="floatingInput">Username</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-info p-2 mt-2">
+                                                        <div class="form-floating">
+                                                            <InputText @bind-Value="LoginRequest.Password" class="form-control" id="floatingPassword" placeholder="Password"></InputText>
+                                                            <label for="floatingPassword">Password</label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="card-info p-2 mt-2">
+                                                        <input type="submit" class="btn btn-primary me-5" value="Đăng Nhập" />
+                                                        <button class="btn btn-outline-primary">Đăng Ký</button>
+                                                    </div>
+                                                </EditForm>
+
+                                            </div>
+
+                                        </div>
+
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+
             </div>
         </div>
 
     </div>
 </nav>
 
-@if (_element.pop_user)
-{
-    <div class="pop-menu pop-menu-right">
-        <div class="d-flex">
-            <div class="card rounded-5 bg-content" name="info">
-                <div class="p-2">
-                    <div class="rounded-5 p-2 border-bottom">
-                        <a class="navbar-brand" href="#">Thông Tin</a>
-                    </div>
-                    @if (_element.IsSignIn)
-                    {
-                        <div class="mt-2">
-                            <div class="row card-info m-1 mb-3 p-2">
-                                <div class="col-auto m-auto p-0">
-                                    <img class="avatar-md rounded-circle" src="@_element.User.Avatar" alt="avatar">
-                                </div>
-                                <div class="col d-flex align-items-center">
-                                    <div class="fs-2">@_element.User.Nickname</div>
-                                </div>
-                            </div>
-                            <div class="content mt-1 m-1">
-                                <div class="card-info p-2 mt-2">
-                                    <div class="form-check form-switch">
-                                        Dảk Mode<input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" @onclick="() => OnDarkMode(_element.OnDark)">
-                                    </div>
-                                </div>
-                                <div class="card-info p-2 mt-2">
-                                    Truyện đang theo dõi
-                                </div>
-                                <div class="card-info p-2 mt-2">
-                                    Cài đặt tài khoản
-                                </div>
-                                <a href="#" class="text">
-                                    <div class="card-info p-2 mt-2" @onclick="SignOut">
-                                        Đăng Xuất
-                                    </div>
-                                </a>
-                            </div>
-
-                        </div>
-
-                    }
-                    else
-                    {
-                        <div class="mt-2">
-                            <div class="content mt-1 m-1">
-                                <div class="card-info p-2 mt-2">
-                                    <div class="form-check form-switch">
-                                        Dảk Mode<input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" @onclick="()=>OnDarkMode(_element.OnDark)">
-                                    </div>
-                                </div>
-                                <EditForm Model="LoginRequest" OnValidSubmit="SignIn">
-                                    <div class="card-info p-2 mt-2">
-                                        <div class="form-floating">
-                                            <InputText @bind-Value="LoginRequest.Username" class="form-control" id="floatingInput" placeholder="Username"></InputText>
-                                            <label for="floatingInput">Username</label>
-                                        </div>
-                                    </div>
-                                    <div class="card-info p-2 mt-2">
-                                        <div class="form-floating">
-                                            <InputText @bind-Value="LoginRequest.Password" class="form-control" id="floatingPassword" placeholder="Password"></InputText>
-                                            <label for="floatingPassword">Password</label>
-                                        </div>
-                                    </div>
-
-                                    <div class="card-info p-2 mt-2">
-                                        <input type="submit" class="btn btn-primary me-5" value="Đăng Nhập" />
-                                        <button class="btn btn-outline-primary">Đăng Ký</button>
-                                    </div>
-                                </EditForm>
-
-                            </div>
-
-                        </div>
-
-                    }
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-}
-
-
-@if (_element.pop_grene)
-{
-    <div class="pop-menu pop-menu-center">
-        <div class="d-flex">
-            <div class="card rounded-5 bg-content" name="info">
-                <div class="p-2">
-                    <div class="rounded-5 p-2 border-bottom">
-                        <a class="navbar-brand" href="#">Thông Tin</a>
-                    </div>
-
-                    <div class="d-flex flex-wrap justify-content-evenly">
-                        <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
-                        <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
-                        <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
-                        <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
-                        <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
-                        <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
-                        <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
-                        <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
-                        <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-}
 @if (_element.pop_background_click)
 {
     <div class="background-click" @onclick="ClosePopMenu"></div>

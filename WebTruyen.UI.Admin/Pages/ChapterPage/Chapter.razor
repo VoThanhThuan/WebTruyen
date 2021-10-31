@@ -153,7 +153,7 @@
     ViewElement _element = new ViewElement();
     List<PageAM> _Pages { get; set; } = new List<PageAM>();
 
-    List<(byte[] image, string nameFile)> _imageValues = new List<(byte[] image, string nameFile)>();
+    List<(byte[] image, string nameFile, string contentType)> _imageValues = new List<(byte[] image, string nameFile, string contentType)>();
 
     //Xem là đang trong tiến trình tạo mới hay cập nhật
     private bool _isUpdate = true;
@@ -226,7 +226,7 @@
         _element.IsLoadImage = true;
         StateHasChanged();
 
-        _imageValues = new List<(byte[] image, string nameFile)>();
+        _imageValues = new List<(byte[] image, string nameFile, string contentType)>();
         await foreach (var image in imageDataUrl)
         {
             if (!string.IsNullOrEmpty(image.stringValue))

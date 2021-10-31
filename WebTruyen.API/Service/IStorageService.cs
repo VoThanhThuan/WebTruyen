@@ -76,5 +76,22 @@ namespace WebTruyen.API.Service
         public void Move(string sourceDirName, string destDirName, bool security = false);
         public Task<int> DeleteFileAsync(string fileName, bool security = false);
         public Task<int> DeleteFolderAsync(string folder, bool security = false);
+
+        /// <summary>
+        /// <para>kiểm tra định dạng file có hợp lệ hay không</para>
+        /// <para>Các định dạng hỗ trợ: { "image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp" }</para>
+        /// </summary>
+        /// <param name="contentType"></param>
+        /// <returns></returns>
+        public bool ImageIsValid(string contentType);
+
+        /// <summary>
+        /// <para>kiểm tra định dạng file có hợp lệ hay không</para>
+        /// <para>Các định dạng hỗ trợ: { "image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp" }</para>
+        /// </summary>
+        /// <param name="contentType"></param>
+        /// <returns></returns>
+        public bool ImageIsValid(IFormFile contentType);
+
     }
 }

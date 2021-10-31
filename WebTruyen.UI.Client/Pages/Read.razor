@@ -164,12 +164,21 @@
     async Task GetPages()
     {
         var pages = await _pageService.GetPagesInChapter(_Chapter.Id);
-        foreach (var page in pages)
+        if (_Chapter.IsLock)
         {
-            page.Image = await _imageApi.GetImageFromUrl(page.Image);
-            _Pages.Add(page);
+            foreach (var page in pages)
+            {
+                page.Image = await _imageApi.GetImageFromUrl(page.Image);
+                _Pages.Add(page);
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            _Pages = pages;
             StateHasChanged();
         }
+
     }
 
     #endregion

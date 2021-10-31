@@ -151,7 +151,7 @@ namespace WebTruyen.API.Repository.Page
                 
         }
 
-        public async Task<PageAM> PostPage(Guid idChapter, PageRequest request)
+        public async Task<(bool isSuccess, PageAM page, string messages)> PostPage(Guid idChapter, PageRequest request)
         {
             var chapAndComic = (from chap in _context.Chapters
                 where chap.Id == idChapter
@@ -163,6 +163,9 @@ namespace WebTruyen.API.Repository.Page
             var path = $@"comic-collection/{chapAndComic.com.Id}/chapter{chapAndComic.chap.Ordinal}";
             //Tạo folder cho chapter
             _storage.CreateDirectory(path, security: true);
+
+            if (!_storage.ImageIsValid(request.Image))
+                return (false, null, "Định dạng hình ảnh không hỗ trợ");
 
             var lastOrder = _context.Pages.Where(x => x.IdChapter == idChapter).OrderBy(x => x.SortOrder).Last().SortOrder;
 
@@ -178,7 +181,7 @@ namespace WebTruyen.API.Repository.Page
 
             await _context.SaveChangesAsync();
 
-            return page.ToApiModel();
+            return (true, page.ToApiModel(), "Lưu thành công");
         }
 
 
@@ -222,7 +225,7 @@ namespace WebTruyen.API.Repository.Page
         /// <param name="idChapter"></param>
         /// <param name="images">Danh sách hình ảnh</param>
         /// <returns></returns>
-        public async Task<int> PostPages(Guid idChapter, List<IFormFile> images)
+        public async Task<(int statusCode, string messages)> PostPages(Guid idChapter, List<IFormFile> images)
         {
             var chapAndComic = (from chap in _context.Chapters
                                 where chap.Id == idChapter
@@ -232,6 +235,11 @@ namespace WebTruyen.API.Repository.Page
 
             //lấy đường dẫn
             var path = $@"comic-collection/{chapAndComic.com.Id}/chapter{chapAndComic.chap.Ordinal}";
+
+            if (images.Any(image => !_storage.ImageIsValid(image)))
+            {
+                return (StatusCodes.Status400BadRequest, "Định dạng hình ảnh không hỗ trợ");
+            }
 
             images = images.OrderBy(x => x.FileName).ToList();
 
@@ -247,7 +255,7 @@ namespace WebTruyen.API.Repository.Page
 
             await _context.SaveChangesAsync();
 
-            return StatusCodes.Status200OK;
+            return (StatusCodes.Status200OK, "Lưu thành công");
         }
 
 
@@ -270,7 +278,5 @@ namespace WebTruyen.API.Repository.Page
         {
             return _context.Pages.Any(e => e.Id == id);
         }
-
-
     }
 }

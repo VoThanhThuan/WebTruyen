@@ -127,8 +127,9 @@ namespace WebTruyen.API.Controllers
             if (result is null)
                 return BadRequest("Tạo chapter mới thất bại");
 
-            await _page.PostPages(result.Id, pages);
-
+            var resultPage = await _page.PostPages(result.Id, pages);
+            if (resultPage.statusCode != 200)
+                return StatusCode(resultPage.statusCode, resultPage.messages);
             return Ok(result);
 
             //return CreatedAtAction("GetChapter", new { id = result.Id }, chapter);

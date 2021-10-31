@@ -85,8 +85,9 @@ namespace WebTruyen.API.Service
 
         public async Task<string> SaveFile(IFormFile file, string path, bool security = false)
         {
+            if (file is null) return "";
             var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim().Value;
-            var fileName = $@"{path}/{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
+            var fileName = $@"./{path}/{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
             var pathFile = security == false ? Path.Combine(_userContentFolder, fileName) : Path.Combine(_securityContentFolder, fileName);
             await SaveFileAsync(file.OpenReadStream(), pathFile);
             return fileName;
@@ -127,5 +128,18 @@ namespace WebTruyen.API.Service
             await Task.Run(() => di.Delete(true));
             return 200;
         }
+
+        public bool ImageIsValid(string contentType)
+        {
+            var fileTypeSupported = new List<string>() { "image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp" };
+            return fileTypeSupported.Any(type => contentType == type);
+        }
+
+        public bool ImageIsValid(IFormFile file)
+        {
+            var fileTypeSupported = new List<string>() { "image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp" };
+            return fileTypeSupported.Any(type => file.ContentType == type);
+        }
+
     }
 }

@@ -16,7 +16,7 @@ namespace WebTruyen.UI.Admin.Service.ImageService
         public Task<string> GetImageFromUrl(string url);
         public IAsyncEnumerable<byte[]> ImagesToByte(IReadOnlyList<IBrowserFile> imgs);
 
-        public IAsyncEnumerable<((byte[] data, string fileName) image, string stringValue)> ImagesToString(
+        public IAsyncEnumerable<((byte[] data, string fileName, string contentType) image, string stringValue)> ImagesToString(
             IReadOnlyList<IBrowserFile> imgs);
 
     }

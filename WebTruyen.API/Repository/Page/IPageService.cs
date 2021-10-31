@@ -21,8 +21,8 @@ namespace WebTruyen.API.Repository.Page
 
         //Post
         public Task<int> PostPages(Guid idChapter, List<string> request);
-        public Task<int> PostPages(Guid idChapter, List<IFormFile> request);
-        public Task<PageAM> PostPage(Guid idChapter, PageRequest request);
+        public Task<(bool isSuccess, PageAM page, string messages)> PostPage(Guid idChapter, PageRequest request);
+        public Task<(int statusCode, string messages)> PostPages(Guid idChapter, List<IFormFile> request);
         //Delete
         public Task<int> DeletePage(Guid id);
 
