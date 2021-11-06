@@ -28,7 +28,7 @@ namespace WebTruyen.Library.Entities.ViewModel
 
         public UserAM User { get; set; } = new();//chỉ dùng trên client
 
-        public List<CommentAM> CommentReply { get; set; } = new();
+        public List<CommentVM> CommentReply { get; set; } = new();
 
         public int TotalCommentChild { get; set; } = 0;
     }

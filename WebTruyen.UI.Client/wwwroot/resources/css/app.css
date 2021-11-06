@@ -1,3 +1,7 @@
+:root {
+    --bs-primary: #19B5FE;
+}
+
 @font-face {
     font-family: "GGSans";
     src: url(./font/GoogleSansText-Regular.ttf) format("truetype");

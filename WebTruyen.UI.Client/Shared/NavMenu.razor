@@ -298,8 +298,9 @@ else
             await _localStorage.SetItemAsStringAsync("Token", token);
             await _sessionStorage.SetItemAsStringAsync("Token", token);
             //await GetUserByToken(token);
-            _navigationManager.NavigateTo(_navigationManager.Uri, forceLoad: true);
             StateHasChanged();
+
+            _navigationManager.NavigateTo(_navigationManager.Uri, forceLoad: true);
         }
     }
 

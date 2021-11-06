@@ -45,13 +45,11 @@ namespace WebTruyen.API.Repository.Comment
         public async Task<List<CommentAM>> GetCommentChildInComic(Guid idComic, Guid idCommentReply, int skip = 0, int take = 10)
         {
             var comments =
-                await _context.Comments.FirstOrDefaultAsync(x => x.Id == idCommentReply && x.IdComic == idComic);
+                await _context.Comments.Where(x => x.IdCommentReply == idCommentReply && x.IdComic == idComic && x.Level > 0)
+                    .OrderBy(x => x.DateTimeUp)
+                    .Select(x => x.ToApiModel()).ToListAsync();
 
-            var cmtChilds = await _context.Comments
-                .Where(x => x.IdCommentReply == comments.IdComic).OrderBy(x => x.DateTimeUp)
-                .Select(x => x.ToApiModel()).ToListAsync();
-
-            return cmtChilds;
+            return comments;
         }
 
         public async Task<List<CommentAM>> GetCommentInChapter(Guid idChapter, int skip = 0, int take = 10)
@@ -68,14 +66,12 @@ namespace WebTruyen.API.Repository.Comment
         public async Task<List<CommentAM>> GetCommentChildInChapter(Guid idChapter, Guid idCommentReply, int skip = 0, int take = 10)
         {
             var comments =
-                await _context.Comments.FirstOrDefaultAsync(x => x.Id == idCommentReply && x.IdChapter == idChapter);
+                await _context.Comments.Where(x => x.IdCommentReply == idCommentReply && x.IdChapter == idChapter && x.Level > 0)
+                    .OrderBy(x => x.DateTimeUp)
+                    .Select(x => x.ToApiModel()).ToListAsync();
 
-            var cmtChilds = await _context.Comments
-                .Where(x => x.IdCommentReply == comments.IdComic).OrderBy(x => x.DateTimeUp)
-                .Skip(skip).Take(take)
-                .Select(x => x.ToApiModel()).ToListAsync();
 
-            return cmtChilds;
+            return comments;
         }
 
         public async Task<(bool isSuccess, string messages)> PutComment(Guid id, CommentAM request)

@@ -1,8 +1,10 @@
 ﻿@using WebTruyen.Library.Entities.ApiModel;
 @using WebTruyen.UI.Client.Service.ChapterService
 @using WebTruyen.UI.Client.Service.ComicService
+
+
 <div class="col-lg-8" name="list-truyen">
-    <div class="content p-2 rounded-5">
+    <div class="content p-2 rounded-5" style="min-height: 69px;">
         <div class="">
             <div class="rounded-5 p-2 border-bottom">
                 <a class="navbar-brand" href="#">Truyện mới</a>
@@ -10,13 +12,13 @@
         </div>
         <div class="m-2">
             <div class="row row-cols-2 row-cols-xs-1 row-cols-sm-3 row-cols-md-4 g-3 gy-5">
-                
+
                 @foreach (var item in _listComic)
                 {
                     <div class="col">
                         <div class="card card-info shadow-sm">
                             <a href="/@item.comic.NameAlias">
-                                <img src="@item.comic.Thumbnail" alt="@item.comic.NameAlias"/>
+                                <img src="@item.comic.Thumbnail" alt="@item.comic.NameAlias" />
                             </a>
                             <div class="p-1">
                                 <div class="fs-5 title">@item.comic.Name</div>
@@ -24,7 +26,7 @@
                                     @foreach (var chapter in item.chapters)
                                     {
                                         <div class="d-flex justify-content-between">
-                                            <a class="col" href="#">Chapter @chapter.Ordinal</a> 
+                                            <a class="col" href="#">Chapter @chapter.Ordinal</a>
                                             <span class="col fw-lighter text-end time">@CalculateRelativeTime(chapter.DateTimeUp)</span>
                                         </div>
                                     }
@@ -36,12 +38,13 @@
                 }
 
 
-
             </div>
         </div>
 
     </div>
 </div>
+
+
 @code {
 
     [Inject] IComicApiClient _comicApi { get; set; }
@@ -71,7 +74,7 @@
         const int DAY = 24 * HOUR;
         const int MONTH = 30 * DAY;
 
-        var ts = DateTime.Now.Subtract(dataTime); 
+        var ts = DateTime.Now.Subtract(dataTime);
         var delta = Math.Abs(ts.TotalSeconds);
 
         switch (delta)
@@ -91,15 +94,15 @@
             case < 30 * DAY:
                 return ts.Days + " days ago";
             case < 12 * MONTH:
-            {
-                var months = Convert.ToInt32(Math.Floor((double)ts.Days / 30));
-                return months <= 1 ? "one month ago" : months + " months ago";
-            }
+                {
+                    var months = Convert.ToInt32(Math.Floor((double)ts.Days / 30));
+                    return months <= 1 ? "one month ago" : months + " months ago";
+                }
             default:
-            {
-                var years = Convert.ToInt32(Math.Floor((double)ts.Days / 365));
-                return years <= 1 ? "one year ago" : years + " years ago";
-            }
+                {
+                    var years = Convert.ToInt32(Math.Floor((double)ts.Days / 365));
+                    return years <= 1 ? "one year ago" : years + " years ago";
+                }
         }
     }
 

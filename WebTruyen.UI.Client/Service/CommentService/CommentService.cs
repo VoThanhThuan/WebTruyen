@@ -40,17 +40,31 @@ namespace WebTruyen.UI.Client.Service.CommentService
             throw new NotImplementedException();
         }
 
-        public async Task<List<CommentVM>> GetCommentInComic(Guid idComic, int take = 10, int skip = 0)
+        public async Task<List<CommentVM>> GetCommentInComic(Guid idComic, int skip = 0, int take = 10)
         {
             await GetSession();
-            var result = await _http.GetFromJsonAsync<List<CommentVM>>($"/api/Comments/GetCommentInComic?idComic={idComic}&take={take}&skip={skip}");
+            var result = await _http.GetFromJsonAsync<List<CommentVM>>($"/api/Comments/GetCommentInComic?idComic={idComic}&skip={skip}&take={take}");
             return result;
         }
 
-        public async Task<List<CommentVM>> GetCommentInChapter(Guid idChapter, int take = 10, int skip = 0)
+        public async Task<List<CommentVM>> GetCommentInChapter(Guid idChapter, int skip =0, int take = 10)
         {
             await GetSession();
-            var result = await _http.GetFromJsonAsync<List<CommentVM>>($"/api/Comments/GetCommentInComic?idComic={idChapter}&take={take}&skip={skip}");
+            var result = await _http.GetFromJsonAsync<List<CommentVM>>($"/api/Comments/GetCommentInComic?idComic={idChapter}&skip={skip}&take={take}");
+            return result;
+        }
+
+        public async Task<List<CommentVM>> GetCommentChildInComic(Guid idComic, Guid idCommentReply, int skip = 0, int take = 10)
+        {
+            await GetSession();
+            var result = await _http.GetFromJsonAsync<List<CommentVM>>($"/api/Comments/GetCommentChildInComic?idComic={idComic}&idCommentReply={idCommentReply}&skip={skip}&take={take}");
+            return result;
+        }
+
+        public async Task<List<CommentVM>> GetCommentChildInChapter(Guid idChapter, Guid idCommentReply, int skip = 0, int take = 10)
+        {
+            await GetSession();
+            var result = await _http.GetFromJsonAsync<List<CommentVM>>($"/api/Comments/GetCommentChildInChapter?idChapter={idChapter}&idCommentReply={idCommentReply}&skip={skip}&take={take}");
             return result;
         }
 

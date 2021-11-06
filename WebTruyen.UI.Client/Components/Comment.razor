@@ -1,4 +1,4 @@
-﻿@using WebTruyen.Library.Entities.ApiModel;
+﻿@using WebTruyen.Library.Entities.ApiModel
 @using Blazored.SessionStorage
 @using System.Text.Json
 @using WebTruyen.Library.Entities.Request
@@ -17,7 +17,7 @@
                         <img src="truyen.jpg" alt="avatar" class="avatar-md rounded-circle ">
                     </div>
                     <div class="mb-3 col">
-                        <EditForm model="_CommentRequest" OnValidSubmit="PostNewComent">
+                        <EditForm model="_CommentRequest" OnValidSubmit="PostNewComment">
                             <label for="exampleFormControlTextarea1" class="form-label">Để lại bình luận của bạn ở đây</label>
                             <InputTextArea class="form-control" rows="2" maxlength="500" @bind-Value="_CommentRequest.Content"></InputTextArea>
                             @if (!_isSignIn)
@@ -52,12 +52,39 @@
                                 <span>@comment.Content</span>
                             </div>
                             <div class="btn-reply">
-                                <span><i class="fad fa-reply"></i>Trả lời</span>
+                                <span @onclick="() => ShowCommentReply(comment.Id)"><i class="fad fa-reply"></i>Trả lời</span>
                                 <span><i class="fad fa-pen"></i>Chỉnh sửa</span>
                                 <span class="remove"><i class="fad fa-trash"></i>Xóa</span>
                             </div>
                         </div>
-                        @*@foreach (var child in comment.CommentReply)
+                        
+                        @if (comment.Id == _idShowComment)
+                        {
+                            <div class="comment-child">
+                                <EditForm model="_CommentRequest" OnValidSubmit="() => PostReplyComment(comment.Id)">
+                                    <label for="exampleFormControlTextarea1" class="form-label">Để lại bình luận của bạn ở đây</label>
+                                    <InputTextArea class="form-control" rows="2" maxlength="500" @bind-Value="_CommentRequest.Content"></InputTextArea>
+                                    @if (!_isSignIn)
+                                    {
+                                        <span>Bạn cần đăng nhập để bình luận</span>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="btn btn-primary mt-1">Bình Loạn</button>
+                                        <span>(Bình luận không quá 500 ký tự)</span>
+                                        if (_element.ErrorComment.isError)
+                                        {
+                                            <span class="text-danger">Lỗi: @_element.ErrorComment.Messages</span>
+                                        }
+                                    }
+                                </EditForm>
+
+                            </div>
+
+                        }
+
+
+                        @foreach (var child in comment.CommentReply)
                         {
                             <div class="comment-child">
                                 <div class="row border-bottom mt-2">
@@ -69,12 +96,13 @@
                                         <span>@child.Content</span>
                                     </div>
                                     <div class="btn-reply">
-                                        <span><i class="fad fa-reply"></i>Trả lời</span>
+                                        @*<span @onclick="() => ShowCommentReply(child.Id)"><i class="fad fa-reply"></i>Trả lời</span>*@
                                     </div>
                                 </div>
                             </div>
 
-                        }*@
+                        } 
+
                     </div>
                 </div>
             }
@@ -88,8 +116,6 @@
 
     #region Initialization
 
-
-
     [Parameter]
     public string _IdComic { get; set; } = null;
     [Parameter]
@@ -99,7 +125,7 @@
     [Inject] ISessionStorageService _sessionStorage { get; set; }
     [Inject] ICommentService _commentApi { get; set; }
     [Inject] IUserService _userApi { get; set; }
-
+    private Guid _idShowComment;
 
     public bool _isSignIn { get; set; } = false;
     private PositionPage _wherePage { get; set; }
@@ -138,7 +164,7 @@
     async Task CheckUser()
     {
         var jsonUser = await _sessionStorage.GetItemAsStringAsync("user_webtruyen");
-        Console.WriteLine($"jsonUser:>>> {jsonUser}");
+        //Console.WriteLine($"jsonUser:>>> {jsonUser}");
         if (string.IsNullOrEmpty(jsonUser))
             return;
         _isSignIn = true;
@@ -146,11 +172,17 @@
         StateHasChanged();
     }
 
+    async Task ShowCommentReply(Guid idComment)
+    {
+        _idShowComment = idComment;
+        StateHasChanged();
+    }
+
     #endregion
 
     #region Giao tiếp server
 
-    async Task PostNewComent()
+    async Task PostNewComment()
     {
         if (!_isSignIn) return;
         _CommentRequest.Level = 0;
@@ -165,32 +197,67 @@
             StateHasChanged();
         }
         //Load lại ds comment
+        _CommentRequest = new CommentRequest();
+
+        await GetComments();
     }
+
+    async Task PostReplyComment(Guid idCommentReply)
+    {
+        if (!_isSignIn) return;
+        _CommentRequest.Level = 1;
+        _CommentRequest.IdUser = _UserAM.Id;
+        _CommentRequest.IdComic = Guid.Parse(_IdComic);
+        _CommentRequest.IdCommentReply = idCommentReply;
+
+        if (!string.IsNullOrEmpty(_IdChapter))
+            _CommentRequest.IdChapter = Guid.Parse(_IdChapter);
+        var result = await _commentApi.PostComment(_CommentRequest);
+        if (!result.isSuccess)
+        {
+            _element.ErrorComment = (true, result.value);
+            StateHasChanged();
+        }
+        //Load lại ds comment
+        _CommentRequest = new CommentRequest();
+
+
+        await GetComments();
+    }
+
 
     async Task GetComments()
     {
         if (_wherePage == PositionPage.Comic)
         {
-            _ListComment = await _commentApi.GetCommentInComic(Guid.Parse(_IdComic), _element.Take, _element.Skip);
+            _ListComment = await _commentApi.GetCommentInComic(Guid.Parse(_IdComic), _element.Skip, _element.Take);
         }
         else
         {
-            _ListComment = await _commentApi.GetCommentInChapter(Guid.Parse(_IdChapter), _element.Take, _element.Skip);
+            _ListComment = await _commentApi.GetCommentInChapter(Guid.Parse(_IdChapter), _element.Skip, _element.Take);
         }
         Console.WriteLine($"_ListComment >>> {_ListComment.Count}");
         foreach (var comment in _ListComment)
         {
-            Console.WriteLine($"IdUser >>> {comment.IdUser}");
+            //Console.WriteLine($"IdUser >>> {comment.IdUser}");
             var user = await GetUser(comment.IdUser);
-            if(user == null) continue;
-            Console.WriteLine($">>> {user.Nickname}");
+            if (user == null) continue;
+            //Console.WriteLine($">>> {user.Nickname}");
             comment.User = user;
-            //foreach (var child in comment.CommentReply)
-            //{
-            //    var cmtc = await GetUser(child.IdUser);
-            //    child = cmtc;
-            //    StateHasChanged();
-            //}
+            if (_wherePage == PositionPage.Comic)
+            {
+                comment.CommentReply = await _commentApi.GetCommentChildInComic(Guid.Parse(_IdComic), comment.Id, skip: 0, take: 10);
+            }
+            else
+            {
+                comment.CommentReply = await _commentApi.GetCommentChildInChapter(Guid.Parse(_IdComic), comment.Id, skip: 0, take: 10);
+            }
+            foreach (var child in comment.CommentReply)
+            {
+                var c_user = await GetUser(child.IdUser);
+                child.User = c_user;
+                StateHasChanged();
+            }
             StateHasChanged();
         }
         StateHasChanged();
@@ -222,6 +289,7 @@
         public (bool isError, string Messages) ErrorComment { get; set; } = (false, "");
         public int Take { get; set; } = 10;
         public int Skip { get; set; } = 0;
+        public bool ShowComentReply { get; set; } = false;
     }
 
 }

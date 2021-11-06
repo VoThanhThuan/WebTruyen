@@ -59,11 +59,39 @@ namespace WebTruyen.API.Controllers
 
             return comment;
         }
-        // GET: api/Comments/GetCommentInComic?idComic=&skip=&take=
+        // GET: api/Comments/GetCommentInComic?idChapter=&skip=&take=
         [HttpGet("GetCommentInChapter")]
-        public async Task<ActionResult<List<CommentAM>>> GetCommentInChapter(Guid idComic, int skip = 0, int take = 10)
+        public async Task<ActionResult<List<CommentAM>>> GetCommentInChapter(Guid idChapter, int skip = 0, int take = 10)
         {
-            var comment = await _comment.GetCommentInChapter(idComic, skip, take);
+            var comment = await _comment.GetCommentInChapter(idChapter, skip, take);
+
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            return comment;
+        }
+
+        // GET: api/Comments/GetCommentChildInComic?idComic=&idCommentReply=&skip=&take=
+        [HttpGet("GetCommentChildInComic")]
+        public async Task<ActionResult<List<CommentAM>>> GetCommentChildInComic(Guid idComic, Guid idCommentReply, int skip = 0, int take = 10)
+        {
+            var comment = await _comment.GetCommentChildInComic(idComic, idCommentReply, skip, take);
+
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            return comment;
+        }
+
+        // GET: api/Comments/GetCommentChildInChapter?idChapter=&idCommentReply=&skip=&take=
+        [HttpGet("GetCommentChildInChapter")]
+        public async Task<ActionResult<List<CommentAM>>> GetCommentChildInChapter(Guid idChapter, Guid idCommentReply, int skip = 0, int take = 10)
+        {
+            var comment = await _comment.GetCommentChildInChapter(idChapter, idCommentReply, skip, take);
 
             if (comment == null)
             {
