@@ -57,7 +57,7 @@
                                 <span class="remove"><i class="fad fa-trash"></i>Xóa</span>
                             </div>
                         </div>
-                        
+
                         @if (comment.Id == _idShowComment)
                         {
                             <div class="comment-child">
@@ -101,7 +101,7 @@
                                 </div>
                             </div>
 
-                        } 
+                        }
 
                     </div>
                 </div>
@@ -111,6 +111,22 @@
         </div>
     </div>
 </div>
+
+<!--Comment Facebook-->
+<div class="comment-section ">
+    <div class="content p-2 rounded-5 ">
+        <div class="rounded-5 p-2 border-bottom ">
+            <a id="comment" class="navbar-brand " href="# "><i class="fad fa-comments"></i> Bình Luận Facebook</a>
+        </div>
+        <div class="content" style="background-color: white">
+            <div class="rounded-5 p-2 border-bottom">
+                <div class="fb-comments" data-href="https://vothanhthuan.github.io/vtt/" data-width="100%" data-numposts="5" data-colorscheme="dark"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--End [Comment Facebook]-->
 
 @code {
 
@@ -125,6 +141,8 @@
     [Inject] ISessionStorageService _sessionStorage { get; set; }
     [Inject] ICommentService _commentApi { get; set; }
     [Inject] IUserService _userApi { get; set; }
+    [Inject] IJSRuntime JS { get; set; }
+
     private Guid _idShowComment;
 
     public bool _isSignIn { get; set; } = false;
@@ -154,6 +172,8 @@
             }
             await CheckUser();
             await GetComments();
+            //  FB.XFBML.parse();
+            await JS.InvokeVoidAsync("RefreshCommentFB");
         }
 
     }

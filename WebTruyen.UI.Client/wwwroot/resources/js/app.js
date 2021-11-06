@@ -41,3 +41,7 @@ document.addEventListener('click', function (e) {
         });
     }
 });
+
+function RefreshCommentFB() {
+    FB.XFBML.parse();
+}
