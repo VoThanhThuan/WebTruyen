@@ -1,0 +1,81 @@
+﻿@using WebTruyen.UI.Client.Service.CommentService
+@using WebTruyen.Library.Entities.ViewModel
+@using WebTruyen.UI.Client.Service.ChapterService
+@using WebTruyen.UI.Client.Service.ComicService
+@using WebTruyen.UI.Client.Service.UserService
+<div class="card mb-3 rounded-5 bg-content">
+    <div class="content rounded-5 p-2 pb-0">
+        <div class="rounded-5 p-2 border-bottom">
+            <a class="navbar-brand" href="#">Comment</a>
+        </div>
+        <div class="content m-1 p-2 pt-0">
+
+
+            @foreach (var comment in _ListComment)
+            {
+                <div class="row p-2">
+
+                    <div class="col border-bottom p-0 pb-1 mt-2">
+                        <div class="mb-2">
+                            <img class="rounded-circle" src="@comment.User.Avatar" alt="avatar" style="height: 32px; width: 32px;">
+                            <span>@comment.User.Nickname</span>
+                        </div>
+                        <div class="card-info p-1 comment">
+                            @comment.Content
+                        </div>
+                        @if (comment.IdChapter is not null)
+                        {
+                            <a href="@comment.Comic.NameAlias">@comment.Comic.Name - </a>
+                            <a href="@comment.Comic.NameAlias/@comment.Chapter.Ordinal">@comment.Comic.Name - Chapter @comment.Chapter</a>
+                        }
+                        else
+                        {
+                            <a href="@comment.Comic.NameAlias">@comment.Comic.Name</a>
+                        }
+                    </div>
+                </div>
+
+            }
+
+
+
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Inject] ICommentService _commentApi { get; set; }
+    [Inject] IUserService _userApi { get; set; }
+    [Inject] IComicApiClient _CommicApi { get; set; }
+    [Inject] IChapterApiClient _ChapterApi { get; set; }
+
+
+    public List<CommentVM> _ListComment { get; set; } = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _ListComment = (List<CommentVM>)await _commentApi.GetComments();
+
+            StateHasChanged();
+
+            foreach (var comment in _ListComment)
+            {
+                if (comment.IdChapter is not null)
+                {
+                    comment.Chapter = await _ChapterApi.GetChapter((Guid)comment.IdChapter);
+                }
+                if (comment.IdComic is not null)
+                {
+                    comment.Comic = await _CommicApi.GetComic((Guid)comment.IdComic);
+                }
+
+                comment.User = await _userApi.GetUser(comment.IdUser);
+                StateHasChanged();
+            }
+        }
+    }
+
+}

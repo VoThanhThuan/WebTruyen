@@ -138,7 +138,7 @@ else
                                 @foreach (var chap in _Chapters)
                                 {
                                     <li>
-                                        <a href="/read/@chap.Id" target="_blank" title="Chapter 35">
+                                        <a href="/@ComicName/@chap.Ordinal" target="_blank" title="Chapter @chap.Ordinal">
                                             <div class="chapter-name text-truncate"> Chapter @chap.Ordinal @chap.Name</div>
                                             <div class="chapter-time">@chap.DateTimeUp</div>
                                         </a>
@@ -167,6 +167,7 @@ else
 @code {
     [Parameter]
     public string ComicName { get; set; }
+
     [Inject] IComicApiClient _comicApi { get; set; }
     [Inject] IChapterApiClient _chapterApi { get; set; }
 

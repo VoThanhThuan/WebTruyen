@@ -153,27 +153,34 @@
     public UserAM _UserAM { get; set; } = null;
     public Element _element { get; set; } = new();
 
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($">>>Comment: OnInitializedAsync: _IdComic: {_IdComic}");
+        Console.WriteLine($">>>Comment: OnInitializedAsync: _IdChapter: {_IdChapter}");
+        if (!string.IsNullOrEmpty(_IdComic))
+        {
+            Console.WriteLine($">>> comment in Comic");
+            _CommentRequest.IdComic = Guid.Parse(_IdComic);
+            _wherePage = PositionPage.Comic;
+        }
+        if (!string.IsNullOrEmpty(_IdChapter))
+        {
+            Console.WriteLine($">>> comment in Chapter");
+            _CommentRequest.IdChapter = Guid.Parse(_IdChapter);
+            _wherePage = PositionPage.Chapter;
+        }
+        await CheckUser();
+        await GetComments();
+    //  FB.XFBML.parse();
+        await JS.InvokeVoidAsync("RefreshCommentFB");
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            if (!string.IsNullOrEmpty(_IdComic))
-            {
-                Console.WriteLine($">>> comment in Comic");
-                _CommentRequest.IdComic = Guid.Parse(_IdComic);
-                _wherePage = PositionPage.Comic;
-            }
-            if (!string.IsNullOrEmpty(_IdChapter))
-            {
-                Console.WriteLine($">>> comment in Chapter");
-                _CommentRequest.IdChapter = Guid.Parse(_IdChapter);
-                _wherePage = PositionPage.Chapter;
 
-            }
-            await CheckUser();
-            await GetComments();
-            //  FB.XFBML.parse();
-            await JS.InvokeVoidAsync("RefreshCommentFB");
+
         }
 
     }
@@ -207,7 +214,8 @@
         if (!_isSignIn) return;
         _CommentRequest.Level = 0;
         _CommentRequest.IdUser = _UserAM.Id;
-        _CommentRequest.IdComic = Guid.Parse(_IdComic);
+        if(!string.IsNullOrEmpty(_IdComic))
+            _CommentRequest.IdComic = Guid.Parse(_IdComic);
         if (!string.IsNullOrEmpty(_IdChapter))
             _CommentRequest.IdChapter = Guid.Parse(_IdChapter);
         var result = await _commentApi.PostComment(_CommentRequest);
@@ -248,6 +256,7 @@
 
     async Task GetComments()
     {
+        Console.WriteLine($">>>GetComments: _wherePage: {_wherePage}");
         if (_wherePage == PositionPage.Comic)
         {
             _ListComment = await _commentApi.GetCommentInComic(Guid.Parse(_IdComic), _element.Skip, _element.Take);

@@ -35,7 +35,18 @@ namespace WebTruyen.API.Repository.Chapter
         {
             var chapter = await _context.Chapters.FindAsync(id);
             //chapter.Views += 1;
-            _context.Entry(chapter).State = EntityState.Modified;
+            //_context.Entry(chapter).State = EntityState.Modified;
+            return chapter?.ToApiModel();
+        }
+
+        public async Task<ChapterAM> GetChapterOrder(string comicAliasName, float ordinal)
+        {
+            var comic = await _context.Comics.FirstOrDefaultAsync(x => x.NameAlias == comicAliasName);
+            if (comic is null)
+                return null;
+            var chapter = await _context.Chapters.FirstOrDefaultAsync(x => x.IdComic == comic.Id && x.Ordinal.Equals(ordinal));
+            //chapter.Views += 1;
+            //_context.Entry(chapter).State = EntityState.Modified;
             return chapter?.ToApiModel();
         }
 

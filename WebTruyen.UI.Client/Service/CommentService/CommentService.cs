@@ -30,9 +30,11 @@ namespace WebTruyen.UI.Client.Service.CommentService
             var sessions = (await _sessionStorage.GetItemAsync<string>("Token"));
             _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
         }
-        public Task<IEnumerable<CommentAM>> GetComments()
+        public async Task<IEnumerable<CommentVM>> GetComments()
         {
-            throw new NotImplementedException();
+            await GetSession();
+            var result = await _http.GetFromJsonAsync<List<CommentVM>>($"/api/Comments");
+            return result;
         }
 
         public Task<CommentAM> GetComment(Guid id)

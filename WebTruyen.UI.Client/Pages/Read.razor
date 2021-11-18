@@ -1,4 +1,5 @@
 ﻿@page "/read/{IdChapter}"
+@page "/{ComicAliasName}/{Ordinal}"
 @using WebTruyen.UI.Client.Service.ComicService
 @using WebTruyen.UI.Client.Service.ChapterService
 @using WebTruyen.UI.Client.Service.PageService
@@ -102,8 +103,11 @@
                     </div>
                 </div>
                 <!-- End [Danh sách chap truyện] -->
-                <!-- Comment -->
+            <!-- Comment -->
+            @if (_isLoadComment)
+            {
                 <Comment _IdChapter="@IdChapter"></Comment>
+            }
                 <!-- End [Comment] -->
             </div>
         </div>
@@ -113,7 +117,10 @@
 
     @code {
         [Parameter] public string IdChapter { get; set; }
-
+        //
+        [Parameter] public string ComicAliasName { get; set; }
+        [Parameter] public string Ordinal { get; set; }
+        //
         [Inject] IComicApiClient _comicApi { get; set; }
         [Inject] IChapterApiClient _chapterApi { get; set; }
         [Inject] IPageService _pageService { get; set; }
@@ -126,6 +133,8 @@
         public List<ChapterAM> _Chapters { get; set; } = new();
         public List<PageAM> _Pages { get; set; } = new();
 
+        public bool _isLoadComment { get; set; } = false;
+
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -137,7 +146,18 @@
 
         async Task GetDataChapter()
         {
-            _Chapter = await _chapterApi.GetChapter(Guid.Parse(IdChapter));
+            if (!string.IsNullOrEmpty(IdChapter))
+            {
+                _Chapter = await _chapterApi.GetChapter(Guid.Parse(IdChapter));
+            }else if (!string.IsNullOrEmpty(ComicAliasName) && !string.IsNullOrEmpty(Ordinal))
+            {
+                _Chapter = await _chapterApi.GetChapterOrder(ComicAliasName, Ordinal);
+            }
+
+            IdChapter = _Chapter.Id.ToString();
+            _isLoadComment = true;
+            StateHasChanged();
+
             Console.WriteLine($">>>Trạng thái chap lock: {_Chapter.IsLock}");
 
             _Comic = await _comicApi.GetComic(_Chapter.IdComic);

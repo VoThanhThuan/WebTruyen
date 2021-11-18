@@ -11,6 +11,8 @@ namespace WebTruyen.UI.Client.Service.ChapterService
     {
         public Task<List<ChapterAM>> GetChapters();
         public Task<ChapterAM> GetChapter(Guid id);
+        public Task<ChapterAM> GetChapterOrder(string comicAliasName, string ordinal);
+
         public Task<ChapterAM> GetLastChapter(Guid idComic);
         public Task<List<ChapterAM>> GetNewChapters(Guid idComic, int amount);
 

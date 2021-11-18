@@ -1,0 +1,201 @@
+﻿@layout LoginLayout
+
+@page "/login"
+@using WebTruyen.Library.Entities.ApiModel
+@using WebTruyen.Library.Entities.Request
+@using WebTruyen.UI.Client.Service.UserService
+@using Blazored.SessionStorage
+@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.WebUtilities
+
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+        <div class="card bg-secondary shadow border-0">
+            <div class="card-header bg-transparent pb-4 px-lg-5">
+                <div class="text-muted text-center mt-2 mb-3"><small>Đăng nhập với</small></div>
+                <div class="row">
+                    <div class="col-12 col-sm-6">
+                        <a href="#" class="btn btn-neutral btn-icon btn-block mb-3">
+                            <span class="btn-inner--icon"><img src="https://j2team.dev/images/brand/facebook.svg" alt="facebook" width="20" height="20"></span>
+                            <span class="btn-inner--text">Facebook</span>
+                        </a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <a href="#" class="btn btn-neutral btn-icon btn-block mb-3">
+                            <span class="btn-inner--icon"><img src="https://j2team.dev/assets/argon/img/icons/common/google.svg" alt="google" width="20" height="20"></span>
+                            <span class="btn-inner--text">Google</span>
+                        </a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <a href="#" class="btn btn-neutral btn-icon btn-block mb-3">
+                            <span class="btn-inner--icon"><img src="https://j2team.dev/images/brand/twitter.svg" alt="twitter" width="20" height="20"></span>
+                            <span class="btn-inner--text">Twitter</span>
+                        </a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <a href="#" class="btn btn-neutral btn-icon btn-block mb-3">
+                            <span class="btn-inner--icon"><img src="https://j2team.dev/assets/argon/img/icons/common/github.svg" alt="github" width="20" height="20"></span>
+                            <span class="btn-inner--text">Github</span>
+                        </a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <a href="#" class="btn btn-neutral btn-icon btn-block mb-3">
+                            <span class="btn-inner--icon"><img src="https://j2team.dev/images/brand/linkedin.svg" alt="linkedin" width="20" height="20"></span>
+                            <span class="btn-inner--text">Linkedin</span>
+                        </a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <a href="#" class="btn btn-neutral btn-icon btn-block mb-3">
+                            <span class="btn-inner--icon"><img src="https://j2team.dev/images/brand/gitlab.svg" alt="gitlab" width="20" height="20"></span>
+                            <span class="btn-inner--text">Gitlab</span>
+                        </a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <a href="#" class="btn btn-neutral btn-icon btn-block mb-3">
+                            <span class="btn-inner--icon"><img src="https://j2team.dev/images/brand/bitbucket.svg" alt="bitbucket" width="20" height="20"></span>
+                            <span class="btn-inner--text">Bitbucket</span>
+                        </a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <a href="#" class="btn btn-neutral btn-icon btn-block mb-3" id="btn-ph">
+                            <span class="btn-inner--icon"><img src="https://j2team.dev/images/brand/ph.ico" alt="ph" width="16" height="16" class="w-auto"></span>
+                            <span class="btn-inner--text">P<span hidden="">a</span>or<span hidden="">b</span>nh<span hidden="">c</span>ub</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body px-lg-5 py-lg-5">
+                @if (_element.AlertLogin)
+                {
+                    <span class="text-danger">Tài khoản hoặc mật khẩu sai!</span>
+                }
+                <EditForm Model="LoginRequest" OnValidSubmit="SignIn">
+                    <div class="form-group mb-3">
+                        <div class="input-group input-group-alternative">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="ni ni-email-83"></i></span>
+                            </div>
+                            <InputText @bind-Value="LoginRequest.Username" class="form-control" id="floatingInput" placeholder="Username"></InputText>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group input-group-alternative">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                            </div>
+                            <InputText @bind-Value="LoginRequest.Password" class="form-control" id="floatingPassword" placeholder="Password"></InputText>
+                        </div>
+                    </div>
+                    <div class="custom-control custom-control-alternative custom-checkbox">
+                        <InputCheckbox @bind-Value="LoginRequest.RememberMe" class="custom-control-input" id="customCheckLogin" placeholder="Password"></InputCheckbox>
+                        @*<input class="custom-control-input" name="remember" id="customCheckLogin" type="checkbox">*@
+                        <label class="custom-control-label" for="customCheckLogin">
+                            <span class="text-muted">Ghi nhớ đăng nhập</span>
+                        </label>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary mt-4">Đăng nhập</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-6">
+                <a href="https://j2team.dev/password/reset" class="text-light">
+                    <small>Quên mật khẩu?</small>
+                </a>
+            </div>
+            <div class="col-6 text-right">
+                <a href="https://j2team.dev/register" class="text-light">
+                    <small>Tạo tài khoản mới</small>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    public string ReturnUrl { get; set; } = null;
+
+    public Element _element { get; set; } = new();
+
+    public LoginRequest LoginRequest { get; set; } = new();
+
+    [Inject] IUserService _userApi { get; set; }
+    [Inject] ISessionStorageService _sessionStorage { get; set; }
+    [Inject] ILocalStorageService _localStorage { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
+    [Inject] IJSRuntime JS { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        NavigateToComponent();
+
+        return base.OnInitializedAsync();
+    }
+
+    #region initialization
+
+
+
+    #endregion
+
+    #region Xử lý dữ liệu
+
+    void SignOut() {
+        _sessionStorage.ClearAsync();
+        _localStorage.ClearAsync();
+        _element.IsSignIn = false;
+        _element.User = new UserAM();
+        StateHasChanged();
+
+    }
+
+    void NavigateToComponent() {
+        var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
+        // Phân tích query
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("ReturnUrl", out var url)) {
+            ReturnUrl = url.First();
+        }
+        if (string.IsNullOrEmpty(ReturnUrl))
+            ReturnUrl = "/";
+    }
+
+    #endregion
+
+    #region Giao tiếp server
+
+    async Task SignIn(EditContext editContext) {
+        var token = await _userApi.Authenticate(LoginRequest);
+        if (string.IsNullOrEmpty(token)) {
+            Console.WriteLine($">>> [❌] Đăng thập thất bại ");
+            _element.AlertLogin = true;
+            StateHasChanged();
+        } else {
+            Console.WriteLine($">>> [⭕] Đăng Nhập Thành Công");
+
+            //await _localStorage.SetItemAsStringAsync("Token", token);
+            await JS.InvokeAsync<string>("blazorExtensions.WriteCookie", "Token", token, 1);
+            await _sessionStorage.SetItemAsStringAsync("Token", token);
+            //await GetUserByToken(token);
+            StateHasChanged();
+
+            _navigationManager.NavigateTo(ReturnUrl, forceLoad: true);
+        }
+    }
+
+    #endregion
+
+    public class Element {
+        public bool IsSignIn { get; set; } = false;
+
+        public UserAM User { get; set; } = new UserAM();
+
+        public bool AlertLogin { get; set; } = false;
+    }
+
+
+}

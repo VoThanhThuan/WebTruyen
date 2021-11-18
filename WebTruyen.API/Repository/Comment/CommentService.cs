@@ -20,7 +20,7 @@ namespace WebTruyen.API.Repository.Comment
 
         public async Task<IEnumerable<CommentAM>> GetComments()
         {
-            return await _context.Comments.OrderByDescending(x => x.DateTimeUp).Select(x => x.ToApiModel()).ToListAsync();
+            return await _context.Comments.Where(x => x.Level == 0).OrderByDescending(x => x.DateTimeUp).Select(x => x.ToApiModel()).ToListAsync();
         }
 
         public async Task<CommentAM> GetComment(Guid id)

@@ -61,6 +61,21 @@ namespace WebTruyen.API.Controllers
             return Ok(result);
         }
 
+        // GET: api/Chapters/GetChapterOrder/a-b-c/0
+        [HttpGet("GetChapterOrder/{comicAliasName}/{ordinal}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<ChapterAM>> GetChapterOrder(string comicAliasName, float ordinal)
+        {
+            var result = await _chapter.GetChapterOrder(comicAliasName, ordinal);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
+
         // GET: api/Chapters/
         [HttpGet("lastChapter")]
         [AllowAnonymous]

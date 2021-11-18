@@ -10,7 +10,7 @@ namespace WebTruyen.UI.Client.Service.CommentService
 {
     public interface ICommentService
     {
-        public Task<IEnumerable<CommentAM>> GetComments();
+        public Task<IEnumerable<CommentVM>> GetComments();
         public Task<CommentAM> GetComment(Guid id);
         public Task<List<CommentVM>> GetCommentInComic(Guid idComic, int take = 10, int skip = 0);
         public Task<List<CommentVM>> GetCommentInChapter(Guid idChapter, int take = 10, int skip = 0);

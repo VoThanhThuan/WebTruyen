@@ -5,6 +5,6 @@
     --bg-hover: #f0f5fc;
     --fg: #000;
 }
-body {
+.bg-pokemon {
     background-image: url("/resources/img/background-pokemon-grass-light.png");
 }

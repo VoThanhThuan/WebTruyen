@@ -11,6 +11,7 @@ namespace WebTruyen.API.Repository.Chapter
     {
         public Task<IEnumerable<ChapterAM>> GetChapters();
         public Task<ChapterAM> GetChapter(Guid id);
+        public Task<ChapterAM> GetChapterOrder(string comicAliasName, float ordinal);
         public Task<ChapterAM> GetLastChapter(Guid idComic);
         public Task<List<ChapterAM>> GetNewChapters(Guid idComic, int amount);
 

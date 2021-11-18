@@ -27,6 +27,8 @@ namespace WebTruyen.Library.Entities.ViewModel
         public Guid IdUser { get; set; }
 
         public UserAM User { get; set; } = new();//chỉ dùng trên client
+        public ComicAM Comic { get; set; } = new();//chỉ dùng trên client
+        public ChapterAM Chapter { get; set; } = new();//chỉ dùng trên client
 
         public List<CommentVM> CommentReply { get; set; } = new();
 

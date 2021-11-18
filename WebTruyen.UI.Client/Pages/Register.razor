@@ -1,0 +1,116 @@
+﻿@layout LoginLayout
+
+@page "/register"
+
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+        <div class="card bg-secondary shadow border-0">
+            <div class="card-header bg-transparent pb-4 px-lg-5">
+                <div class="text-muted text-center mt-2 mb-3"><small>Đăng nhập với</small></div>
+                <div class="row">
+                    <div class="col-12 col-sm-6">
+                        <a href="#" class="btn btn-neutral btn-icon btn-block mb-3">
+                            <span class="btn-inner--icon"><img src="https://j2team.dev/images/brand/facebook.svg" alt="facebook" width="20" height="20"></span>
+                            <span class="btn-inner--text">Facebook</span>
+                        </a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <a href="#" class="btn btn-neutral btn-icon btn-block mb-3">
+                            <span class="btn-inner--icon"><img src="https://j2team.dev/assets/argon/img/icons/common/google.svg" alt="google" width="20" height="20"></span>
+                            <span class="btn-inner--text">Google</span>
+                        </a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <a href="#" class="btn btn-neutral btn-icon btn-block mb-3">
+                            <span class="btn-inner--icon"><img src="https://j2team.dev/images/brand/twitter.svg" alt="twitter" width="20" height="20"></span>
+                            <span class="btn-inner--text">Twitter</span>
+                        </a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <a href="#" class="btn btn-neutral btn-icon btn-block mb-3">
+                            <span class="btn-inner--icon"><img src="https://j2team.dev/assets/argon/img/icons/common/github.svg" alt="github" width="20" height="20"></span>
+                            <span class="btn-inner--text">Github</span>
+                        </a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <a href="#" class="btn btn-neutral btn-icon btn-block mb-3">
+                            <span class="btn-inner--icon"><img src="https://j2team.dev/images/brand/linkedin.svg" alt="linkedin" width="20" height="20"></span>
+                            <span class="btn-inner--text">Linkedin</span>
+                        </a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <a href="#" class="btn btn-neutral btn-icon btn-block mb-3">
+                            <span class="btn-inner--icon"><img src="https://j2team.dev/images/brand/gitlab.svg" alt="gitlab" width="20" height="20"></span>
+                            <span class="btn-inner--text">Gitlab</span>
+                        </a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <a href="#" class="btn btn-neutral btn-icon btn-block mb-3">
+                            <span class="btn-inner--icon"><img src="https://j2team.dev/images/brand/bitbucket.svg" alt="bitbucket" width="20" height="20"></span>
+                            <span class="btn-inner--text">Bitbucket</span>
+                        </a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <a href="#" class="btn btn-neutral btn-icon btn-block mb-3" id="btn-ph">
+                            <span class="btn-inner--icon"><img src="https://j2team.dev/images/brand/ph.ico" alt="ph" width="16" height="16" class="w-auto"></span>
+                            <span class="btn-inner--text">P<span hidden="">a</span>or<span hidden="">b</span>nh<span hidden="">c</span>ub</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body px-lg-5 py-lg-5">
+                <div class="text-center text-muted mb-4">
+                    <small>Hoặc đăng ký với thông tin của bạn</small>
+                </div>
+
+                <form role="form" method="POST" action="#">
+                    <input type="hidden" name="_token" value="MyOwY4nep4j9e9nw61pvvBE6hbhZWbrkUCLV4Ebe">
+
+                    <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" value="03AGdBq24a6ngNbKesEHTZROvIisKTrfuLdn3L-S4yYhm8meKmRCwjSIqWYfO5FETAfQKQDoP4XtmAyEx_62zPa0teI5NwMK56S1J9dMGJFSnM9xUCAZ9R3DyEee1vl5W5KtVxATb9W1cRvSvf54SjTMtjeHFdv8QYfBNJ_rVmYBIFLC85XWoexKB2JznmrmPt6UGF1N2cO-kIx3kMcH8p8ReVgCGIhvV1OiXSzOFPzTl7_7UaRjUs2Axk8qUw1_uetlI5QvWXXDrmHK8aU5F6__5R1jnog6rUOjUXnLea339ZRIvQX_zD8ccmxjjO_Ng-UrJ6sobnt0CX1YV_tc69WZQn90h63HuyZkzf8_y8t9qOxSvKub6jqhvPg_3R7kSINpUD__5BEa5CMxqIO55WGJV3OQImuwMhC_wW7MVvc4hYZCTVr35hPXM">
+
+                    <div class="form-group">
+                        <div class="input-group input-group-alternative mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                            </div>
+                            <input class="form-control" placeholder="Tên" type="text" name="name" value="" required="" autofocus="" disabled="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group input-group-alternative mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="ni ni-email-83"></i></span>
+                            </div>
+                            <input class="form-control" placeholder="Email" type="email" name="email" value="" required="" disabled="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group input-group-alternative">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                            </div>
+                            <input class="form-control" placeholder="Mật khẩu" type="password" name="password" required="" disabled="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group input-group-alternative">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                            </div>
+                            <input class="form-control" placeholder="Xác nhận mật khẩu" type="password" name="password_confirmation" required="" disabled="">
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary mt-4" disabled="">Tạo tài khoản</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+}

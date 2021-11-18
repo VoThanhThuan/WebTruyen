@@ -45,3 +45,25 @@ document.addEventListener('click', function (e) {
 function RefreshCommentFB() {
     FB.XFBML.parse();
 }
+
+window.blazorExtensions = {
+    WriteCookie: function (name, value, hours) {
+
+        var expires;
+        if (hours) {
+            const date = new Date();
+            date.setTime(date.getTime() + (hours * 60 * 60 * 1000));
+            expires = `; expires=${date.toGMTString()}`;
+        } else {
+            expires = "";
+        }
+        document.cookie = name + "=" + value + expires + "; path=/";
+    }
+
+    , ReadCookie: function (name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return "";
+    }
+}

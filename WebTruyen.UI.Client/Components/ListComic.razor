@@ -26,7 +26,7 @@
                                     @foreach (var chapter in item.chapters)
                                     {
                                         <div class="d-flex justify-content-between">
-                                            <a class="col" href="#">Chapter @chapter.Ordinal</a>
+                                            <a class="col" href="/@item.comic.NameAlias/@chapter.Ordinal">Chapter @chapter.Ordinal</a>
                                             <span class="col fw-lighter text-end time">@CalculateRelativeTime(chapter.DateTimeUp)</span>
                                         </div>
                                     }

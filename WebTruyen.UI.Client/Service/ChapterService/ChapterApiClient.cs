@@ -45,6 +45,12 @@ namespace WebTruyen.UI.Client.Service.ChapterService
             return chapter;
         }
 
+        public async Task<ChapterAM> GetChapterOrder(string comicAliasName, string ordinal)
+        {
+            var chapter = await _http.GetFromJsonAsync<ChapterAM>($"/api/Chapters/GetChapterOrder/{comicAliasName}/{ordinal}");
+            return chapter;
+        }
+
         public async Task<List<ChapterAM>> GetChaptersInComic(Guid idComic)
         {
             // api/Chapters/comic?idComic=
