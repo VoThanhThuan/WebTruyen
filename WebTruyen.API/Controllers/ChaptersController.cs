@@ -159,7 +159,10 @@ namespace WebTruyen.API.Controllers
 
             var result = await _page.PostPages(idChapter, pages);
 
-            return Ok(result);
+            if (result.statusCode > 299)
+                return BadRequest(result.messages);
+
+            return Ok(result.messages);
 
             //return CreatedAtAction("GetChapter", new { id = result.Id }, chapter);
         }

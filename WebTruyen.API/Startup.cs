@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -9,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Collections.Generic;
+using SixLabors.ImageSharp.Web.DependencyInjection;
 using WebTruyen.API.Repository.Announcement;
 using WebTruyen.API.Repository.Bookmark;
 using WebTruyen.API.Repository.Chapter;
@@ -87,6 +88,8 @@ namespace WebTruyen.API
 
             services.AddTransient<RoleManager<Role>, RoleManager<Role>>();
 
+            services.AddTransient<IWaterMarkService, WaterMarkService>();
+
             //services.AddTransient<UserManager<User>, UserManager<User>>();
             //services.AddTransient<SignInManager<User>, SignInManager<User>>();
             //services.AddTransient<RoleManager<Role>, RoleManager<Role>>();
@@ -152,7 +155,7 @@ namespace WebTruyen.API
                     };
                 });
 
-
+            services.AddImageSharp();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -177,6 +180,8 @@ namespace WebTruyen.API
             app.UseCors("CorsPolicy");
 
             app.UseAuthorization();
+
+            app.UseImageSharp();
 
             app.UseEndpoints(endpoints =>
             {

@@ -18,10 +18,12 @@ namespace WebTruyen.API.Repository.Page
     {
         private readonly ComicDbContext _context;
         private readonly IStorageService _storage;
-        public PageService(ComicDbContext context, IStorageService storage)
+        private readonly IWaterMarkService _waterMark;
+        public PageService(ComicDbContext context, IStorageService storage, IWaterMarkService waterMark)
         {
             _context = context;
             _storage = storage;
+            _waterMark = waterMark;
         }
 
         public async Task<IEnumerable<PageAM>> GetPages()
@@ -67,12 +69,9 @@ namespace WebTruyen.API.Repository.Page
             page.SortOrder = request.SortOrder ?? lastOrder + 1;
             page.IdChapter = request.IdChapter;
 
-            try
-            {
+            try {
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
+            } catch (DbUpdateConcurrencyException) {
                 if (!PageExists(id))
                     return StatusCodes.Status409Conflict;
                 throw;
@@ -84,15 +83,14 @@ namespace WebTruyen.API.Repository.Page
         public async Task<int> PutPages(Guid idChapter, List<IFormFile> images, bool isLock)
         {
             var chapAndComic = (from chap in _context.Chapters
-                where chap.Id == idChapter
-                join com in _context.Comics
-                    on chap.IdComic equals com.Id
-                select new { chap, com }).First();
+                                where chap.Id == idChapter
+                                join com in _context.Comics
+                                    on chap.IdComic equals com.Id
+                                select new { chap, com }).First();
 
             //đường dẫn thư mục của chapter 
             var path = $@"comic-collection/{chapAndComic.com.Id}/chapter{chapAndComic.chap.Ordinal}";
-            if (_storage.FolderExists(path, security: true))
-            {
+            if (_storage.FolderExists(path, security: true)) {
                 //Xóa các chap cũ
                 //  <> Xóa Hình
                 var resultRemove = await _storage.DeleteFolderAsync(path, security: true);
@@ -100,12 +98,10 @@ namespace WebTruyen.API.Repository.Page
                 if (resultRemove == StatusCodes.Status500InternalServerError)
                     return StatusCodes.Status500InternalServerError;
                 _storage.CreateDirectory(path, security: true);
-            }
-            else
-            {
+            } else {
                 _storage.CreateDirectory(path, security: true);
             }
-            
+
 
             // <> Xóa CSDL
             var pagesInDb = await _context.Pages.Where(x => x.IdChapter == idChapter).ToListAsync();
@@ -113,8 +109,7 @@ namespace WebTruyen.API.Repository.Page
 
             //Lưu những chap mới
             images = images.OrderBy(x => x.FileName).ToList();
-            var pages = images.Select((t, i) => new Library.Entities.Page()
-            {
+            var pages = images.Select((t, i) => new Library.Entities.Page() {
                 Id = Guid.NewGuid(),
                 Image = $@"api/Pages/image?name={_storage.SaveFile(t, path, security: true).Result}",
                 SortOrder = i,
@@ -123,12 +118,9 @@ namespace WebTruyen.API.Repository.Page
 
             _context.Pages.AddRange(pages);
 
-            try
-            {
+            try {
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
+            } catch (DbUpdateConcurrencyException) {
                 return StatusCodes.Status409Conflict;
             }
 
@@ -138,26 +130,24 @@ namespace WebTruyen.API.Repository.Page
         public async Task MoveUrlPages(Guid idChapter, string oldChapter, string newChapter)
         {
             var pages = await _context.Pages.Where(x => x.IdChapter == idChapter).ToListAsync();
-            
-            if (pages.Any())
-            {
-                foreach (var page in pages)
-                {
+
+            if (pages.Any()) {
+                foreach (var page in pages) {
                     page.Image = page.Image.Replace($@"/{oldChapter}/", $@"/{newChapter}/");
                 }
                 _context.Pages.AttachRange(pages);
                 await _context.SaveChangesAsync();
             }
-                
+
         }
 
         public async Task<(bool isSuccess, PageAM page, string messages)> PostPage(Guid idChapter, PageRequest request)
         {
             var chapAndComic = (from chap in _context.Chapters
-                where chap.Id == idChapter
-                join com in _context.Comics
-                    on chap.IdComic equals com.Id
-                select new { chap, com }).First();
+                                where chap.Id == idChapter
+                                join com in _context.Comics
+                                    on chap.IdComic equals com.Id
+                                select new { chap, com }).First();
 
             //lấy đường dẫn
             var path = $@"comic-collection/{chapAndComic.com.Id}/chapter{chapAndComic.chap.Ordinal}";
@@ -169,8 +159,7 @@ namespace WebTruyen.API.Repository.Page
 
             var lastOrder = _context.Pages.Where(x => x.IdChapter == idChapter).OrderBy(x => x.SortOrder).Last().SortOrder;
 
-            var page = new Library.Entities.Page()
-            {
+            var page = new Library.Entities.Page() {
                 Id = request.Id ?? Guid.NewGuid(),
                 Image = string.IsNullOrEmpty(request.Link) ? $@"api/Pages/image?name={_storage.SaveFile(request.Image, path, security: true).Result}" : request.Link,
                 SortOrder = request.SortOrder ?? lastOrder + 1,
@@ -204,8 +193,7 @@ namespace WebTruyen.API.Repository.Page
             //Tạo folder cho chapter
             _storage.CreateDirectory(path, security: true);
 
-            var pages = images.Select((t, i) => new Library.Entities.Page()
-            {
+            var pages = images.Select((t, i) => new Library.Entities.Page() {
                 Id = Guid.NewGuid(),
                 Image = t,
                 SortOrder = i,
@@ -236,17 +224,21 @@ namespace WebTruyen.API.Repository.Page
             //lấy đường dẫn
             var path = $@"comic-collection/{chapAndComic.com.Id}/chapter{chapAndComic.chap.Ordinal}";
 
-            if (images.Any(image => !_storage.ImageIsValid(image)))
-            {
+            if (images.Any(image => !_storage.ImageIsValid(image))) {
                 return (StatusCodes.Status400BadRequest, "Định dạng hình ảnh không hỗ trợ");
             }
 
             images = images.OrderBy(x => x.FileName).ToList();
 
-            var pages = images.Select((t, i) => new Library.Entities.Page()
-            {
+            //var pages = images.Select((t, i) => new Library.Entities.Page() {
+            //    Id = Guid.NewGuid(),
+            //    Image = $@"api/Pages/image?name={_storage.SaveFile(t, path, security: true).Result}",
+            //    SortOrder = i,
+            //    IdChapter = idChapter
+            //}).ToList();
+            var pages = images.Select((t, i) => new Library.Entities.Page() {
                 Id = Guid.NewGuid(),
-                Image = $@"api/Pages/image?name={_storage.SaveFile(t, path, security: true).Result}",
+                Image = $@"api/Pages/image?name={_waterMark.SaveImage(t, path, security: true).Result}",
                 SortOrder = i,
                 IdChapter = idChapter
             }).ToList();
@@ -263,8 +255,7 @@ namespace WebTruyen.API.Repository.Page
         {
             var page = await _context.Pages.FindAsync(id);
 
-            if (page == null)
-            {
+            if (page == null) {
                 return StatusCodes.Status404NotFound;
             }
             await _storage.DeleteFileAsync(page.Image);

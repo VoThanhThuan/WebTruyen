@@ -202,6 +202,7 @@
             await Task.Delay(500);
             if(result.StatusCode == HttpStatusCode.OK)
                 _navigationManager.NavigateTo($@"comic/detail?id={result.Content.IdComic}");
+            _element.Apiresult = 0;
         }
         else
         {

@@ -1,18 +1,20 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SixLabors.Fonts;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 using WebTruyen.API.Repository.Page;
 using WebTruyen.API.Service;
-using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ApiModel;
+using WebTruyen.Library.Entities.Request;
 
 namespace WebTruyen.API.Controllers
 {
@@ -29,6 +31,34 @@ namespace WebTruyen.API.Controllers
             _page = context;
             _env = env;
             _storage = storage;
+        }
+
+
+        // GET: api/TestWaterMark
+        [HttpPost("TestWaterMark")]
+        public async Task<ActionResult> TestWaterMark(IFormFile file)
+        {
+            var stream =file.OpenReadStream();
+            using var image = await Image.LoadAsync(stream);
+            using var imageNew = new Image<Rgba32>(image.Width, image.Height + 30);
+            imageNew.Mutate(
+                context => {
+                    context.Fill(Color.Gray);
+
+                    var text = "Võ Thành Thuận";
+                    var font = SystemFonts.CreateFont("Arial", 26);
+                    var rendererOptions = new RendererOptions(font);
+
+                    context.DrawImage(image, new Point(0, 0), 1);
+
+                    context.DrawText(
+                        text,
+                        font,
+                        Color.White,
+                        new PointF(20, image.Height));
+                });
+            await imageNew.SaveAsync("wwwroot/Test.png");
+            return PhysicalFile("wwwroot/Test.png", "image/png");
         }
 
 

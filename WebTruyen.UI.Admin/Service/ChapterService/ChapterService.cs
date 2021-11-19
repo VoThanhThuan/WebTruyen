@@ -112,55 +112,53 @@ namespace WebTruyen.UI.Admin.Service.ChapterService
 
             var response = new HttpResponseMessage();
             var resultPost = new ChapterAM();
-            if (images != null)
+            if (images == null) return (response.StatusCode, resultPost);
+            if (images.Count > 40)
             {
-                if (images.Count > 40)
-                {
-                    var i = 0;
-                    var j = 0;
+                var i = 0;
+                var j = 0;
 
-                    var bytes = new ByteArrayContent(images[i].image);
-                    bytes.Headers.ContentType = new MediaTypeHeaderValue(images[0].contentType);
+                var bytes = new ByteArrayContent(images[i].image);
+                bytes.Headers.ContentType = new MediaTypeHeaderValue(images[0].contentType);
+                requestContent.Add(bytes, "pages", images[i].nameFile);
+
+                response = await _http.PostAsync($"/api/Chapters", requestContent);
+
+                if (!response.IsSuccessStatusCode) return (response.StatusCode, resultPost);
+                resultPost = await response.Content.ReadFromJsonAsync<ChapterAM>();
+                requestContent = new MultipartFormDataContent();
+
+                for (i = 1; i < images.Count; i++)
+                {
+                    bytes = new ByteArrayContent(images[i].image);
+                    bytes.Headers.ContentType = new MediaTypeHeaderValue(images[i].contentType);
                     requestContent.Add(bytes, "pages", images[i].nameFile);
 
-                    response = await _http.PostAsync($"/api/Chapters", requestContent);
+                    ++j;
 
-                    if (!response.IsSuccessStatusCode) return (response.StatusCode, resultPost);
-                    resultPost = await response.Content.ReadFromJsonAsync<ChapterAM>();
+                    if (j < 40) continue;
+                    var resultContinue = await _http.PostAsync($"/api/Chapters/ContinuePostChapter/{resultPost.Id}", requestContent);
+                    j = 0;
+
                     requestContent = new MultipartFormDataContent();
 
-                    for (i = 1; i < images.Count; i++)
-                    {
-                        bytes = new ByteArrayContent(images[i].image);
-                        requestContent.Add(bytes, "pages", images[i].nameFile);
-
-                        ++j;
-
-                        if (j < 40) continue;
-                        var resultContinue = await _http.PostAsync($"/api/Chapters/ContinuePostChapter/{resultPost.Id}", requestContent);
-                        j = 0;
-
-                        requestContent = new MultipartFormDataContent();
-
-                        if (!resultContinue.IsSuccessStatusCode)
-                            return (resultContinue.StatusCode, null);
-                    }
-
+                    if (!resultContinue.IsSuccessStatusCode)
+                        return (resultContinue.StatusCode, null);
                 }
-                else
+
+            }
+            else
+            {
+                foreach (var image in images)
                 {
-                    foreach (var image in images)
-                    {
-                        var bytes = new ByteArrayContent(image.image);
-                        bytes.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+                    var bytes = new ByteArrayContent(image.image);
+                    bytes.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
 
-                        requestContent.Add(bytes, "pages", image.nameFile);
+                    requestContent.Add(bytes, "pages", image.nameFile);
 
-                    }
-                    response = await _http.PostAsync($"/api/Chapters", requestContent);
-                    resultPost = await response.Content.ReadFromJsonAsync<ChapterAM>();
                 }
-
+                response = await _http.PostAsync($"/api/Chapters", requestContent);
+                resultPost = await response.Content.ReadFromJsonAsync<ChapterAM>();
             }
 
             return (response.StatusCode, resultPost);
