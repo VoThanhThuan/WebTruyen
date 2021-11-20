@@ -197,7 +197,7 @@ else
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel">Xác Nhận Xóa</h5>
+                        <h5 class="modal-title" id="staticBackdropLabel">Crop hình</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -417,7 +417,14 @@ else
 
         void DeleteUser()
         {
-            var a = _modalAlert.Result;
+            _modalAlert.Function = async () =>
+            {
+                var result = await _userApi.DeleteUser(_UserAM.Id);
+                if(result < 300)
+                    _navigationManager.NavigateTo("/User");
+                return true;
+            };
+
         }
 
         #endregion

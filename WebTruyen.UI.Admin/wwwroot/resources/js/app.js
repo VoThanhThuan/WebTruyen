@@ -18,6 +18,7 @@ function imgError(image) {
 function Click(parameters) {
     $(parameters).click();
 }
+
 function RawHtml(element, value) {
     let e = $(element);
     e.innerHTML = value;

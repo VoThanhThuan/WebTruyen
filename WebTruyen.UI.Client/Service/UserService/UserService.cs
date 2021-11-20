@@ -1,6 +1,7 @@
 ﻿using Blazored.SessionStorage;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -9,8 +10,9 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ApiModel;
+using WebTruyen.Library.Entities.Request;
+using WebTruyen.UI.Client.Model;
 
 namespace WebTruyen.UI.Client.Service.UserService
 {
@@ -77,6 +79,52 @@ namespace WebTruyen.UI.Client.Service.UserService
 
         }
 
+        public async Task<(int apiResult, string mess, UserAM user)> Register(RegisterRequestClient request)
+        {
+            await GetSession();
+            var requestContent = new MultipartFormDataContent();
+
+            if (!string.IsNullOrEmpty(request.Avatar.data)) {
+
+                var offset = request.Avatar.data.IndexOf(',') + 1;
+                var data = Convert.FromBase64String(request.Avatar.data[offset..^0]);
+                var bytes = new ByteArrayContent(data);
+                requestContent.Add(bytes, "Avatar", request.Avatar.filename);
+            }
+
+            Console.WriteLine("UserService.cs > Register");
+            Console.WriteLine($"Nickname: {request.Nickname}" );
+            Console.WriteLine($"Username: {request.Username}");
+            Console.WriteLine($"Password: {request.Password}");
+            Console.WriteLine($"ConfirmPassword: {request.ConfirmPassword}");
+            Console.WriteLine($"sex: {request.sex}");
+            Console.WriteLine($"Dob: {request.Dob.ToString("dd/MM/yyyy", DateTimeFormatInfo.InvariantInfo)}");
+            Console.WriteLine($"Address: {request.Address}");
+            Console.WriteLine($"PhoneNumber: {request.PhoneNumber}");
+            Console.WriteLine($"Email: {request.Email}");
+            Console.WriteLine($"Fanpage: {request.Fanpage}");
+
+            requestContent.Add(new StringContent(request.Nickname), "Nickname");
+            requestContent.Add(new StringContent(request.Username), "Username");
+            requestContent.Add(new StringContent(request.Password), "Password");
+            requestContent.Add(new StringContent(request.ConfirmPassword), "ConfirmPassword");
+            requestContent.Add(new StringContent(request.sex.ToString()), "sex");
+            requestContent.Add(new StringContent(request.Dob.ToString("dd/MM/yyyy")), "Dob");
+            requestContent.Add(new StringContent(request.Address), "Address");
+            requestContent.Add(new StringContent(request.PhoneNumber), "PhoneNumber");
+            requestContent.Add(new StringContent(request.Email), "Email");
+            requestContent.Add(new StringContent(request.Fanpage), "Fanpage");
+
+
+            var response = await _http.PostAsync($"/api/Users/Register/", requestContent);
+            if (response.StatusCode == HttpStatusCode.OK) {
+                return ((int)response.StatusCode, "", await response.Content.ReadFromJsonAsync<UserAM>());
+
+            } else {
+                return ((int)response.StatusCode, response.RequestMessage.ToString(), null);
+
+            }
+        }
 
     }
 }

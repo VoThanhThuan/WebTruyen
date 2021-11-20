@@ -181,8 +181,8 @@ namespace WebTruyen.API.Repository.User
             }
 
             var result = await DeleteFile(user.Avatar);
-            if (result != 200)
-                return StatusCodes.Status500InternalServerError;
+            //if (result != 200)
+            //    return StatusCodes.Status500InternalServerError;
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();

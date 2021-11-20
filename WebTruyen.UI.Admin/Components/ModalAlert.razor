@@ -26,11 +26,10 @@
 {
     [Parameter]
     public string _contentAlert { get; set; }
-    [Parameter]
-    public Func<bool> Function { get; set; }
+
+    public Func<Task<bool>> Function { get; set; }
 
     public bool Result { get; set; }
-
 
     public void TestFunc()
     {
@@ -38,10 +37,15 @@
         {
             Function();
         }
+
     }
 
     void ResultAlert(bool value)
     {
         Result = value;
+        if (Result)
+        {
+            Function();
+        }
     }
 }

@@ -32,7 +32,6 @@ namespace WebTruyen.Library.Entities.ApiModel
         {
             return new UserRequest()
             {
-                Id = Id,
                 Nickname = Nickname,
                 Dob = Dob,
                 sex = sex,

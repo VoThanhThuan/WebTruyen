@@ -97,6 +97,7 @@ namespace WebTruyen.UI.Admin.Service.UserService
                 var bytes = new ByteArrayContent(data);
                 requestContent.Add(bytes, "Avatar", request.Avatar.filename);
             }
+
             requestContent.Add(new StringContent(id.ToString()), "Id");
             requestContent.Add(new StringContent(request.Nickname), "Nickname");
             requestContent.Add(new StringContent(request.Username), "Username");
@@ -157,16 +158,19 @@ namespace WebTruyen.UI.Admin.Service.UserService
                 return (response.StatusCode, await response.Content.ReadFromJsonAsync<UserAM>());
 
             }
-            else
-            {
-                return (response.StatusCode, null);
 
-            }
+            return (response.StatusCode, null);
         }
 
-        public Task<int> DeleteUser(Guid id)
+        public async Task<int> DeleteUser(Guid id)
         {
-            throw new NotImplementedException();
+            var response = await _http.DeleteAsync($"/api/Users/{id}");
+            if (response.StatusCode == HttpStatusCode.OK) {
+                return (int)response.StatusCode;
+
+            }
+
+            return (int)response.StatusCode;
         }
     }
 }

@@ -102,7 +102,7 @@ namespace WebTruyen.API.Controllers
             if (user == null)
                 return NotFound();
 
-            return user;
+            return Ok(user);
         }
 
         // PUT: api/Users/5
@@ -127,11 +127,32 @@ namespace WebTruyen.API.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize(Roles = "Admin")]
+        [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<ActionResult<UserAM>> PostUser([FromForm]UserRequest user)
+        public async Task<ActionResult<UserAM>> PostUser([FromForm] UserRequest user)
         {
             if (user.Password != user.ConfirmPassword)
                 return BadRequest();
+
+            var result = await _user.PostUser(user);
+            if (result.user == null)
+                return Conflict(result.mess);
+
+            return CreatedAtAction("GetUser", new { id = result.user.Id }, user);
+        }
+
+        // POST: api/Users/Register
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost("Register")]
+        [Consumes("multipart/form-data")]
+        [AllowAnonymous]
+        public async Task<ActionResult<UserAM>> Register([FromForm] RegisterRequest request)
+        {
+            if (request.Password != request.ConfirmPassword)
+                return BadRequest();
+
+            var user = request.ToUserRequest();
+            user.IdRole = Guid.Empty;
 
             var result = await _user.PostUser(user);
             if (result.user == null)

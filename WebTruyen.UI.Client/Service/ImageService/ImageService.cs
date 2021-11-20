@@ -37,11 +37,12 @@ namespace WebTruyen.UI.Client.Service.ImageService
 
         public async Task<byte[]> ImageToByte(IBrowserFile img)
         {
-
             var buffer = new byte[img.Size]; // Tạo bộ nhớ đệm
+            Console.WriteLine($"ImageService > ImageToByte > buffer");
             await using var br = img.OpenReadStream();
             await br.ReadAsync(buffer); //ghi dữ liệu vào bộ nhớ đệm
-            GC.Collect();
+            Console.WriteLine($"ImageService > ImageToByte > await br.ReadAsync(buffer);");
+
             return buffer;
         }
 
@@ -83,7 +84,6 @@ namespace WebTruyen.UI.Client.Service.ImageService
                 await br.ReadAsync(data);
                 yield return data;
             }
-            GC.Collect();
         }
 
         public async IAsyncEnumerable<((byte[] data, string fileName) image, string stringValue)> ImagesToString(
@@ -105,7 +105,6 @@ namespace WebTruyen.UI.Client.Service.ImageService
 
                 yield return value;
             }
-            GC.Collect();
         }
     }
 }

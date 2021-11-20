@@ -19,17 +19,25 @@ var prevScrollpos = window.pageYOffset;
 window.onscroll = function () {
     var currentScrollPos = window.pageYOffset;
     if (prevScrollpos > currentScrollPos) {
-        $("#navbar").style.top = "0";
-        $$(".pop-menu").forEach(function (el) {
-            el.style.opacity = "100";
-            el.style.visibility = "visible";
-        });
+        var nav = $("#navbar");
+        if (nav != null) {
+            nav.style.top = "0";
+            $$(".pop-menu").forEach(function (el) {
+                el.style.opacity = "100";
+                el.style.visibility = "visible";
+            });
+        }
+
     } else {
-        $("#navbar").style.top = "-60px";
-        $$(".pop-menu").forEach(function (el) {
-            el.style.opacity = "0";
-            el.style.visibility = "hidden";
-        });
+        var nav = $("#navbar");
+        if (nav != null) {
+            nav.style.top = "-60px";
+            $$(".pop-menu").forEach(function (el) {
+                el.style.opacity = "0";
+                el.style.visibility = "hidden";
+            });
+        }
+
     }
     prevScrollpos = currentScrollPos;
 }
@@ -66,4 +74,52 @@ window.blazorExtensions = {
         if (parts.length === 2) return parts.pop().split(';').shift();
         return "";
     }
+}
+
+function Click(parameters) {
+    $(parameters).click();
+}
+
+var cropvalue;
+function Cropper(parameters) {
+    let check = $(parameters);
+    if (check == null) {
+        return;
+    }
+    var croppr = new Croppr(parameters, {
+        onInitialize: (instance) => {
+            console.log('instance', instance);
+        },
+        onCropStart: (data) => {
+            console.log('start', data);
+        },
+        onCropEnd: (data) => {
+            cropvalue = croppr.getValue();
+            console.log('end', data);
+        },
+        onCropMove: (data) => {
+            console.log('move', data);
+        },
+        aspectRatio: 1,
+        startSize: [100, 100]
+    });
+    cropvalue = croppr.getValue();
+    console.log(cropvalue);
+}
+
+function GetValueCrop() {
+    return cropvalue;
+}
+
+
+function cropImageToBase64(imageSelect, x, y, dWidth, dHeight) {
+    console.log(`cropImageToBase64 > imageSelect : ${imageSelect}`);
+    const image = document.querySelector(imageSelect);
+    const canvas = document.createElement('canvas');
+    canvas.width = dWidth;
+    canvas.height = dHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(image, x, y, dWidth, dHeight, 0, 0, dWidth, dHeight);
+    const dataURL = canvas.toDataURL('image/png');
+    return dataURL;
 }
