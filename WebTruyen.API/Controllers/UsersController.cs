@@ -86,7 +86,7 @@ namespace WebTruyen.API.Controllers
         {
             if (HttpContext.User.Identity is ClaimsIdentity identity)
             {
-                IEnumerable<Claim> claims = identity.Claims;
+                var claims = identity.Claims;
 
             }
             return Ok(await _user.GetUsers());
@@ -107,6 +107,7 @@ namespace WebTruyen.API.Controllers
 
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> PutUser(Guid id, [FromForm]UserRequest user)
@@ -161,6 +162,48 @@ namespace WebTruyen.API.Controllers
             return CreatedAtAction("GetUser", new { id = result.user.Id }, user);
         }
 
+        // PUT: api/UpdateInfoUser/5
+        [HttpPut("UpdateInfoUser/{idUser}")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UpdateInfoUser(Guid idUser, [FromBody] InfoUser user)
+        {
+            var tokenUserId = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (tokenUserId != idUser.ToString())
+                return BadRequest("Id của tài khoản đăng nhập và id yêu câu sửa đổi không giống nhau");
+
+            var result = await _user.UpdateInfoUser(idUser, user);
+
+            return StatusCode(result.apiResult, result.mess);
+        }
+
+        [HttpPut("UpdateAvater/{idUser}")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UpdateAvatar(Guid idUser, [FromForm] IFormFile avatar)
+        {
+            var tokenUserId = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (tokenUserId != idUser.ToString())
+                return BadRequest("Id của tài khoản đăng nhập và id yêu câu sửa đổi không giống nhau");
+
+
+            var result = await _user.UpdateAvatar(idUser, avatar);
+
+            return StatusCode(result.apiResult, result.mess);
+        }
+
+        [HttpPut("UpdatePassword/{idUser}")]
+        public async Task<IActionResult> UpdatePassword(Guid idUser, [FromBody] ChangePasswordRequest request)
+        {
+            var tokenUserId = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (tokenUserId != idUser.ToString())
+                return BadRequest("Id của tài khoản đăng nhập và id yêu câu sửa đổi không giống nhau");
+
+
+            if (request.Password != request.ConfirmPassword)
+                return BadRequest("Xác nhận mật khẩu mới không đúng");
+            var result = await _user.UpdatePassword(idUser, request);
+
+            return StatusCode(result.apiResult, result.mess);
+        }
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)

@@ -1,0 +1,222 @@
+﻿@page "/user"
+@using WebTruyen.UI.Client.Service.UserService
+@using WebTruyen.Library.Entities.ApiModel
+@using WebTruyen.Library.Entities.Request
+@using WebTruyen.UI.Client.Model
+
+
+<main>
+    <div class="container-xl mt-xxl-5 rounded-5 pb-5">
+        <div class="row g-2 gx-4">
+
+            <!-- Card chức năng -->
+            <div class="col-lg-4">
+                <!-- Card thông tin -->
+                <div class="card mb-3 rounded-5 bg-content" name="info">
+                    <div class="p-2">
+                        <div class="rounded-5 p-2 border-bottom">
+                            <a class="navbar-brand" href="#">Thông Tin</a>
+                        </div>
+                        <div class="mt-2">
+                            <div class="row card-info m-1 mb-3 p-2">
+                                <div class="col-auto m-auto p-0">
+                                    <img class="avatar-md rounded-circle" src="truyen.jpg" alt="avatar">
+                                </div>
+                                <div class="col">
+                                    <div class="mt-auto fs-2">Võ Thành Thuận</div>
+                                    <div>MSSV: DPM185194</div>
+                                </div>
+                            </div>
+                            <div class="content mt-2 m-1">
+                                <p class="card-info p-2 cursor-pointer" @onclick="() =>{SwitchPage(ChangePage.ChangeAvatar);}">Đổi ảnh đại diện</p>
+                                <p class="card-info p-2 cursor-pointer" @onclick="() =>{SwitchPage(ChangePage.ChangePassword);}">Đổi mật khẩu</p>
+                                <p class="card-info p-2 cursor-pointer" @onclick="() =>{SwitchPage(ChangePage.ChangeInfo);}">Đổi thông tin cá nhân</p>
+                                <p class="card-info p-2 cursor-pointer" @onclick="() =>{SwitchPage(ChangePage.ComicFlowed);}">Truyện đang theo dõi</p>
+                                <p class="card-info p-2 cursor-pointer" @onclick="() =>{SwitchPage(ChangePage.SignOut);}">Đăng Xuất</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End [Card thông tin] -->
+
+            </div>
+            <!-- End [Card chức năng] -->
+            <!-- Form update -->
+
+            <div class="col-lg-8" name="list-truyen">
+                <div class="content p-2 rounded-5">
+                    <div class="">
+                        <div class="rounded-5 p-2 border-bottom">
+                            <a class="navbar-brand" href="#">Text</a>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        @switch (_changePage) {
+                            case ChangePage.ChangeAvatar:
+                                <EditForm Model="_Model.Avatar" OnSubmit="UpdateAvatar">
+                                    <div class="form-floating mb-3">
+                                        <InputFile class="form-control" id="floatingOldPassword" placeholder="Mật khẩu cũ" accept="image/png, image/gif, image/jpeg" />
+                                        <label for="floatingOldPassword">Mật khẩu cũ</label>
+                                    </div>
+                                </EditForm>
+                                break;
+                            case ChangePage.ChangePassword:
+                                <EditForm Model="_Model.ChangePasswordRequest" OnSubmit="UpdatePassword">
+                                    <div class="form-floating mb-3">
+                                        <InputText type="password" class="form-control" id="floatingOldPassword" placeholder="Mật khẩu cũ" @bind-Value="_Model.ChangePasswordRequest.OldPassword" />
+                                        <label for="floatingOldPassword">Mật khẩu cũ</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <InputText type="password" class="form-control" id="floatingPassword" placeholder="Mật khẩu mới" @bind-Value="_Model.ChangePasswordRequest.Password" />
+                                        <label for="floatingPassword">Mật khẩu mới</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <InputText type="password" class="form-control" id="floatingConfirmPassword" placeholder="Mật khẩu cũ" @bind-Value="_Model.ChangePasswordRequest.ConfirmPassword" />
+                                        <label for="floatingConfirmPassword">Xác nhận mật khẩu mới</label>
+                                    </div>
+                                    <input type="submit" class="btn btn-primary" value="Đổi mật khẩu">
+                                </EditForm>
+                                break;
+                            case ChangePage.ChangeInfo:
+                                <EditForm Model="_Model.ChangeInfoUser" OnSubmit="UpdateFinfo">
+                                    <div class="form-floating mb-3">
+                                        <InputText class="form-control" id="floating" placeholder="" @bind-Value="_Model.ChangeInfoUser.Nickname" />
+                                        <label for="floating"></label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <InputText class="form-control" id="floating" placeholder="" @bind-Value="_Model.ChangeInfoUser.Email" />
+                                        <label for="floating"></label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <InputDate class="form-control" id="floating" placeholder="" @bind-Value="_Model.ChangeInfoUser.Dob" />
+                                        <label for="floating"></label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <InputText class="form-control" id="floating" placeholder="" @bind-Value="_Model.ChangeInfoUser.Address" />
+                                        <label for="floating"></label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <InputText class="form-control" id="floating" placeholder="" @bind-Value="_Model.ChangeInfoUser.Fanpage" />
+                                        <label for="floating"></label>
+                                    </div>
+
+                                    <div class="form-floating mb-3">
+                                        <select class="form-select" id="floatingSelect" aria-label="Floating label select example" @onchange="(e) => { var v = e.Value.ToString();_Model.ChangeInfoUser.sex = string.IsNullOrEmpty(v) || bool.Parse(v); }">
+                                            <option value="True">Nam</option>
+                                            <option value="False">Nữ</option>
+                                        </select>
+                                        <label for="floatingSelect">Giới Tính</label>
+                                        <ValidationMessage For="() => _Model.ChangeInfoUser.sex" />
+                                    </div>
+                                </EditForm>
+                                break;
+                            case ChangePage.ComicFlowed:
+                                break;
+                        }
+
+                    </div>
+
+                </div>
+            </div>
+            <!-- End [Form update] -->
+
+
+        </div>
+    </div>
+</main>
+
+
+@code {
+    [Inject] NavigationManager _navigationManager { get; set; }
+    [Inject] IJSRuntime JS { get; set; }
+    [Inject] IUserService _userApi { get; set; }
+
+    public UserAM _UserAM { get; set; } = null;
+
+    public ModelRequest _Model { get; set; } = new();
+
+    public ChangePage _changePage { get; set; } = ChangePage.ChangeInfo;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await JS.InvokeAsync<string>("blazorExtensions.ReadCookie", "Token");
+        if (string.IsNullOrEmpty(token)) {
+            _navigationManager.NavigateTo("/login");
+        } else {
+            await GetUserByToken(token);
+        }
+    }
+
+    #region Xử lý giao diện
+
+    void SwitchPage(ChangePage page)
+    {
+        switch (page) {
+            case ChangePage.ChangeAvatar:
+                _changePage = ChangePage.ChangeAvatar;
+                break;
+            case ChangePage.ChangePassword:
+                _changePage = ChangePage.ChangePassword;
+                break;
+            case ChangePage.ChangeInfo:
+                _changePage = ChangePage.ChangeInfo;
+                break;
+            case ChangePage.ComicFlowed:
+                _changePage = ChangePage.ComicFlowed;
+                break;
+            case ChangePage.SignOut:
+                FuncCode.SignOut();
+                break;
+        }
+        StateHasChanged();
+    }
+
+
+
+    #endregion
+
+    #region Giao tiếp với server
+    async Task GetUserByToken(string token)
+    {
+        var user = await _userApi.GetUserByAccessTokenAsync(token);
+        if (user == null) {
+            _navigationManager.NavigateTo("/login");
+        } else {
+            _UserAM = user;
+            StateHasChanged();
+        }
+
+    }
+
+    async Task UpdatePassword()
+    {
+
+    }
+    async Task UpdateAvatar()
+    {
+
+    }
+    async Task UpdateFinfo()
+    {
+
+    }
+
+    #endregion
+
+    public class ModelRequest
+    {
+        public ChangePasswordRequest ChangePasswordRequest { get; set; } = new ();
+        public string Avatar { get; set; } = "";
+        public InfoUser ChangeInfoUser { get; set; } = new ();
+    }
+
+    public enum ChangePage
+    {
+        ChangeAvatar,
+        ChangePassword,
+        ChangeInfo,
+        ComicFlowed,
+        SignOut
+    }
+}

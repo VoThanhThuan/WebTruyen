@@ -16,6 +16,10 @@ namespace WebTruyen.UI.Client.Service.UserService
         public Task<UserAM> GetUserByAccessTokenAsync(string accessToken);
         public Task<UserAM> GetUser(Guid id);
 
+        public Task<(int statusCode, string mess)> UpdateInfoUser(Guid idUser, InfoUser info);
+        public Task<(int statusCode, string mess)> UpdateAvatar(Guid idUser, (string data, string filename) Avatar);
+        public Task<(int statusCode, string mess)> UpdatePassword(Guid idUser, ChangePasswordRequest password);
+
         public Task<(int apiResult, string mess, UserAM user)> Register(RegisterRequestClient request);
 
     }

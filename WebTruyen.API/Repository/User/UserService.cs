@@ -73,7 +73,7 @@ namespace WebTruyen.API.Repository.User
             user.Fanpage = string.IsNullOrEmpty(text.RemoveSpaces(request.Fanpage)) == true ? user.Fanpage : request.Fanpage;
             user.Email = string.IsNullOrEmpty(text.RemoveSpaces(request.Email)) == true ? user.Email : request.Email;
             user.PhoneNumber = string.IsNullOrEmpty(text.RemoveSpaces(request.PhoneNumber)) == true ? user.PhoneNumber : request.PhoneNumber;
-            user.UserName = string.IsNullOrEmpty(text.RemoveSpaces(request.Username)) == true ? user.UserName : request.Username;
+            //user.UserName = string.IsNullOrEmpty(text.RemoveSpaces(request.Username)) == true ? user.UserName : request.Username;
 
             if (!string.IsNullOrEmpty(text.RemoveSpaces(request.Password)))
                 user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
@@ -82,24 +82,25 @@ namespace WebTruyen.API.Repository.User
 
             //_context.Entry(request.ToUser()).State = EntityState.Modified;
 
+
             //Role assign
-
-            var roles = await _context.Roles.Select(x => x).ToListAsync();
-            var userRole = await _context.AppUserRole.FindAsync(id, request.IdRole);
-            if (userRole == null)
+            if (request.IdRole == Guid.Empty)
             {
-                foreach (var role in roles)
-                {
-                    if (await _userManager.IsInRoleAsync(user, role.Name) == true)
-                    {
-                        await _userManager.RemoveFromRoleAsync(user, role.Name);
+                var roles = await _context.Roles.Select(x => x).ToListAsync();
+                var userRole = await _context.AppUserRole.FindAsync(id, request.IdRole);
+                if (userRole == null) {
+                    foreach (var role in roles) {
+                        if (await _userManager.IsInRoleAsync(user, role.Name) == true) {
+                            await _userManager.RemoveFromRoleAsync(user, role.Name);
+                        }
                     }
+
+                    var roleNew = await _context.Roles.FindAsync(request.IdRole);
+
+                    await _userManager.AddToRoleAsync(user, roleNew.Name);
                 }
-
-                var roleNew = await _context.Roles.FindAsync(request.IdRole);
-
-                await _userManager.AddToRoleAsync(user, roleNew.Name);
             }
+
 
             try
             {
@@ -232,7 +233,7 @@ namespace WebTruyen.API.Repository.User
             var token = new JwtSecurityToken(_config["Tokens:Issuer"],
                 _config["Tokens:Issuer"],
                 claims,
-                expires: DateTime.Now.AddHours(1),
+                expires: DateTime.Now.AddDays(1),
                 signingCredentials: creds);
             //</>
 
@@ -259,5 +260,46 @@ namespace WebTruyen.API.Repository.User
             return null;
         }
 
+        public async Task<(int apiResult, string mess)> UpdateAvatar(Guid idUser, IFormFile file)
+        {
+            if(file == null) return ((int)StatusCodes.Status400BadRequest, "File không được rỗng");
+            var user = _context.Users.Find(idUser);
+            if (user == null) return ((int) StatusCodes.Status404NotFound, "Không tìm thấy user");
+
+            //Xóa avatar cũ
+            await _storageService.DeleteFileAsync(user.Avatar);
+
+            //Update
+            user.Avatar = await _storageService.SaveFile(file, @"avatar/");
+            await _context.SaveChangesAsync();
+
+            return (200, "Cập nhật thành công");
+        }
+
+        public async Task<(int apiResult, string mess)> UpdatePassword(Guid idUser, ChangePasswordRequest request)
+        {
+            var user = await _context.Users.FindAsync(idUser);
+            if (user == null) return ((int) StatusCodes.Status404NotFound, "Không tìm thấy user");
+            var result = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.Password);
+            return (200, "Đổi mật khẩu thành công");
+        }
+
+        public async Task<(int apiResult, string mess)> UpdateInfoUser(Guid idUser, InfoUser request)
+        {
+            var text = new TextService();
+            var user = await _userManager.FindByIdAsync(idUser.ToString());
+            if (user == null)
+                return ((int)StatusCodes.Status404NotFound, "Không tìm thầy user");
+            user.Nickname = string.IsNullOrEmpty(text.RemoveSpaces(request.Nickname)) == true ? user.Nickname : request.Nickname;
+            user.Dob = request.Dob;
+            user.sex = request.sex;
+            user.Address = string.IsNullOrEmpty(text.RemoveSpaces(request.Address)) == true ? user.Address : request.Address;
+            user.Fanpage = string.IsNullOrEmpty(text.RemoveSpaces(request.Fanpage)) == true ? user.Fanpage : request.Fanpage;
+            user.Email = string.IsNullOrEmpty(text.RemoveSpaces(request.Email)) == true ? user.Email : request.Email;
+            user.PhoneNumber = string.IsNullOrEmpty(text.RemoveSpaces(request.PhoneNumber)) == true ? user.PhoneNumber : request.PhoneNumber;
+
+            await _context.SaveChangesAsync();
+            return (200, "Cập nhật thành công");
+        }
     }
 }

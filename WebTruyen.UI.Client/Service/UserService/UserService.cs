@@ -55,7 +55,10 @@ namespace WebTruyen.UI.Client.Service.UserService
             var response = await _http.GetAsync(@"/api/Users/GetUserByAccessToken");
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                return await response.Content.ReadFromJsonAsync<UserAM>();
+                var user = await response.Content.ReadFromJsonAsync<UserAM>();
+                user.Avatar = $"{_http.BaseAddress}{user.Avatar}";
+                Console.WriteLine($"UserService > GetUserByAccessTokenAsync > userId: {user.Id}");
+                return user;
             }
 
             return null;
@@ -75,6 +78,7 @@ namespace WebTruyen.UI.Client.Service.UserService
             var result = await _http.GetFromJsonAsync<UserAM>($"/api/Users/{id}");
             if (result == null) return null;
             result.Avatar = $"{_http.BaseAddress}{result.Avatar}";
+            Console.WriteLine($"UserService > GetUser > result.Id: {result.Id}");
             return result;
 
         }
@@ -92,17 +96,17 @@ namespace WebTruyen.UI.Client.Service.UserService
                 requestContent.Add(bytes, "Avatar", request.Avatar.filename);
             }
 
-            Console.WriteLine("UserService.cs > Register");
-            Console.WriteLine($"Nickname: {request.Nickname}" );
-            Console.WriteLine($"Username: {request.Username}");
-            Console.WriteLine($"Password: {request.Password}");
-            Console.WriteLine($"ConfirmPassword: {request.ConfirmPassword}");
-            Console.WriteLine($"sex: {request.sex}");
-            Console.WriteLine($"Dob: {request.Dob.ToString("dd/MM/yyyy", DateTimeFormatInfo.InvariantInfo)}");
-            Console.WriteLine($"Address: {request.Address}");
-            Console.WriteLine($"PhoneNumber: {request.PhoneNumber}");
-            Console.WriteLine($"Email: {request.Email}");
-            Console.WriteLine($"Fanpage: {request.Fanpage}");
+            //Console.WriteLine("UserService.cs > Register");
+            //Console.WriteLine($"Nickname: {request.Nickname}" );
+            //Console.WriteLine($"Username: {request.Username}");
+            //Console.WriteLine($"Password: {request.Password}");
+            //Console.WriteLine($"ConfirmPassword: {request.ConfirmPassword}");
+            //Console.WriteLine($"sex: {request.sex}");
+            //Console.WriteLine($"Dob: {request.Dob.ToString("dd/MM/yyyy", DateTimeFormatInfo.InvariantInfo)}");
+            //Console.WriteLine($"Address: {request.Address}");
+            //Console.WriteLine($"PhoneNumber: {request.PhoneNumber}");
+            //Console.WriteLine($"Email: {request.Email}");
+            //Console.WriteLine($"Fanpage: {request.Fanpage}");
 
             requestContent.Add(new StringContent(request.Nickname), "Nickname");
             requestContent.Add(new StringContent(request.Username), "Username");
@@ -120,11 +124,71 @@ namespace WebTruyen.UI.Client.Service.UserService
             if (response.StatusCode == HttpStatusCode.OK) {
                 return ((int)response.StatusCode, "", await response.Content.ReadFromJsonAsync<UserAM>());
 
-            } else {
-                return ((int)response.StatusCode, response.RequestMessage.ToString(), null);
-
             }
+
+            return ((int)response.StatusCode, response.RequestMessage.ToString(), null);
         }
 
+        public async Task<(int statusCode, string mess)> UpdateInfoUser(Guid idUser, InfoUser info)
+        {
+            await GetSession();
+            //var requestContent = new MultipartFormDataContent
+            //{
+            //    {new StringContent(request.Nickname), "Nickname"},
+            //    {new StringContent(request.sex.ToString()), "sex"},
+            //    {new StringContent(request.Dob.ToString("dd/MM/yyyy")), "Dob"},
+            //    {new StringContent(request.Address), "Address"},
+            //    {new StringContent(request.PhoneNumber), "PhoneNumber"},
+            //    {new StringContent(request.Email), "Email"},
+            //    {new StringContent(request.Fanpage), "Fanpage"}
+            //};
+
+            var json = JsonSerializer.Serialize(info);
+
+
+            var response = await _http.PutAsJsonAsync($"/api/Users/UpdateInfoUser/{idUser}", json);
+            if (response.StatusCode == HttpStatusCode.OK) {
+                return ((int)response.StatusCode, response.RequestMessage.ToString());
+
+            }
+            return ((int)response.StatusCode, response.RequestMessage.ToString());
+        }
+
+        public async Task<(int statusCode, string mess)> UpdateAvatar(Guid idUser, (string data, string filename) Avatar)
+        {
+            await GetSession();
+            var requestContent = new MultipartFormDataContent();
+
+            if (!string.IsNullOrEmpty(Avatar.data)) {
+
+                var offset = Avatar.data.IndexOf(',') + 1;
+                var data = Convert.FromBase64String(Avatar.data[offset..^0]);
+                var bytes = new ByteArrayContent(data);
+                requestContent.Add(bytes, "Avatar", Avatar.filename);
+
+                var response = await _http.PutAsync($"/api/Users/UpdateAvater/{idUser}", requestContent);
+                if (response.StatusCode == HttpStatusCode.OK) {
+                    return ((int)response.StatusCode, response.RequestMessage.ToString());
+
+                }
+                return ((int)response.StatusCode, response.RequestMessage.ToString());
+
+            }
+            return ((int)404, "Avatar không được rỗng");
+        }
+
+        public async Task<(int statusCode, string mess)> UpdatePassword(Guid idUser, ChangePasswordRequest password)
+        {
+            await GetSession();
+
+            var json = JsonSerializer.Serialize(password);
+            var response = await _http.PutAsJsonAsync($"/api/Users/UpdatePassword/{idUser}", json);
+            if (response.StatusCode == HttpStatusCode.OK) {
+                return ((int)response.StatusCode, response.RequestMessage.ToString());
+
+            }
+            return ((int)response.StatusCode, response.RequestMessage.ToString());
+
+        }
     }
 }

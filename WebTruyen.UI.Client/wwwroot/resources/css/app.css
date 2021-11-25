@@ -69,10 +69,22 @@ ul {
     background-color: var(--bg-info);
     color: var(--fg);
 }
+
+.form-control {
+    background-color: var(--bg-info);
+    color: var(--fg);
+}
+
+    .form-control:focus {
+        background-color: var(--bg-info);
+        color: var(--fg);
+    }
+
+.form-floating > label {
+    color: var(--fg);
+}
 /*End [Sửa boostrap]*/
-
 /* nav */
-
 #navbar {
     position: fixed;
     top: 0;

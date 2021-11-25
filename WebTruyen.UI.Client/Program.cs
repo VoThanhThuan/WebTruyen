@@ -16,6 +16,7 @@ using WebTruyen.UI.Client.Service.GenreService;
 using WebTruyen.UI.Client.Service.ImageService;
 using WebTruyen.UI.Client.Service.PageService;
 using WebTruyen.UI.Client.Service.UserService;
+using WebTruyen.UI.Client.Shared;
 
 namespace WebTruyen.UI.Client
 {
@@ -27,7 +28,7 @@ namespace WebTruyen.UI.Client
             builder.RootComponents.Add<App>("#app");
 
             Console.WriteLine(">>>" + builder.Configuration["BaseAddress"]);
-            
+
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration["BaseAddress"]) });
 
             builder.Services.AddBlazoredSessionStorage();
@@ -40,6 +41,7 @@ namespace WebTruyen.UI.Client
             builder.Services.AddTransient<IImageService, ImageService>();
             builder.Services.AddTransient<IUserService, UserService>();
             builder.Services.AddTransient<ICommentService, CommentService>();
+
 
 
             await builder.Build().RunAsync();

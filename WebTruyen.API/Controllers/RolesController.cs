@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +15,7 @@ namespace WebTruyen.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class RolesController : ControllerBase
     {
         private readonly IRoleService _role;
@@ -42,6 +45,15 @@ namespace WebTruyen.API.Controllers
 
             return role;
         }
+
+        // GET: api/Roles/5
+        [HttpGet("GetUserRole")]
+        public IActionResult GetUserRole()
+        {
+            var userRole = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Role)?.Value;
+            return Ok(userRole);
+        }
+
 
         // PUT: api/Roles/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

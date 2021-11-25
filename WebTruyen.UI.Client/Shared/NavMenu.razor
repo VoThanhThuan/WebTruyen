@@ -5,12 +5,9 @@
 @using Blazored.LocalStorage
 @using System.Threading
 @using System.Text.Json
-@if (_element.OnDark)
-{
+@if (_element.OnDark) {
     <link rel="stylesheet" href="./resources/css/dark.css">
-}
-else
-{
+} else {
     <link rel="stylesheet" href="./resources/css/light.css">
 }
 
@@ -38,13 +35,10 @@ else
 
                             <div class="icon" @onclick="OpenGenreMenu">
                                 <span>
-                                    @if (_element.pop_grene)
-                                    {
+                                    @if (_element.pop_grene) {
                                         <svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" focusable="false" class="style-scope yt-icon" style="pointer-events: none; display: block; width: 100%; height: 100%;"><g class="style-scope yt-icon"><path d="M16,4v4h4V4H16z M16,10v4h4v-4H16z M10,4v4h4V4H10z M10,10v4h4v-4H10z M16,16v4h4v-4H16z M10,16v4h4v-4H10z M4,4v4h4V4H4z M4,10v4h4v-4H4z M4,16v4h4v-4H4z" class="style-scope yt-icon"></path></g></svg>
 
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         <svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" focusable="false" class="style-scope yt-icon" style="pointer-events: none; display: block; width: 100%; height: 100%;"><g class="style-scope yt-icon"><path d="M16,4v4h4V4H16z M19,7h-2V5h2V7z M16,10v4h4v-4H16z M19,13h-2v-2h2V13z M10,4v4h4V4H10z M13,7h-2V5h2V7z M10,10v4h4v-4H10z M13,13h-2v-2h2V13z M16,16v4h4v-4H16z M19,19h-2v-2h2V19z M10,16v4h4v-4H10z M13,19h-2v-2h2V19z M4,4v4h4V4H4z M7,7H5V5h2V7z M4,10 v4h4v-4H4z M7,13H5v-2h2V13z M4,16v4h4v-4H4z M7,19H5v-2h2V19z" class="style-scope yt-icon"></path></g></svg>
 
                                     }
@@ -54,24 +48,20 @@ else
 
                     </div>
 
-                    @if (_element.pop_grene)
-                    {
+                    @if (_element.pop_grene) {
                         <div class="pop-menu pop-menu-center">
                             <div class="d-flex">
                                 <div class="card rounded-5 bg-content" name="info">
                                     <div class="p-2">
                                         <div class="rounded-5 p-2 border-bottom d-flex justify-content-between">
                                             <a class="navbar-brand" href="#">Thông Tin</a>
-                                            <div class="cursor-pointer"  @onclick="()=>OnDarkMode(_element.OnDark)">
-                                                @if (_element.OnDark)
-                                                {
+                                            <div class="cursor-pointer" @onclick="()=>OnDarkMode(_element.OnDark)">
+                                                @if (_element.OnDark) {
                                                     <div>
                                                         <i class="fad fa-moon"></i> Dark Mode
                                                     </div>
 
-                                                }
-                                                else
-                                                {
+                                                } else {
                                                     <div>
                                                         <i class="fad fa-sun"></i> Light Mode
                                                     </div>
@@ -105,16 +95,12 @@ else
 
             </form>
             <div class="d-flex justify-content-end">
-                @if (_element.IsSignIn)
-                {
+                @if (_element.IsSignIn) {
                     <img class="avatar-sm rounded-circle cursor-pointer" src="@_element.User.Avatar" alt="avatar" @onclick="OpenUserMenu">
-                }
-                else
-                {
+                } else {
                     <a @onclick="SignIn" class="btn btn-primary" style="white-space: nowrap;">Đăng Nhập</a>
                 }
-                @if (_element.pop_user)
-                {
+                @if (_element.pop_user) {
                     <div class="pop-menu pop-menu-right">
                         <div class="d-flex">
                             <div class="card rounded-5 bg-content" name="info">
@@ -151,39 +137,38 @@ else
 
                                     } else {
                                         <!--
-                                                    <div class="mt-2">
-            <div class="content mt-1 m-1">
-                <div class="card-info p-2 mt-2">
-                    <div class="form-check form-switch">
-                        Dảk Mode<input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" @onclick="()=>OnDarkMode(_element.OnDark)">
-                    </div>
-                </div>
-                <EditForm Model="LoginRequest" OnValidSubmit="SignIn">
-                    <div class="card-info p-2 mt-2">
-                        <div class="form-floating">
-                            <InputText @bind-Value="LoginRequest.Username" class="form-control" id="floatingInput" placeholder="Username"></InputText>
-                            <label for="floatingInput">Username</label>
-                        </div>
-                    </div>
-                    <div class="card-info p-2 mt-2">
-                        <div class="form-floating">
-                            <InputText @bind-Value="LoginRequest.Password" class="form-control" id="floatingPassword" placeholder="Password"></InputText>
-                            <label for="floatingPassword">Password</label>
-                        </div>
-                    </div>
+                                                                                    <div class="mt-2">
+                                            <div class="content mt-1 m-1">
+                                                <div class="card-info p-2 mt-2">
+                                                    <div class="form-check form-switch">
+                                                        Dảk Mode<input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" @onclick="()=>OnDarkMode(_element.OnDark)">
+                                                    </div>
+                                                </div>
+                                                <EditForm Model="LoginRequest" OnValidSubmit="SignIn">
+                                                    <div class="card-info p-2 mt-2">
+                                                        <div class="form-floating">
+                                                            <InputText @bind-Value="LoginRequest.Username" class="form-control" id="floatingInput" placeholder="Username"></InputText>
+                                                            <label for="floatingInput">Username</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-info p-2 mt-2">
+                                                        <div class="form-floating">
+                                                            <InputText @bind-Value="LoginRequest.Password" class="form-control" id="floatingPassword" placeholder="Password"></InputText>
+                                                            <label for="floatingPassword">Password</label>
+                                                        </div>
+                                                    </div>
 
-                    <div class="card-info p-2 mt-2">
-                        <input type="submit" class="btn btn-primary me-5" value="Đăng Nhập" />
-                        <button class="btn btn-outline-primary">Đăng Ký</button>
-                    </div>
-                </EditForm>
+                                                    <div class="card-info p-2 mt-2">
+                                                        <input type="submit" class="btn btn-primary me-5" value="Đăng Nhập" />
+                                                        <button class="btn btn-outline-primary">Đăng Ký</button>
+                                                    </div>
+                                                </EditForm>
 
-            </div>
+                                            </div>
 
-        </div>
+                                        </div>
 
-        -->
-
+                                        -->
                                     }
 
                                 </div>
@@ -199,12 +184,11 @@ else
     </div>
 </nav>
 
-@if (_element.pop_background_click)
-{
+@if (_element.pop_background_click) {
     <div class="background-click" @onclick="ClosePopMenu"></div>
 }
 
-@code{
+@code {
 
     #region initialization
 
@@ -222,18 +206,24 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-        {
+        if (firstRender) {
             //var token = await _localStorage.GetItemAsStringAsync("Token");
             var token = await JS.InvokeAsync<string>("blazorExtensions.ReadCookie", "Token");
-            Console.WriteLine($"NavMenu > OnAfterRenderAsync > token: {token}");
             var isdark = await _localStorage.GetItemAsStringAsync("dark");
             OnDarkMode(isdark != "1");
-            if (!string.IsNullOrEmpty(token))
-            {
+            if (!string.IsNullOrEmpty(token)) {
                 await GetUserByToken(token);
                 StateHasChanged();
             }
+            FuncCode.SignOut = () => {
+                JS.InvokeVoidAsync("blazorExtensions.DeleteCookie", "Token");
+                _sessionStorage.ClearAsync();
+                _localStorage.ClearAsync();
+                _element.IsSignIn = false;
+                _element.User = new UserAM();
+                _navigationManager.NavigateTo("/");
+                StateHasChanged();
+            };
         }
     }
 
@@ -264,12 +254,9 @@ else
 
     void BackgroundClick()
     {
-        if (!_element.pop_grene && !_element.pop_user)
-        {
+        if (!_element.pop_grene && !_element.pop_user) {
             _element.pop_background_click = false;
-        }
-        else
-        {
+        } else {
             _element.pop_background_click = true;
         }
     }
@@ -293,16 +280,14 @@ else
         _navigationManager.NavigateTo($"/login?ReturnUrl=/{returnUrl}");
     }
 
-
-
     void SignOut()
     {
+        JS.InvokeVoidAsync("blazorExtensions.DeleteCookie", "Token");
         _sessionStorage.ClearAsync();
         _localStorage.ClearAsync();
         _element.IsSignIn = false;
         _element.User = new UserAM();
         StateHasChanged();
-
     }
 
     #endregion
@@ -312,12 +297,9 @@ else
     async Task SignIn(EditContext editContext)
     {
         var token = await _userApi.Authenticate(LoginRequest);
-        if (string.IsNullOrEmpty(token))
-        {
+        if (string.IsNullOrEmpty(token)) {
             Console.WriteLine($">>> [❌] Đăng thập thất bại ");
-        }
-        else
-        {
+        } else {
             Console.WriteLine($">>> [⭕] Đăng Nhập Thành Công");
 
             await _localStorage.SetItemAsStringAsync("Token", token);
@@ -332,21 +314,25 @@ else
     async Task GetUserByToken(string token)
     {
         var user = await _userApi.GetUserByAccessTokenAsync(token);
-        if (user is not null)
-        {
-            //Console.WriteLine($">>> GetUserByToken: check user: ok");
+        if (user is not null) {
+            Console.WriteLine($"NavMenu > GetUserByToken > user.Id: {user.Id}");
+            Console.WriteLine($"NavMenu > GetUserByToken > user.Avatar: {user.Avatar}");
             _element.IsSignIn = true;
             _element.User = user;
-
+            
             var jsonUser = JsonSerializer.Serialize(user);
-            await _localStorage.SetItemAsStringAsync("Token", token);
+            Console.WriteLine($"NavMenu > GetUserByToken > jsonUser: {jsonUser}");
+
+            //await _localStorage.SetItemAsStringAsync("Token", token);
+            await JS.InvokeAsync<string>("blazorExtensions.WriteCookie", "Token", token, 1);
             await _sessionStorage.SetItemAsStringAsync("Token", token);
             await _sessionStorage.SetItemAsStringAsync("user_webtruyen", jsonUser);
-        }
-        else
-        {
+        } else {
+            await JS.InvokeVoidAsync("blazorExtensions.DeleteCookie", "Token");
             await _localStorage.RemoveItemAsync("Token");
+
         }
+        StateHasChanged();
     }
 
     #endregion

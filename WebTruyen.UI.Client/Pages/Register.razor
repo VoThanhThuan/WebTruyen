@@ -84,7 +84,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
                             </div>
-                            <InputFile class="form-control" type="file" id="input-file" OnChange="InputImage" />
+                            <InputFile class="form-control" type="file" id="input-file" OnChange="InputImage" accept="image/png, image/gif, image/jpeg" />
                         </div>
                     </div>
                     <div class="form-group">
@@ -137,8 +137,8 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
                             </div>
-                            <InputText type="text" class="form-control" placeholder="Địa chỉ" @bind-Value="_userRequest.Address" />
-                            <ValidationMessage For="() => _userRequest.Address" />
+                            <InputText type="text" class="form-control" placeholder="Số điện thoại" @bind-Value="_userRequest.PhoneNumber" />
+                            <ValidationMessage For="() => _userRequest.PhoneNumber" />
                         </div>
                     </div>
                     <div class="form-group">
@@ -146,8 +146,17 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
                             </div>
-                            <InputText type="text" class="form-control" placeholder="Số điện thoại" @bind-Value="_userRequest.PhoneNumber" />
-                            <ValidationMessage For="() => _userRequest.PhoneNumber" />
+                            <InputText type="text" class="form-control" placeholder="Số điện thoại" @bind-Value="_userRequest.Email" />
+                            <ValidationMessage For="() => _userRequest.Email" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group input-group-alternative mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                            </div>
+                            <InputText type="text" class="form-control" placeholder="Địa chỉ" @bind-Value="_userRequest.Address" />
+                            <ValidationMessage For="() => _userRequest.Address" />
                         </div>
                     </div>
                     <div class="form-group">
@@ -191,7 +200,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">Xác Nhận Xóa</h5>
+                    <h5 class="modal-title" id="staticBackdropLabel">Crop Hình</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">

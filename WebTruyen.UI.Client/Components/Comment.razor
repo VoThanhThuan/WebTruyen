@@ -14,7 +14,7 @@
             <div class="rounded-5 p-2 border-bottom">
                 <div class="row">
                     <div class="col-auto">
-                        <img src="truyen.jpg" alt="avatar" class="avatar-md rounded-circle ">
+                        <img src="@_UserAM.Avatar" alt="avatar" class="avatar-md rounded-circle ">
                     </div>
                     <div class="mb-3 col">
                         <EditForm model="_CommentRequest" OnValidSubmit="PostNewComment">
@@ -150,36 +150,36 @@
 
     public CommentRequest _CommentRequest { get; set; } = new();
     public List<CommentVM> _ListComment { get; set; } = new();
-    public UserAM _UserAM { get; set; } = null;
+    public UserAM _UserAM { get; set; } = new();
     public Element _element { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
         Console.WriteLine($">>>Comment: OnInitializedAsync: _IdComic: {_IdComic}");
         Console.WriteLine($">>>Comment: OnInitializedAsync: _IdChapter: {_IdChapter}");
-        if (!string.IsNullOrEmpty(_IdComic))
-        {
-            Console.WriteLine($">>> comment in Comic");
-            _CommentRequest.IdComic = Guid.Parse(_IdComic);
-            _wherePage = PositionPage.Comic;
-        }
-        if (!string.IsNullOrEmpty(_IdChapter))
-        {
-            Console.WriteLine($">>> comment in Chapter");
-            _CommentRequest.IdChapter = Guid.Parse(_IdChapter);
-            _wherePage = PositionPage.Chapter;
-        }
-        await CheckUser();
-        await GetComments();
-    //  FB.XFBML.parse();
-        await JS.InvokeVoidAsync("RefreshCommentFB");
+
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-
+            if (!string.IsNullOrEmpty(_IdComic))
+            {
+                Console.WriteLine($">>> comment in Comic");
+                _CommentRequest.IdComic = Guid.Parse(_IdComic);
+                _wherePage = PositionPage.Comic;
+            }
+            if (!string.IsNullOrEmpty(_IdChapter))
+            {
+                Console.WriteLine($">>> comment in Chapter");
+                _CommentRequest.IdChapter = Guid.Parse(_IdChapter);
+                _wherePage = PositionPage.Chapter;
+            }
+            await CheckUser();
+            await GetComments();
+    //  FB.XFBML.parse();
+            await JS.InvokeVoidAsync("RefreshCommentFB");
 
         }
 
@@ -191,7 +191,7 @@
     async Task CheckUser()
     {
         var jsonUser = await _sessionStorage.GetItemAsStringAsync("user_webtruyen");
-        //Console.WriteLine($"jsonUser:>>> {jsonUser}");
+        Console.WriteLine($"Comment > CheckUser > jsonUser:>>> {jsonUser}");
         if (string.IsNullOrEmpty(jsonUser))
             return;
         _isSignIn = true;
