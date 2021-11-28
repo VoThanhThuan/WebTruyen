@@ -15,7 +15,7 @@ namespace WebTruyen.API.Repository.Chapter
         public Task<ChapterAM> GetLastChapter(Guid idComic);
         public Task<List<ChapterAM>> GetNewChapters(Guid idComic, int amount);
 
-        public Task<List<ChapterAM>> GetChaptersInComic(Guid idComic);
+        public Task<List<ChapterAM>> GetChaptersInComic(Guid idComic, int skip = 0, int take = 40);
 
         public Task<int> PutChapter(Guid id, ChapterRequest chapter);
         public Task<ChapterAM> PostChapter(ChapterRequest chapter);

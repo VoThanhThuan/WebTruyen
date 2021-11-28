@@ -62,21 +62,21 @@ ul {
 }
 
 .border-bottom {
-    border-bottom-color: var(--bg-info) !important;
+    border-bottom-color: var(--bg-medium) !important;
 }
 
 .form-select {
-    background-color: var(--bg-info);
+    background-color: var(--bg-medium);
     color: var(--fg);
 }
 
 .form-control {
-    background-color: var(--bg-info);
+    background-color: var(--bg-medium);
     color: var(--fg);
 }
 
     .form-control:focus {
-        background-color: var(--bg-info);
+        background-color: var(--bg-medium);
         color: var(--fg);
     }
 
@@ -98,7 +98,7 @@ ul {
 .search-bar {
     background: var(--bg);
     display: flex;
-    border: 1px solid var(--bg-info);
+    border: 1px solid var(--bg-medium);
     box-shadow: none;
     border-radius: 24px;
     z-index: 3;
@@ -172,12 +172,12 @@ main {
 
 .card-info {
     border-radius: 0.5rem !important;
-    background-color: var(--bg-info);
+    background-color: var(--bg-medium);
     border: 0px !important;
 }
 
     .card-info:hover {
-        background-color: var(--bg-hover);
+        background-color: var(--bg-low);
     }
 
     .card-info img {
@@ -211,6 +211,10 @@ main {
         -webkit-line-clamp: 3;
         display: -webkit-box;
     }
+
+.card-comic {
+    height: 100%;
+}
 
 .info-name {
     margin-left: 5px;
@@ -300,7 +304,7 @@ ul.list-chapters {
     }
 
         ul.list-chapters li:hover {
-            background-color: var(--bg-hover);
+            background-color: var(--bg-low);
         }
 
         ul.list-chapters li a .chapter-name {

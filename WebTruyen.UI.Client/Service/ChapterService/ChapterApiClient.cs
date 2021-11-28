@@ -51,10 +51,10 @@ namespace WebTruyen.UI.Client.Service.ChapterService
             return chapter;
         }
 
-        public async Task<List<ChapterAM>> GetChaptersInComic(Guid idComic)
+        public async Task<List<ChapterAM>> GetChaptersInComic(Guid idComic, int skip = 0, int take = 40)
         {
             // api/Chapters/comic?idComic=
-            var chapter = await _http.GetFromJsonAsync<List<ChapterAM>>($"/api/Chapters/comic?idComic={idComic}");
+            var chapter = await _http.GetFromJsonAsync<List<ChapterAM>>($"/api/Chapters/comic?idComic={idComic}&skip={skip}&take={take}");
 
             return chapter;
         }

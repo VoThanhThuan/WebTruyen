@@ -21,12 +21,16 @@ namespace WebTruyen.UI.Admin.Service.PageService
 
         public Task<List<PageAM>> GetPages()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            return null;
+
         }
 
         public Task<PageAM> GetPage(Guid id)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+
+            return null;
         }
 
         public async Task<List<PageAM>> GetPagesInChapter(Guid idChapter)
@@ -41,8 +45,7 @@ namespace WebTruyen.UI.Admin.Service.PageService
         {
             var result = await _http.GetFromJsonAsync<List<PageAM>>($"api/Pages/chapter?idChapter={idChapter}");
 
-            foreach (var page in result)
-            {
+            foreach (var page in result) {
                 page.Image = $"{_http.BaseAddress}{page.Image}";
                 yield return page;
             }

@@ -58,8 +58,7 @@ namespace WebTruyen.UI.Admin.Service.ComicService
             await GetSession();
 
             var result = await _http.GetFromJsonAsync<ComicAM>($"/api/Comics/{id}");
-            if (result != null)
-            {
+            if (result != null) {
                 result.Thumbnail = $"{_http.BaseAddress}{result.Thumbnail}";
             }
             return result;
@@ -70,8 +69,7 @@ namespace WebTruyen.UI.Admin.Service.ComicService
             await GetSession();
 
             var result = await _http.GetFromJsonAsync<ComicAM>($"/api/Comics/detail?nameAlias={nameAlias}");
-            if (result != null)
-            {
+            if (result != null) {
                 result.Thumbnail = $"{_http.BaseAddress}{result.Thumbnail}";
             }
             return result;
@@ -83,15 +81,12 @@ namespace WebTruyen.UI.Admin.Service.ComicService
 
             var requestContent = new MultipartFormDataContent();
 
-            if (request.Thumbnail != null)
-            {
-                var data = new byte[request.Thumbnail.Size];
-                await using (var br = request.Thumbnail.OpenReadStream())
-                {
-                    await br.ReadAsync(data);
-                }
+            if (request.Thumbnail != null) {
+
+                var data = await _image.ImageToByte(request.Thumbnail);
 
                 var bytes = new ByteArrayContent(data);
+                bytes.Headers.ContentType = new MediaTypeHeaderValue(request.Thumbnail.ContentType);
                 requestContent.Add(bytes, "Thumbnail", request.Thumbnail.Name);
             }
             //Comic
@@ -104,8 +99,7 @@ namespace WebTruyen.UI.Admin.Service.ComicService
             requestContent.Add(new StringContent(request.Description), "Description");
 
             //genre
-            foreach (var genre in genres)
-            {
+            foreach (var genre in genres) {
                 requestContent.Add(new StringContent(genre.Id.ToString()), "genres");
             }
 
@@ -119,15 +113,11 @@ namespace WebTruyen.UI.Admin.Service.ComicService
 
             var requestContent = new MultipartFormDataContent();
 
-            if (request.Thumbnail != null)
-            {
-                var data = new byte[request.Thumbnail.Size];
-                await using (var br = request.Thumbnail.OpenReadStream())
-                {
-                    await br.ReadAsync(data);
-                }
-
+            if (request.Thumbnail != null) {
+                var data = await _image.ImageToByte(request.Thumbnail);
                 var bytes = new ByteArrayContent(data);
+                bytes.Headers.ContentType = new MediaTypeHeaderValue(request.Thumbnail.ContentType);
+
                 requestContent.Add(bytes, "Thumbnail", request.Thumbnail.Name);
             }
 
@@ -138,8 +128,7 @@ namespace WebTruyen.UI.Admin.Service.ComicService
             requestContent.Add(new StringContent(request.Description), "Description");
 
             //genre
-            foreach (var genre in genres)
-            {
+            foreach (var genre in genres) {
                 requestContent.Add(new StringContent(genre.Id.ToString()), "genres");
             }
 
@@ -149,7 +138,7 @@ namespace WebTruyen.UI.Admin.Service.ComicService
 
         public async Task<int> DeleteComic(Guid id)
         {
-            GetSession();
+            await GetSession();
 
             var response = await _http.DeleteAsync($"/api/Comics/{id}");
             return (int)response.StatusCode;

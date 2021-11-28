@@ -60,23 +60,27 @@ namespace WebTruyen.API.Service
             var newPath = security == false ? $"{_userContentFolder}/{fileName}" : $"{_securityContentFolder}/{fileName}";
             return File.Exists(newPath);
         }
-        public void Move(string sourceDirName, string destDirName, bool security = false)
+        public void FolderMove(string sourceDirName, string destDirName, bool security = false)
         {
             sourceDirName = security == false ? $"{_userContentFolder}/{sourceDirName}" : $"{_securityContentFolder}/{sourceDirName}";
             destDirName = security == false ? $"{_userContentFolder}/{destDirName}" : $"{_securityContentFolder}/{destDirName}";
             Directory.Move(sourceDirName, destDirName);
         }
-
+        public void FileMove(string sourceDirName, string destDirName, bool security = false)
+        {
+            sourceDirName = security == false ? $"{_userContentFolder}/{sourceDirName}" : $"{_securityContentFolder}/{sourceDirName}";
+            destDirName = security == false ? $"{_userContentFolder}/{destDirName}" : $"{_securityContentFolder}/{destDirName}";
+            File.Move(sourceDirName, destDirName);
+        }
         public async Task<int> DeleteFileAsync(string fileName, bool security = false)
         {
             var filePath = security == false ? $"{_userContentFolder}/{fileName}" : $"{_securityContentFolder}/{fileName}";
             if (!File.Exists(filePath)) return StatusCodes.Status404NotFound;
-            try
-            {
+            try {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
                 await Task.Run(() => File.Delete(filePath));
-            }
-            catch (Exception)
-            {
+            } catch (Exception) {
                 return StatusCodes.Status500InternalServerError;
             }
             return StatusCodes.Status200OK;
@@ -90,7 +94,7 @@ namespace WebTruyen.API.Service
             var fileName = $@"{path}/{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
 
             //var pathFile = security == false ? $"{_userContentFolder}{fileName}" : $"{_securityContentFolder}{fileName}";
-            await SaveFileAsync(file.OpenReadStream(), fileName);
+            await SaveFileAsync(file.OpenReadStream(), fileName, security);
             return fileName;
         }
 
@@ -102,26 +106,18 @@ namespace WebTruyen.API.Service
 
             var di = new DirectoryInfo(folderPath);
 
-            foreach (var file in di.GetFiles())
-            {
-                try
-                {
+            foreach (var file in di.GetFiles()) {
+                try {
                     await Task.Run(() => file.Delete());
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     Console.WriteLine(e);
                     return StatusCodes.Status500InternalServerError;
                 }
             }
-            foreach (var dir in di.GetDirectories())
-            {
-                try
-                {
+            foreach (var dir in di.GetDirectories()) {
+                try {
                     await Task.Run(() => dir.Delete(true));
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     Console.WriteLine(e);
                     return StatusCodes.Status500InternalServerError;
                 }

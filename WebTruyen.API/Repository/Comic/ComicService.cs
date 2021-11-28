@@ -27,7 +27,7 @@ namespace WebTruyen.API.Repository.Comic
         }
         public async Task<IEnumerable<ComicAM>> GetComics(int skip = 0, int take = 50)
         {
-            return await _context.Comics.OrderByDescending(x => x.DateUpdate).Skip(skip).Take(50).Select(x => x.ToApiModel()).ToListAsync();
+            return await _context.Comics.OrderByDescending(x => x.DateUpdate).Skip(skip).Take(take).Select(x => x.ToApiModel()).ToListAsync();
         }
 
         public async Task<ComicAM> GetComic(Guid id)
@@ -35,8 +35,7 @@ namespace WebTruyen.API.Repository.Comic
             var comic = await _context.Comics.FindAsync(id);
             var comicInGenre = await _context.ComicInGenres.Where(x => x.IdComic == comic.Id).ToListAsync();
             var genres = new List<GenreAM>();
-            foreach (var cig in comicInGenre)
-            {
+            foreach (var cig in comicInGenre) {
                 var geren = await _context.Genres.FindAsync(cig.IdGenre);
                 genres.Add(geren.ToApiModel());
             }
@@ -51,8 +50,7 @@ namespace WebTruyen.API.Repository.Comic
 
             var comicInGenre = await _context.ComicInGenres.Where(x => x.IdComic == comic.Id).ToListAsync();
             var genres = new List<GenreAM>();
-            foreach (var cig in comicInGenre)
-            {
+            foreach (var cig in comicInGenre) {
                 var geren = await _context.Genres.FindAsync(cig.IdGenre);
                 genres.Add(geren.ToApiModel());
             }
@@ -68,11 +66,10 @@ namespace WebTruyen.API.Repository.Comic
                 return false;
             comic.AnotherNameOfComic = string.IsNullOrEmpty(text.RemoveSpaces(request.AnotherNameOfComic)) == true ? comic.AnotherNameOfComic : request.AnotherNameOfComic;
             comic.Author = string.IsNullOrEmpty(text.RemoveSpaces(request.Author)) == true ? comic.Author : request.Author;
-            comic.Status = request.Status??comic.Status;
+            comic.Status = request.Status ?? comic.Status;
             comic.Description = string.IsNullOrEmpty(text.RemoveSpaces(request.Description)) == true ? comic.Description : request.Description;
 
-            if (!string.IsNullOrEmpty(request.Name))
-            {
+            if (!string.IsNullOrEmpty(request.Name)) {
                 comic.Name = request.Name;
                 //Lưu name alias có dạnh như [ a-b-c ]
                 comic.NameAlias = new TextService().ConvertToUnSign(request.Name).Replace(" ", "-");
@@ -80,26 +77,18 @@ namespace WebTruyen.API.Repository.Comic
             }
 
             var path = $"comic-collection/{comic.Id}";
-            if (request.Thumbnail != null)
-            {
-                if (comic.Thumbnail != null && _storageService.ImageIsValid(request.Thumbnail))
-                {
+            if (request.Thumbnail != null) {
+                if (comic.Thumbnail != null && _storageService.ImageIsValid(request.Thumbnail)) {
                     await _storageService.DeleteFileAsync(comic.Thumbnail, security: true);
                     comic.Thumbnail = $@"api/Pages/image?name={await _storageService.SaveFile(request.Thumbnail, path, security: true)}";
                 }
             }
-            try
-            {
+            try {
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ComicExists(id))
-                {
+            } catch (DbUpdateConcurrencyException) {
+                if (!ComicExists(id)) {
                     return false;
-                }
-                else
-                {
+                } else {
                     throw;
                 }
             }
@@ -121,7 +110,7 @@ namespace WebTruyen.API.Repository.Comic
             if (!folder.Exists)
                 return null;
 
-            if (comic.Thumbnail != null && _storageService.ImageIsValid(request.Thumbnail))
+            if (request.Thumbnail != null && _storageService.ImageIsValid(request.Thumbnail))
                 comic.Thumbnail = $@"api/Pages/image?name={await _storageService.SaveFile(request.Thumbnail, path, security: true)}";
 
             _context.Comics.Add(comic);
@@ -134,16 +123,14 @@ namespace WebTruyen.API.Repository.Comic
         public async Task<int> DeleteComic(Guid id)
         {
             var comic = await _context.Comics.FindAsync(id);
-            if (comic == null)
-            {
+            if (comic == null) {
                 return StatusCodes.Status404NotFound;
             }
-            
+
 
             // Xóa ComicInGenres
             var cig = await _context.ComicInGenres.Where(x => x.IdComic == id).ToListAsync();
-            if (!cig.Any())
-            {
+            if (!cig.Any()) {
                 _context.ComicInGenres.RemoveRange(cig);
             }
             // Xóa Chapters
@@ -152,28 +139,24 @@ namespace WebTruyen.API.Repository.Comic
 
             // Xóa TranslationOfUsers
             var trans = await _context.TranslationOfUsers.Where(x => x.IdComic == id).ToListAsync();
-            if (!trans.Any())
-            {
+            if (!trans.Any()) {
                 _context.TranslationOfUsers.RemoveRange(trans);
             }
             // Xóa Bookmarks
             var bookmarks = await _context.Bookmarks.Where(x => x.IdComic == id).ToListAsync();
-            if (!bookmarks.Any())
-            {
+            if (!bookmarks.Any()) {
                 _context.Bookmarks.RemoveRange(bookmarks);
             }
 
             // Xóa HistoryReads
             var history = await _context.HistoryReads.Where(x => x.IdComic == id).ToListAsync();
-            if (!history.Any())
-            {
+            if (!history.Any()) {
                 _context.HistoryReads.RemoveRange(history);
             }
 
             // Xóa comment
             var comment = await _context.Comments.Where(x => x.IdComic == id).ToListAsync();
-            if (!comment.Any())
-            {
+            if (!comment.Any()) {
                 _context.Comments.RemoveRange(comment);
             }
 

@@ -25,8 +25,7 @@
         <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
     </symbol>
 </svg>
-@if (_element.Apiresult is >= 200 and <= 299)
-{
+@if (_element.Apiresult is >= 200 and <= 299) {
     <div>
         <div class="alert alert-success d-flex align-items-center alert-dismissible" role="alert">
             <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill" /></svg>
@@ -37,9 +36,7 @@
         </div>
     </div>
 
-}
-else if (_element.Apiresult != 0)
-{
+} else if (_element.Apiresult != 0) {
     <div>
         <div class="alert alert-danger d-flex align-items-center alert-dismissible" role="alert">
             <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill" /></svg>
@@ -69,9 +66,7 @@ else if (_element.Apiresult != 0)
                                 Tình Trạng:
                             </span>
 
-
-                            @switch (_comicRequest.Status)
-                            {
+                            @switch (_comicRequest.Status) {
                                 case Status.InProgress:
                                     <span>Đang Tiến Hành</span>
                                     break;
@@ -82,7 +77,7 @@ else if (_element.Apiresult != 0)
                                     <span>Ngưng Dịch</span>
                                     break;
                                 default:
-                                    <span>Đang Tiến Hành</span>
+                                    <span></span>
                                     break;
 
                             }
@@ -105,12 +100,12 @@ else if (_element.Apiresult != 0)
                         <span>Tác Giả</span>
                         <InputText class="form-control" @bind-Value="_comicRequest.Author"></InputText>
                         <span>Mô Tả</span>
-                        <InputText class="form-control" @bind-Value="_comicRequest.Description"></InputText>
+                        <InputTextArea class="form-control" @bind-Value="_comicRequest.Description"></InputTextArea>
                         <span>Tình Trạng</span>
                         <InputSelect class="form-control" @bind-Value="_comicRequest.Status">
-                            <option value="0">Đang Tiến Hành</option>
-                            <option value="1">Đã Hoàn Thành</option>
-                            <option value="2">Đã Hủy</option>
+                            <option value="InProgress" selected>Đang Tiến Hành</option>
+                            <option value="IsFinish">Đã Hoàn Thành</option>
+                            <option value="Drop">Đã Hủy</option>
                         </InputSelect>
 
                         <div class="input-group mt-2">
@@ -118,12 +113,9 @@ else if (_element.Apiresult != 0)
                             <input type="text" class="form-control" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" disabled value="@_element.AllGenreChoose">
                         </div>
 
-                        @if (_element.IsSubmit)
-                        {
+                        @if (_element.IsSubmit) {
                             <input type="submit" class="btn btn-primary mt-5" />
-                        }
-                        else
-                        {
+                        } else {
                             <button class="btn btn-primary mt-5" type="button" disabled>
                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                 Loading...
@@ -149,10 +141,8 @@ else if (_element.Apiresult != 0)
             </div>
             <div class="modal-body">
                 <div class="d-flex flex-wrap">
-                    @if (_element.GenreAM.Any())
-                    {
-                        foreach (var genre in _element.GenreAM)
-                        {
+                    @if (_element.GenreAM.Any()) {
+                        foreach (var genre in _element.GenreAM) {
                             <div class="form-check form-switch border border-1 rounded-pill m-1">
                                 <div class="m-1">
                                     <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @onclick="() => AddGenre(genre)" checked="@genre.check">
@@ -161,9 +151,7 @@ else if (_element.Apiresult != 0)
                             </div>
                         }
 
-                    }
-                    else
-                    {
+                    } else {
                         <div></div>
                     }
 
@@ -178,7 +166,6 @@ else if (_element.Apiresult != 0)
     </div>
 </div>
 <!-- End Modal Thể Loại  -->
-
 @code {
 
     #region Initialization
@@ -216,8 +203,7 @@ else if (_element.Apiresult != 0)
         var (statusCode, content) = await _ComicApi.PostComic(_comicRequest, _genreRequest);
         _element.Apiresult = 0;
         _element.Apiresult = (int)statusCode;
-        if (_element.Apiresult >= 200 && _element.Apiresult < 299)
-        {
+        if (_element.Apiresult >= 200 && _element.Apiresult < 299) {
             await Task.Delay(200);
             _navigationManager.NavigateTo($"comic/detail?id={content.Id}");
         }
@@ -232,8 +218,7 @@ else if (_element.Apiresult != 0)
 
         var index = 0;
 
-        foreach (var genre in result)
-        {
+        foreach (var genre in result) {
             _element.GenreAM.Add((index, false, genre));
             index++;
         }
@@ -285,15 +270,12 @@ else if (_element.Apiresult != 0)
     {
         var g = _element.GenreAM[genre.index];
         g.check = !g.check;
-        if (g.check)
-        {
+        if (g.check) {
             _genreRequest.Add(g.value);
 
             _element.AllGenreChoose += $"{g.value.Name};";
             StateHasChanged();
-        }
-        else
-        {
+        } else {
             _genreRequest.Remove(g.value);
 
             _element.AllGenreChoose = _element.AllGenreChoose.Replace($"{g.value.Name};", "");

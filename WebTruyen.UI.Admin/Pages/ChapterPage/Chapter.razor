@@ -21,23 +21,27 @@
         </symbol>
     </svg>
     @if (_element.Apiresult is >= 200 and <= 299)
-    {
-        <div class="alert alert-success d-flex align-items-center alert-dismissible" role="alert">
-            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill" /></svg>
-            <div>
-                Cập nhật thành công.
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+    {<div>
+         <div class="alert alert-success d-flex align-items-center alert-dismissible" role="alert">
+             <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill" /></svg>
+             <div>
+                 Cập nhật thành công.
+             </div>
+             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+         </div>
+
+     </div>
     }
     else if (_element.Apiresult != 0)
     {
-        <div class="alert alert-danger d-flex align-items-center alert-dismissible" role="alert">
-            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill" /></svg>
-            <div>
-                Cập nhật thất bại. (@_element.Apiresult)
+        <div>
+            <div class="alert alert-danger d-flex align-items-center alert-dismissible" role="alert">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill" /></svg>
+                <div>
+                    Cập nhật thất bại. (@_element.Apiresult)
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
 
@@ -153,7 +157,8 @@
     ViewElement _element = new ViewElement();
     List<PageAM> _Pages { get; set; } = new List<PageAM>();
 
-    List<(byte[] image, string nameFile, string contentType)> _imageValues = new List<(byte[] image, string nameFile, string contentType)>();
+    //List<(byte[] image, string nameFile, string contentType)> _imageValues = new List<(byte[] image, string nameFile, string contentType)>();
+    List<IBrowserFile> _imageValues = new List<IBrowserFile>();
 
     //Xem là đang trong tiến trình tạo mới hay cập nhật
     private bool _isUpdate = true;
@@ -194,6 +199,8 @@
     async void Upload()
     {
         _element.Apiresult = 0;
+        _element.IsLoadImage = true;
+        StateHasChanged();
         if (!_isUpdate)
         {
             var result = await _ChapterApi.PostChapter(_ChapterAM, _imageValues);;
@@ -212,31 +219,31 @@
             if (_element.Apiresult == (int)HttpStatusCode.OK)
                 _navigationManager.NavigateTo($@"comic/detail?id={idComic}");
         }
+        _element.IsLoadImage = false;
+        StateHasChanged();
     }
 
     async void InputImage(InputFileChangeEventArgs e)
     {
         if (e == null) return;
-        if (e.FileCount > 100) return;
+        //if (e.FileCount > 100) return;
 
         _Pages = new List<PageAM>();
-
-        var imageDataUrl = _image.ImagesToString(e.GetMultipleFiles(100));
+        var images = e.GetMultipleFiles(e.FileCount);
 
         _element.visibility = "visible";
         _element.IsLoadImage = true;
         StateHasChanged();
 
-        _imageValues = new List<(byte[] image, string nameFile, string contentType)>();
-        await foreach (var image in imageDataUrl)
+        _imageValues = new List<IBrowserFile>();
+        foreach (var image in images)
         {
-            if (!string.IsNullOrEmpty(image.stringValue))
-            {
-                _Pages.Add(new PageAM() { Image = image.stringValue });
-                //Cập nhât UI
-                StateHasChanged();
-                _imageValues.Add(image.image);
-            }
+            var base64image = await _image.ImageToString(image);
+            _Pages.Add(new PageAM() { Image =  base64image});
+            //Cập nhât UI
+            StateHasChanged();
+            _imageValues.Add(image);
+
 
         }
         _element.IsLoadImage = false;

@@ -18,13 +18,13 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             await base.OnAfterRenderAsync(firstRender);
-            if (firstRender)
-            {
+            if (firstRender) {
                 _comics = await _ComicApi.GetComics();
-                foreach (var comic in _comics)
-                {
+                foreach (var comic in _comics) {
+
                     comic.Thumbnail = await _image.GetImageFromUrl(comic.Thumbnail);
                     StateHasChanged();
+
                 }
             }
 

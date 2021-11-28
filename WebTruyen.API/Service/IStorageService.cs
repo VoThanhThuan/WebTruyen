@@ -64,7 +64,18 @@ namespace WebTruyen.API.Service
         /// <returns><para>Trả về kiểu bool</para></returns>
         public bool FileExists(string path, bool security = false);
         /// <summary>
-        /// <para>Di chuyển một file hoặc một folder từ <see cref="sourceDirName"/> đến <see cref="destDirName"/></para>
+        /// <para>Di chuyển một folder từ <see cref="sourceDirName"/> đến <see cref="destDirName"/></para>
+        /// <para>Có thể sử dụng để đổi tên folder khi <see cref="sourceDirName"/> và <see cref="destDirName"/> giống nhau</para>
+        /// </summary>
+        /// <param name="sourceDirName">Đường dẫn gốc</param>
+        /// <param name="destDirName">Đường dẫn cần chuyển qua</param>
+        /// <param name="security">
+        ///     <para>false: sử dụng thư mục wwwroot</para>
+        ///     <para>true: sử dụng thư mục MyStaticfile</para>
+        /// </param>
+        public void FolderMove(string sourceDirName, string destDirName, bool security = false);
+        /// <summary>
+        /// <para>Di chuyển một file từ <see cref="sourceDirName"/> đến <see cref="destDirName"/></para>
         /// <para>Có thể sử dụng để đổi tên file khi <see cref="sourceDirName"/> và <see cref="destDirName"/> giống nhau</para>
         /// </summary>
         /// <param name="sourceDirName">Đường dẫn gốc</param>
@@ -73,7 +84,7 @@ namespace WebTruyen.API.Service
         ///     <para>false: sử dụng thư mục wwwroot</para>
         ///     <para>true: sử dụng thư mục MyStaticfile</para>
         /// </param>
-        public void Move(string sourceDirName, string destDirName, bool security = false);
+        public void FileMove(string sourceDirName, string destDirName, bool security = false);
         public Task<int> DeleteFileAsync(string fileName, bool security = false);
         public Task<int> DeleteFolderAsync(string folder, bool security = false);
 

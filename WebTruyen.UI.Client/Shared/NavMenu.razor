@@ -218,7 +218,7 @@
             FuncCode.SignOut = () => {
                 JS.InvokeVoidAsync("blazorExtensions.DeleteCookie", "Token");
                 _sessionStorage.ClearAsync();
-                _localStorage.ClearAsync();
+                //_localStorage.ClearAsync();
                 _element.IsSignIn = false;
                 _element.User = new UserAM();
                 _navigationManager.NavigateTo("/");
@@ -284,7 +284,7 @@
     {
         JS.InvokeVoidAsync("blazorExtensions.DeleteCookie", "Token");
         _sessionStorage.ClearAsync();
-        _localStorage.ClearAsync();
+        //_localStorage.ClearAsync();
         _element.IsSignIn = false;
         _element.User = new UserAM();
         StateHasChanged();

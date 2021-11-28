@@ -1,8 +1,9 @@
 :root {
     --bg: #18191a;
     --bg-content: #242526;
-    --bg-info: #3a3b3c;
-    --bg-hover: #2a2b2c;
+    --bg-hight: #505050;
+    --bg-medium: #3a3b3c;
+    --bg-low: #2a2b2c;
     --fg: #fff;
 }
 .bg-pokemon {

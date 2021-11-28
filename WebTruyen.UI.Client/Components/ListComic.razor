@@ -13,28 +13,35 @@
         <div class="m-2">
             <div class="row row-cols-2 row-cols-xs-1 row-cols-sm-3 row-cols-md-4 g-3 gy-5">
 
-                @foreach (var item in _listComic)
-                {
-                    <div class="col">
-                        <div class="card card-info shadow-sm">
-                            <a href="/@item.comic.NameAlias">
-                                <img src="@item.comic.Thumbnail" alt="@item.comic.NameAlias" class="img-cover"/>
-                            </a>
-                            <div class="p-1">
-                                <div class="fs-5 title">@item.comic.Name</div>
-                                <div class="chapnew mt-2">
-                                    @foreach (var chapter in item.chapters)
-                                    {
-                                        <div class="d-flex justify-content-between">
-                                            <a class="col" href="/@item.comic.NameAlias/@chapter.Ordinal">Chapter @chapter.Ordinal</a>
-                                            <span class="col fw-lighter text-end time">@CalculateRelativeTime(chapter.DateTimeUp)</span>
-                                        </div>
-                                    }
+                @foreach (var item in _listComic) {
+                    if (item.isLoad == false)
+                    {
+                        <div class="col">
+                            <div class="card card-info card-comic shadow-sm">
+                                <a href="/@item.comic.NameAlias">
+                                    <img src="@item.comic.Thumbnail" alt="@item.comic.NameAlias" class="img-cover" />
+                                </a>
+                                <div class="p-1">
+                                    <div class="fs-5 title">@item.comic.Name</div>
+                                    <div class="chapnew mt-2">
+                                        @foreach (var chapter in item.chapters) {
+                                            <div class="d-flex justify-content-between">
+                                                <a class="col" href="/@item.comic.NameAlias/@chapter.Ordinal">Chapter @chapter.Ordinal</a>
+                                                <span class="col fw-lighter text-end time">@CalculateRelativeTime(chapter.DateTimeUp)</span>
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
+                    }
+                    else
+                    {
+                        <div class="col">
+                            <div class="card-skeleton"></div>
+                        </div>
+                    }
                 }
 
 
@@ -50,20 +57,36 @@
     [Inject] IComicApiClient _comicApi { get; set; }
     [Inject] IChapterApiClient _chapterApi { get; set; }
 
-    private List<(ComicAM comic, List<ChapterAM> chapters)> _listComic = new List<(ComicAM comic, List<ChapterAM> chapters)>();
+    private List<(ComicAM comic, List<ChapterAM> chapters, bool isLoad)> _listComic = new List<(ComicAM comic, List<ChapterAM> chapters, bool)>();
+
+    private int skip { get; set; } = 0;
+    private int take { get; set; } = 40;
+
+    protected override Task OnInitializedAsync()
+    {
+        for (var i = 0; i < 40; i++) {
+            (ComicAM comic, List<ChapterAM> chapters, bool isLoad) null_comic = (null, null, true);
+            _listComic.Add(null_comic);
+        }
+        return base.OnInitializedAsync();
+
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-        {
-            var comics = await _comicApi.GetComics();
-            foreach (var comic in comics)
-            {
-                var chapters = await _chapterApi.GetChaptersInComic(comic.Id);
-                _listComic.Add((comic, chapters));
+        if (firstRender) {
+            var comics = await _comicApi.GetComics(skip, take);
+            for (var i = 0; i < comics.Count; i++) {
+                var chapters = await _chapterApi.GetChaptersInComic(comics[i].Id, skip: 0, take: 3);
+                _listComic[i] = (comics[i], chapters, false);
+                StateHasChanged();
             }
-            StateHasChanged();
+            //foreach (var comic in comics) {
+            //    var chapters = await _chapterApi.GetChaptersInComic(comic.Id, skip:0, take:3);
+            //    _listComic.Add((comic, chapters));
+            //}
         }
+
     }
 
     string CalculateRelativeTime(DateTime dataTime)
@@ -77,8 +100,7 @@
         var ts = DateTime.Now.Subtract(dataTime);
         var delta = Math.Abs(ts.TotalSeconds);
 
-        switch (delta)
-        {
+        switch (delta) {
             case < 1 * MINUTE:
                 return ts.Seconds == 1 ? "one second ago" : ts.Seconds + " seconds ago";
             case < 2 * MINUTE:
@@ -93,16 +115,14 @@
                 return "yesterday";
             case < 30 * DAY:
                 return ts.Days + " days ago";
-            case < 12 * MONTH:
-                {
-                    var months = Convert.ToInt32(Math.Floor((double)ts.Days / 30));
-                    return months <= 1 ? "one month ago" : months + " months ago";
-                }
-            default:
-                {
-                    var years = Convert.ToInt32(Math.Floor((double)ts.Days / 365));
-                    return years <= 1 ? "one year ago" : years + " years ago";
-                }
+            case < 12 * MONTH: {
+                var months = Convert.ToInt32(Math.Floor((double)ts.Days / 30));
+                return months <= 1 ? "one month ago" : months + " months ago";
+            }
+            default: {
+                var years = Convert.ToInt32(Math.Floor((double)ts.Days / 365));
+                return years <= 1 ? "one year ago" : years + " years ago";
+            }
         }
     }
 

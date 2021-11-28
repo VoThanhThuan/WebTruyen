@@ -56,6 +56,7 @@ namespace WebTruyen.UI.Admin.Service.ImageService
 
         public async Task<string> GetImageFromUrl(string url)
         {
+            if (url == _http.BaseAddress.ToString()) return "";
             GetSession();
             Console.WriteLine($">>> GetImageFromUrl: {url}");
             var result = await _http.GetByteArrayAsync(url);
@@ -64,8 +65,7 @@ namespace WebTruyen.UI.Admin.Service.ImageService
 
         public async IAsyncEnumerable<byte[]> ImagesToByte(IReadOnlyList<IBrowserFile> imgs)
         {
-            foreach (var img in imgs)
-            {
+            foreach (var img in imgs) {
                 var data = new byte[img.Size];
                 await using var br = img.OpenReadStream();
                 await br.ReadAsync(data);
@@ -77,8 +77,7 @@ namespace WebTruyen.UI.Admin.Service.ImageService
         public async IAsyncEnumerable<((byte[] data, string fileName, string contentType) image, string stringValue)> ImagesToString(
             IReadOnlyList<IBrowserFile> imgs)
         {
-            foreach (var img in imgs)
-            {
+            foreach (var img in imgs) {
                 if (img.Size > 2048000L)
                     yield return (imge: (data: null, fileName: null, contentType: null), stringValue: null);
                 var buffer = new byte[img.Size];

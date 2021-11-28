@@ -31,9 +31,9 @@ namespace WebTruyen.UI.Client.Service.ComicService
             _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
         }
 
-        public async Task<List<ComicAM>> GetComics()
+        public async Task<List<ComicAM>> GetComics(int skip = 0, int take = 40)
         {
-            var result = await _http.GetFromJsonAsync<List<ComicAM>>("/api/Comics");
+            var result = await _http.GetFromJsonAsync<List<ComicAM>>($"/api/Comics?skip={skip}&take={take}");
             var comic = result?.Select(x => { x.Thumbnail = $"{_http.BaseAddress}{x.Thumbnail}"; return x; }).ToList();
             return comic;
         }

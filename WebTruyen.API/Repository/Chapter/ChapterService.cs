@@ -50,10 +50,12 @@ namespace WebTruyen.API.Repository.Chapter
             return chapter?.ToApiModel();
         }
 
-        public async Task<List<ChapterAM>> GetChaptersInComic(Guid idComic)
+        public async Task<List<ChapterAM>> GetChaptersInComic(Guid idComic, int skip = 0, int take = 40)
         {
             var chapter = await _context.Chapters
                 .Where(x => x.IdComic == idComic)
+                .OrderByDescending(x => x.Ordinal)
+                .Skip(skip).Take(take)
                 .Select(x => x.ToApiModel())
                 .ToListAsync();
             return chapter;
@@ -83,7 +85,7 @@ namespace WebTruyen.API.Repository.Chapter
                         pathNew = $@"comic-collection/{comic.Id}/chapter{request.Ordinal}";
                     }
                     await _page.MoveUrlPages(chapter.Id, $"chapter{chapter.Ordinal}", $"chapter{request.Ordinal}");
-                    _storage.Move(path, pathNew, security: true);
+                    _storage.FolderMove(path, pathNew, security: true);
                     chapter.Ordinal = (float)request.Ordinal;
                     path = pathNew;
                 }
@@ -96,11 +98,13 @@ namespace WebTruyen.API.Repository.Chapter
             //Tạo file xác định chapter khóa
             if (request.IsLock && !_storage.FileExists($@"{path}/chapter.isLock", security: true))
             {
-                _storage.CreateFile($@"{path}/chapter.isLock", security: true);
-            }
-            else
+                //_storage.CreateFile($@"{path}/chapter.isLock", security: true);
+                _storage.FileMove($@"{path}/chapter.isNotLock", $@"{path}/chapter.isLock", security:true);
+
+            } else
             {
-               await _storage.DeleteFileAsync($@"{path}/chapter.isLock", security: true);
+               //await _storage.DeleteFileAsync($@"{path}/chapter.isLock", security: true);
+               _storage.FileMove($@"{path}/chapter.isLock", $@"{path}/chapter.isNotLock", security: true);
             }
 
             _context.Entry(chapter).State = EntityState.Modified;
@@ -158,6 +162,10 @@ namespace WebTruyen.API.Repository.Chapter
             if (chapter.IsLock && !_storage.FileExists($@"{path}/chapter.isLock", security: true))
             {
                 _storage.CreateFile($@"{path}/chapter.isLock", security: true);
+            }
+            else
+            {
+                _storage.CreateFile($@"{path}/chapter.isNotLock", security: true);
             }
             return chapter;
         }

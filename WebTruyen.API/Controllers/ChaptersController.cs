@@ -41,9 +41,9 @@ namespace WebTruyen.API.Controllers
         // GET: api/Chapters/comic?idComic=xxx-xxx-xxx-xxx
         [HttpGet("comic")]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<ChapterAM>>> GetChaptersInComic([FromQuery]Guid idComic)
+        public async Task<ActionResult<IEnumerable<ChapterAM>>> GetChaptersInComic([FromQuery]Guid idComic, int skip = 0, int take = 40)
         {
-            return Ok(await _chapter.GetChaptersInComic(idComic));
+            return Ok(await _chapter.GetChaptersInComic(idComic, skip, take));
         }
 
         // GET: api/Chapters/5
@@ -122,8 +122,8 @@ namespace WebTruyen.API.Controllers
 
             if (result != StatusCodes.Status200OK)
                 return StatusCode(result);
-            if (!pages.Any()) return NoContent();
-            result = await _page.PutPages(id, pages, chapter.IsLock);
+            if (pages.Any())
+                result = await _page.PutPages(id, pages, chapter.IsLock);
 
             return result != StatusCodes.Status200OK ? StatusCode(result) : NoContent();
         }

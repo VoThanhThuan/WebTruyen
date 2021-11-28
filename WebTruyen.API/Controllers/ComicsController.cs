@@ -47,9 +47,9 @@ namespace WebTruyen.API.Controllers
         // GET: api/Comics
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<ComicAM>>> GetComics()
+        public async Task<ActionResult<IEnumerable<ComicAM>>> GetComics(int skip = 0, int take = 10)
         {
-            return Ok(await _comic.GetComics());
+            return Ok(await _comic.GetComics(skip, take));
         }
 
         // GET: api/Comics/xxx-xxx-xxx
