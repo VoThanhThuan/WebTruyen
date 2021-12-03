@@ -25,8 +25,8 @@
                         </div>
                         @if (comment.IdChapter is not null)
                         {
-                            <a href="@comment.Comic.NameAlias">@comment.Comic.Name - </a>
-                            <a href="@comment.Comic.NameAlias/@comment.Chapter.Ordinal">@comment.Comic.Name - Chapter @comment.Chapter</a>
+                            <a href="@comment.Chapter.ComicAM.NameAlias">@comment.Chapter.ComicAM.Name - </a>
+                            <a href="@comment.Chapter.ComicAM.NameAlias/@comment.Chapter.Ordinal">Chapter @comment.Chapter.Ordinal</a>
                         }
                         else
                         {
@@ -66,6 +66,7 @@
                 if (comment.IdChapter is not null)
                 {
                     comment.Chapter = await _ChapterApi.GetChapter((Guid)comment.IdChapter);
+                    Console.WriteLine($"CommentPortable >> OnAfterRenderAsync >> {comment.Chapter.ComicAM.NameAlias}");
                 }
                 if (comment.IdComic is not null)
                 {

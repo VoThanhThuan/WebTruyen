@@ -33,10 +33,14 @@ namespace WebTruyen.API.Repository.Chapter
 
         public async Task<ChapterAM> GetChapter(Guid id)
         {
-            var chapter = await _context.Chapters.FindAsync(id);
+            var chapter = await _context.Chapters.Include(x => x.Comic).FirstOrDefaultAsync(x => x.Id == id);
+            //var comic = await _context.Comics.FirstOrDefaultAsync(x => x.Id == chapter.IdComic);
+            //if (comic != null)
+            //    chapter.Name = comic.Name;
             //chapter.Views += 1;
             //_context.Entry(chapter).State = EntityState.Modified;
-            return chapter?.ToApiModel();
+            var chapterAM = chapter?.ToApiModel();
+            return chapterAM;
         }
 
         public async Task<ChapterAM> GetChapterOrder(string comicAliasName, float ordinal)
@@ -74,13 +78,10 @@ namespace WebTruyen.API.Repository.Chapter
             //Đường dẫn thư mục chap truyện
             var path = $@"comic-collection/{comic.Id}/chapter{chapter.Ordinal}";
 
-            if (request.Ordinal is not null)
-            {
-                if (!Equals(request.Ordinal, chapter.Ordinal))
-                {
+            if (request.Ordinal is not null) {
+                if (!Equals(request.Ordinal, chapter.Ordinal)) {
                     var pathNew = $@"comic-collection/{comic.Id}/chapter{request.Ordinal}";
-                    if (_storage.FolderExists(pathNew, security: true))
-                    {
+                    if (_storage.FolderExists(pathNew, security: true)) {
                         request.Ordinal += 0.1f;
                         pathNew = $@"comic-collection/{comic.Id}/chapter{request.Ordinal}";
                     }
@@ -96,31 +97,23 @@ namespace WebTruyen.API.Repository.Chapter
             chapter.IsLock = request.IsLock ? true : false;
 
             //Tạo file xác định chapter khóa
-            if (request.IsLock && !_storage.FileExists($@"{path}/chapter.isLock", security: true))
-            {
+            if (request.IsLock && !_storage.FileExists($@"{path}/chapter.isLock", security: true)) {
                 //_storage.CreateFile($@"{path}/chapter.isLock", security: true);
-                _storage.FileMove($@"{path}/chapter.isNotLock", $@"{path}/chapter.isLock", security:true);
+                _storage.FileMove($@"{path}/chapter.isNotLock", $@"{path}/chapter.isLock", security: true);
 
-            } else
-            {
-               //await _storage.DeleteFileAsync($@"{path}/chapter.isLock", security: true);
-               _storage.FileMove($@"{path}/chapter.isLock", $@"{path}/chapter.isNotLock", security: true);
+            } else {
+                //await _storage.DeleteFileAsync($@"{path}/chapter.isLock", security: true);
+                _storage.FileMove($@"{path}/chapter.isLock", $@"{path}/chapter.isNotLock", security: true);
             }
 
             _context.Entry(chapter).State = EntityState.Modified;
 
-            try
-            {
+            try {
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ChapterExists(id))
-                {
+            } catch (DbUpdateConcurrencyException) {
+                if (!ChapterExists(id)) {
                     return StatusCodes.Status500InternalServerError;
-                }
-                else
-                {
+                } else {
                     throw;
                 }
             }
@@ -135,10 +128,9 @@ namespace WebTruyen.API.Repository.Chapter
             if (comic is null)
                 return null;
 
-            var chapter = new ChapterAM()
-            {
+            var chapter = new ChapterAM() {
                 Id = Guid.NewGuid(),
-                Ordinal = request.Ordinal??1,
+                Ordinal = request.Ordinal ?? 1,
                 Name = request.Name,
                 DateTimeUp = DateTime.Now,
                 Views = 0,
@@ -159,12 +151,9 @@ namespace WebTruyen.API.Repository.Chapter
             //Tạo folder cho chapter
             _storage.CreateDirectory(path, security: true);
             //Tạo file xác định chapter khóa
-            if (chapter.IsLock && !_storage.FileExists($@"{path}/chapter.isLock", security: true))
-            {
+            if (chapter.IsLock && !_storage.FileExists($@"{path}/chapter.isLock", security: true)) {
                 _storage.CreateFile($@"{path}/chapter.isLock", security: true);
-            }
-            else
-            {
+            } else {
                 _storage.CreateFile($@"{path}/chapter.isNotLock", security: true);
             }
             return chapter;
@@ -174,8 +163,7 @@ namespace WebTruyen.API.Repository.Chapter
         {
             //xóa danh sách image =========================================================================================
             var listImage = _context.Pages.Where(x => x.IdChapter == idChapter);
-            if (!listImage.Any())
-            {
+            if (!listImage.Any()) {
                 //foreach (var item in listImage)
                 //{
                 //    await _storage.DeleteFileAsync(item.Image, security: true);
@@ -187,15 +175,13 @@ namespace WebTruyen.API.Repository.Chapter
             }
             //xóa report =========================================================================================
             var report = _context.Report.Where(x => x.IdChapter == idChapter);
-            if (!report.Any())
-            {
+            if (!report.Any()) {
                 _context.Report.RemoveRange(report);
                 await _context.SaveChangesAsync();
             }
             //xóa thông báo =========================================================================================
             var announcement = _context.NewComicAnnouncements.Where(x => x.IdChapter == idChapter);
-            if (!announcement.Any())
-            {
+            if (!announcement.Any()) {
                 _context.NewComicAnnouncements.RemoveRange(announcement);
                 await _context.SaveChangesAsync();
             }
@@ -205,8 +191,7 @@ namespace WebTruyen.API.Repository.Chapter
         {
             var chapters = await _context.Chapters.Where(x => x.IdComic == idComic).ToListAsync();
             //Xóa các bảng kết nối với chapter
-            foreach (var chapter in chapters)
-            {
+            foreach (var chapter in chapters) {
                 await DeleteForeignKey(chapter.Id);
             }
 
@@ -223,8 +208,7 @@ namespace WebTruyen.API.Repository.Chapter
             //Tìm Chapter
             var chapter = await _context.Chapters.FindAsync(id);
 
-            if (chapter == null)
-            {
+            if (chapter == null) {
                 return StatusCodes.Status404NotFound;
             }
 

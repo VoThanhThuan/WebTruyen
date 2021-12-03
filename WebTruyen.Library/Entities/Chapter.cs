@@ -11,8 +11,7 @@ namespace WebTruyen.Library.Entities
     {
         public ChapterAM ToApiModel()
         {
-            return new ChapterAM()
-            {
+            var chapter = new ChapterAM() {
                 Id = Id,
                 Ordinal = Ordinal,
                 Name = Name,
@@ -21,6 +20,9 @@ namespace WebTruyen.Library.Entities
                 IsLock = IsLock,
                 IdComic = IdComic
             };
+            if (Comic != null)
+                chapter.ComicAM = Comic.ToApiModel();
+            return chapter;
         }
 
         [Key]

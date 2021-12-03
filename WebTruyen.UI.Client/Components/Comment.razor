@@ -20,16 +20,12 @@
                         <EditForm model="_CommentRequest" OnValidSubmit="PostNewComment">
                             <label for="exampleFormControlTextarea1" class="form-label">Để lại bình luận của bạn ở đây</label>
                             <InputTextArea class="form-control" rows="2" maxlength="500" @bind-Value="_CommentRequest.Content"></InputTextArea>
-                            @if (!_isSignIn)
-                            {
+                            @if (!_isSignIn) {
                                 <span>Bạn cần đăng nhập để bình luận</span>
-                            }
-                            else
-                            {
+                            } else {
                                 <button type="submit" class="btn btn-primary mt-1">Bình Loạn</button>
                                 <span>(Bình luận không quá 500 ký tự)</span>
-                                if (_element.ErrorComment.isError)
-                                {
+                                if (_element.ErrorComment.isError) {
                                     <span class="text-danger">Lỗi: @_element.ErrorComment.Messages</span>
                                 }
                             }
@@ -39,8 +35,7 @@
             </div>
 
 
-            @foreach (var comment in _ListComment)
-            {
+            @foreach (var comment in _ListComment) {
                 <div class="comment mt-2 ">
                     <div class="mt-1">
                         <div class="row border-bottom">
@@ -58,22 +53,17 @@
                             </div>
                         </div>
 
-                        @if (comment.Id == _idShowComment)
-                        {
+                        @if (comment.Id == _idShowComment) {
                             <div class="comment-child">
                                 <EditForm model="_CommentRequest" OnValidSubmit="() => PostReplyComment(comment.Id)">
                                     <label for="exampleFormControlTextarea1" class="form-label">Để lại bình luận của bạn ở đây</label>
                                     <InputTextArea class="form-control" rows="2" maxlength="500" @bind-Value="_CommentRequest.Content"></InputTextArea>
-                                    @if (!_isSignIn)
-                                    {
+                                    @if (!_isSignIn) {
                                         <span>Bạn cần đăng nhập để bình luận</span>
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         <button type="submit" class="btn btn-primary mt-1">Bình Loạn</button>
                                         <span>(Bình luận không quá 500 ký tự)</span>
-                                        if (_element.ErrorComment.isError)
-                                        {
+                                        if (_element.ErrorComment.isError) {
                                             <span class="text-danger">Lỗi: @_element.ErrorComment.Messages</span>
                                         }
                                     }
@@ -84,8 +74,7 @@
                         }
 
 
-                        @foreach (var child in comment.CommentReply)
-                        {
+                        @foreach (var child in comment.CommentReply) {
                             <div class="comment-child">
                                 <div class="row border-bottom mt-2">
                                     <div class="col-auto">
@@ -127,7 +116,6 @@
 </div>
 
 <!--End [Comment Facebook]-->
-
 @code {
 
     #region Initialization
@@ -157,28 +145,26 @@
     {
         Console.WriteLine($">>>Comment: OnInitializedAsync: _IdComic: {_IdComic}");
         Console.WriteLine($">>>Comment: OnInitializedAsync: _IdChapter: {_IdChapter}");
+        if (!string.IsNullOrEmpty(_IdComic)) {
+            Console.WriteLine($">>> comment in Comic");
+            _CommentRequest.IdComic = Guid.Parse(_IdComic);
+            _wherePage = PositionPage.Comic;
+        }
+        if (!string.IsNullOrEmpty(_IdChapter)) {
+            Console.WriteLine($">>> comment in Chapter");
+            _CommentRequest.IdChapter = Guid.Parse(_IdChapter);
+            _wherePage = PositionPage.Chapter;
+        }
 
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-        {
-            if (!string.IsNullOrEmpty(_IdComic))
-            {
-                Console.WriteLine($">>> comment in Comic");
-                _CommentRequest.IdComic = Guid.Parse(_IdComic);
-                _wherePage = PositionPage.Comic;
-            }
-            if (!string.IsNullOrEmpty(_IdChapter))
-            {
-                Console.WriteLine($">>> comment in Chapter");
-                _CommentRequest.IdChapter = Guid.Parse(_IdChapter);
-                _wherePage = PositionPage.Chapter;
-            }
+        if (firstRender) {
+
             await CheckUser();
             await GetComments();
-    //  FB.XFBML.parse();
+            //  FB.XFBML.parse();
             await JS.InvokeVoidAsync("RefreshCommentFB");
 
         }
@@ -214,13 +200,12 @@
         if (!_isSignIn) return;
         _CommentRequest.Level = 0;
         _CommentRequest.IdUser = _UserAM.Id;
-        if(!string.IsNullOrEmpty(_IdComic))
+        if (!string.IsNullOrEmpty(_IdComic))
             _CommentRequest.IdComic = Guid.Parse(_IdComic);
         if (!string.IsNullOrEmpty(_IdChapter))
             _CommentRequest.IdChapter = Guid.Parse(_IdChapter);
         var result = await _commentApi.PostComment(_CommentRequest);
-        if (!result.isSuccess)
-        {
+        if (!result.isSuccess) {
             _element.ErrorComment = (true, result.value);
             StateHasChanged();
         }
@@ -241,8 +226,7 @@
         if (!string.IsNullOrEmpty(_IdChapter))
             _CommentRequest.IdChapter = Guid.Parse(_IdChapter);
         var result = await _commentApi.PostComment(_CommentRequest);
-        if (!result.isSuccess)
-        {
+        if (!result.isSuccess) {
             _element.ErrorComment = (true, result.value);
             StateHasChanged();
         }
@@ -257,32 +241,24 @@
     async Task GetComments()
     {
         Console.WriteLine($">>>GetComments: _wherePage: {_wherePage}");
-        if (_wherePage == PositionPage.Comic)
-        {
+        if (_wherePage == PositionPage.Comic) {
             _ListComment = await _commentApi.GetCommentInComic(Guid.Parse(_IdComic), _element.Skip, _element.Take);
-        }
-        else
-        {
+        } else {
             _ListComment = await _commentApi.GetCommentInChapter(Guid.Parse(_IdChapter), _element.Skip, _element.Take);
         }
         Console.WriteLine($"_ListComment >>> {_ListComment.Count}");
-        foreach (var comment in _ListComment)
-        {
+        foreach (var comment in _ListComment) {
             //Console.WriteLine($"IdUser >>> {comment.IdUser}");
             var user = await GetUser(comment.IdUser);
             if (user == null) continue;
             //Console.WriteLine($">>> {user.Nickname}");
             comment.User = user;
-            if (_wherePage == PositionPage.Comic)
-            {
+            if (_wherePage == PositionPage.Comic) {
                 comment.CommentReply = await _commentApi.GetCommentChildInComic(Guid.Parse(_IdComic), comment.Id, skip: 0, take: 10);
+            } else {
+                comment.CommentReply = await _commentApi.GetCommentChildInChapter(Guid.Parse(_IdChapter), comment.Id, skip: 0, take: 10);
             }
-            else
-            {
-                comment.CommentReply = await _commentApi.GetCommentChildInChapter(Guid.Parse(_IdComic), comment.Id, skip: 0, take: 10);
-            }
-            foreach (var child in comment.CommentReply)
-            {
+            foreach (var child in comment.CommentReply) {
                 var c_user = await GetUser(child.IdUser);
                 child.User = c_user;
                 StateHasChanged();

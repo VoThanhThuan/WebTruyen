@@ -37,8 +37,7 @@ namespace WebTruyen.API.Controllers
         {
             var comment = await _comment.GetComment(id);
 
-            if (comment == null)
-            {
+            if (comment == null) {
                 return NotFound();
             }
 
@@ -52,12 +51,11 @@ namespace WebTruyen.API.Controllers
         {
             var comment = await _comment.GetCommentInComic(idComic, skip, take);
 
-            if (comment == null)
-            {
+            if (comment == null) {
                 return NotFound();
             }
 
-            return comment;
+            return Ok(comment);
         }
         // GET: api/Comments/GetCommentInComic?idChapter=&skip=&take=
         [HttpGet("GetCommentInChapter")]
@@ -65,12 +63,11 @@ namespace WebTruyen.API.Controllers
         {
             var comment = await _comment.GetCommentInChapter(idChapter, skip, take);
 
-            if (comment == null)
-            {
+            if (comment == null) {
                 return NotFound();
             }
 
-            return comment;
+            return Ok(comment);
         }
 
         // GET: api/Comments/GetCommentChildInComic?idComic=&idCommentReply=&skip=&take=
@@ -79,8 +76,7 @@ namespace WebTruyen.API.Controllers
         {
             var comment = await _comment.GetCommentChildInComic(idComic, idCommentReply, skip, take);
 
-            if (comment == null)
-            {
+            if (comment == null) {
                 return NotFound();
             }
 
@@ -93,8 +89,7 @@ namespace WebTruyen.API.Controllers
         {
             var comment = await _comment.GetCommentChildInChapter(idChapter, idCommentReply, skip, take);
 
-            if (comment == null)
-            {
+            if (comment == null) {
                 return NotFound();
             }
 
@@ -107,8 +102,7 @@ namespace WebTruyen.API.Controllers
         [Authorize]
         public async Task<IActionResult> PutComment(Guid id, CommentAM comment)
         {
-            if (id != comment.Id)
-            {
+            if (id != comment.Id) {
                 return BadRequest();
             }
 
@@ -143,8 +137,7 @@ namespace WebTruyen.API.Controllers
         public async Task<IActionResult> DeleteComment(Guid id)
         {
             var result = await _comment.DeleteComment(id);
-            if (!result)
-            {
+            if (!result) {
                 return NotFound();
             }
 

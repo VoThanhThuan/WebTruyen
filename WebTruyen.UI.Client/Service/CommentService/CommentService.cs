@@ -49,10 +49,10 @@ namespace WebTruyen.UI.Client.Service.CommentService
             return result;
         }
 
-        public async Task<List<CommentVM>> GetCommentInChapter(Guid idChapter, int skip =0, int take = 10)
+        public async Task<List<CommentVM>> GetCommentInChapter(Guid idChapter, int skip = 0, int take = 10)
         {
             await GetSession();
-            var result = await _http.GetFromJsonAsync<List<CommentVM>>($"/api/Comments/GetCommentInComic?idComic={idChapter}&skip={skip}&take={take}");
+            var result = await _http.GetFromJsonAsync<List<CommentVM>>($"/api/Comments/GetCommentInChapter?idChapter={idChapter}&skip={skip}&take={take}");
             return result;
         }
 
@@ -82,8 +82,7 @@ namespace WebTruyen.UI.Client.Service.CommentService
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await _http.PostAsync(@"/api/Comments", httpContent);
-            if (response.IsSuccessStatusCode)
-            {
+            if (response.IsSuccessStatusCode) {
                 return (true, await response.Content.ReadAsStringAsync());
             }
 

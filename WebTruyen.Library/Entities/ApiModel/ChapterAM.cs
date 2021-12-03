@@ -8,8 +8,7 @@ namespace WebTruyen.Library.Entities.ApiModel
     {
         public Chapter ToChapter()
         {
-            return new Chapter()
-            {
+            return new Chapter() {
                 Id = Id,
                 Ordinal = Ordinal,
                 Name = Name,
@@ -28,6 +27,7 @@ namespace WebTruyen.Library.Entities.ApiModel
         public bool IsLock { get; set; } = false;
 
         public Guid IdComic { get; set; }
+        public ComicAM ComicAM { get; set; } = new ComicAM();
 
     }
 }
