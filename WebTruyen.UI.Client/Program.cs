@@ -17,6 +17,7 @@ using WebTruyen.UI.Client.Service.ImageService;
 using WebTruyen.UI.Client.Service.PageService;
 using WebTruyen.UI.Client.Service.UserService;
 using WebTruyen.UI.Client.Shared;
+using Blazored.Toast;
 
 namespace WebTruyen.UI.Client
 {
@@ -42,6 +43,7 @@ namespace WebTruyen.UI.Client
             builder.Services.AddTransient<IUserService, UserService>();
             builder.Services.AddTransient<ICommentService, CommentService>();
 
+            builder.Services.AddBlazoredToast();
 
 
             await builder.Build().RunAsync();

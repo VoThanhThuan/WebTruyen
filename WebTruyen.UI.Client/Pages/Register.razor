@@ -68,8 +68,7 @@
 
             <div class="card-body px-lg-5 py-lg-5">
                 <div class="d-flex flex-column align-items-center">
-                    @if (_element.Apiresult > 100 && _element.Apiresult < 300)
-                    {
+                    @if (_element.Apiresult > 100 && _element.Apiresult < 300) {
                         <span class="text-primary">Tạo mới tài khoản thành công</span>
                     }
                     <div class="text-center text-muted mb-4">
@@ -233,6 +232,8 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+
+        NavigateToComponent();
         await base.OnAfterRenderAsync(firstRender);
 
     }
@@ -240,7 +241,11 @@
     #endregion
 
     #region Xử Lý Dữ Liệu
-
+    void NavigateToComponent()
+    {
+        //if (!uri.AbsolutePath.Contains("/Authentication/"))
+        //    _navigationManager.NavigateTo("./Authentication/register");
+    }
     /// <summary>
     /// Hiển thị image preview và lấy dữ liệu image
     /// </summary>
@@ -281,7 +286,7 @@
         if (valueCrop.width < 1 || valueCrop.height < 1)
             return;
 
-        var imgBase64 = await JS.InvokeAsync<string>("cropImageToBase64", new object[]{ "#img-crop", valueCrop.x, valueCrop.y, valueCrop.width, valueCrop.height });
+        var imgBase64 = await JS.InvokeAsync<string>("cropImageToBase64", new object[] { "#img-crop", valueCrop.x, valueCrop.y, valueCrop.width, valueCrop.height });
 
         //_element.Avatar = $"{image.ToBase64String(format)}";
         _element.Avatar = imgBase64;

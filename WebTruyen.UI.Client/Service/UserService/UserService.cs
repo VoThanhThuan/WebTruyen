@@ -1,4 +1,5 @@
 ﻿using Blazored.SessionStorage;
+using Microsoft.AspNetCore.Components.Forms;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,6 +14,7 @@ using System.Threading.Tasks;
 using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.Library.Entities.Request;
 using WebTruyen.UI.Client.Model;
+using WebTruyen.UI.Client.Service.ImageService;
 
 namespace WebTruyen.UI.Client.Service.UserService
 {
@@ -20,12 +22,13 @@ namespace WebTruyen.UI.Client.Service.UserService
     {
         private HttpClient _http;
         ISessionStorageService _sessionStorage { get; set; }
+        IImageService _image { get; set; }
 
-        public UserService(HttpClient http, ISessionStorageService sessionStorage)
+        public UserService(HttpClient http, ISessionStorageService sessionStorage, IImageService image)
         {
             _http = http;
             _sessionStorage = sessionStorage;
-
+            _image = image;
         }
 
         private async Task GetSession()
@@ -40,8 +43,7 @@ namespace WebTruyen.UI.Client.Service.UserService
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await _http.PostAsync(@"/api/Users/authenticate", httpContent);
-            if (response.IsSuccessStatusCode)
-            {
+            if (response.IsSuccessStatusCode) {
                 return await response.Content.ReadAsStringAsync();
             }
 
@@ -53,8 +55,7 @@ namespace WebTruyen.UI.Client.Service.UserService
             _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             var response = await _http.GetAsync(@"/api/Users/GetUserByAccessToken");
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
+            if (response.StatusCode == HttpStatusCode.OK) {
                 var user = await response.Content.ReadFromJsonAsync<UserAM>();
                 user.Avatar = $"{_http.BaseAddress}{user.Avatar}";
                 Console.WriteLine($"UserService > GetUserByAccessTokenAsync > userId: {user.Id}");
@@ -154,17 +155,16 @@ namespace WebTruyen.UI.Client.Service.UserService
             return ((int)response.StatusCode, response.RequestMessage.ToString());
         }
 
-        public async Task<(int statusCode, string mess)> UpdateAvatar(Guid idUser, (string data, string filename) Avatar)
+        public async Task<(int statusCode, string mess)> UpdateAvatar(Guid idUser, IBrowserFile avatar)
         {
             await GetSession();
             var requestContent = new MultipartFormDataContent();
 
-            if (!string.IsNullOrEmpty(Avatar.data)) {
+            if (avatar != null) {
 
-                var offset = Avatar.data.IndexOf(',') + 1;
-                var data = Convert.FromBase64String(Avatar.data[offset..^0]);
+                var data = await _image.ImageToByte(avatar);
                 var bytes = new ByteArrayContent(data);
-                requestContent.Add(bytes, "Avatar", Avatar.filename);
+                requestContent.Add(bytes, "Avatar", avatar.Name);
 
                 var response = await _http.PutAsync($"/api/Users/UpdateAvater/{idUser}", requestContent);
                 if (response.StatusCode == HttpStatusCode.OK) {
@@ -174,7 +174,7 @@ namespace WebTruyen.UI.Client.Service.UserService
                 return ((int)response.StatusCode, response.RequestMessage.ToString());
 
             }
-            return ((int)404, "Avatar không được rỗng");
+            return (400, "Avatar không được rỗng");
         }
 
         public async Task<(int statusCode, string mess)> UpdatePassword(Guid idUser, ChangePasswordRequest password)

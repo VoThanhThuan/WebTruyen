@@ -1,4 +1,5 @@
 ﻿@page "/user"
+@using Blazored.Toast.Services
 @using WebTruyen.UI.Client.Service.UserService
 @using WebTruyen.Library.Entities.ApiModel
 @using WebTruyen.Library.Entities.Request
@@ -130,8 +131,12 @@
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IJSRuntime JS { get; set; }
     [Inject] IUserService _userApi { get; set; }
-
+    [Inject] IToastService toastService { get; set; }
     public UserAM _UserAM { get; set; } = null;
+
+    public InfoUser _infoUser { get; set; } = new ();
+    public ChangePasswordRequest _passwordChange { get; set; } = new ();
+    public IBrowserFile _avatar { get; set; }
 
     public ModelRequest _Model { get; set; } = new();
 
@@ -191,14 +196,16 @@
 
     async Task UpdatePassword()
     {
-
+        var result = await _userApi.UpdatePassword(_UserAM.Id, _passwordChange);
     }
     async Task UpdateAvatar()
     {
+        var result = await _userApi.UpdateAvatar(_UserAM.Id, _avatar);
 
     }
     async Task UpdateFinfo()
     {
+        var result = await _userApi.UpdateInfoUser(_UserAM.Id, _infoUser);
 
     }
 

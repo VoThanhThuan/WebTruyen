@@ -19,10 +19,16 @@ function Click(parameters) {
     $(parameters).click();
 }
 
-function RawHtml(element, value) {
-    let e = $(element);
-    e.innerHTML = value;
-};
+window.blazorExtensions = {
+    AddScript: (src) => {
+        const head = document.getElementsByTagName('head')[0];
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+
+        script.src = src;
+        head.appendChild(script);
+    }
+}
 
 var cropvalue;
 function Cropper(parameters) {
@@ -45,7 +51,7 @@ function Cropper(parameters) {
             console.log('move', data);
         },
         aspectRatio: 1,
-        startSize: [100,100]
+        startSize: [100, 100]
     });
     cropvalue = croppr.getValue();
 }

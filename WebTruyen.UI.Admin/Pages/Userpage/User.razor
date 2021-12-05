@@ -13,37 +13,34 @@
 
 
             <a href="user/create" class="btn btn-info text-decoration-none text-dark"><i class="far fa-plus"></i>Thêm Người Dùng</a>
-            @if (_UserAM == null)
-            {
+            <Button OnClick="exportCSV">Export to CSV</Button>
+            <Button OnClick="exportHTML">Export to HTML</Button>
+            <Button OnClick="exportJSON">Export to JSON</Button>
+            <Button OnClick="exportXLSX">Export to XLSX</Button>
+            <Button OnClick="exportXML">Export to XML</Button>
+            @if (_UserAM == null) {
                 <Loading></Loading>
-            }
-            else
-            {
-                <table class="table rounded-3 overflow-hidden mt-3">
-                    <thead class="table-primary">
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Quyền</th>
-                            <th scope="col">Hình Ảnh</th>
-                            <th scope="col" style="min-width: 10rem;">Tên</th>
-                            <th scope="col">Tài Khoản</th>
-                            <th scope="col">Ngày Sinh</th>
-                            <th scope="col">SĐT</th>
-                            <th scope="col">Giới Tính</th>
-                            <th scope="col" style="min-width: 10rem;">Địa Chỉ</th>
-                            <th scope="col" style="min-width: 120px;">#</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        @{
-                            var index = 0;
-                            foreach (var user in _UserAM)
-                            {
+            } else {
+                <Table @ref="table" class="table rounded-3 overflow-hidden mt-3" ColumnReorder="true" ColumnResize="true" Filtering="true" SortMode="TableSortMode.One" Paging="true">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Quyền</th>
+                                <th>Hình Ảnh</th>
+                                <th style="min-width: 10rem;">Tên</th>
+                                <th>Tài Khoản</th>
+                                <th>Ngày Sinh</th>
+                                <th>SĐT</th>
+                                <th>Giới Tính</th>
+                                <th style="min-width: 10rem;">Địa Chỉ</th>
+                                <th style="min-width: 120px;">#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in _UserAM) {
                                 <tr>
-                                    <th scope="row">@(index++)</th>
-                                    <th scope="row">@user.RoleName</th>
-                                    <td><img src="@user.Avatar" alt="Avatar" height="64"/></td>
+                                    <td>@user.RoleName</td>
+                                    <td><img src="@user.Avatar" alt="Avatar" height="64" /></td>
                                     <td>@user.Nickname</td>
                                     <td>@user.Username</td>
                                     <td>@user.Dob</td>
@@ -55,10 +52,10 @@
                                     </td>
                                 </tr>
                             }
-                        }
-                    </tbody>
-                </table>
 
+                        </tbody>
+                    </table>
+                </Table>
             }
         </div>
     </div>
@@ -67,20 +64,45 @@
 @code {
     [Inject] private IUserService _UserApi { get; set; }
     [Inject] private IImageService _Image { get; set; }
+    //[Inject] IJSRuntime JS { get; set; }
 
     private List<UserRequestClient> _userRequest;
     private List<UserAM> _UserAM;
 
+    Table table;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
-        if (firstRender)
-        {
+        if (firstRender) {
+            //await JS.InvokeAsync<string>("blazorExtensions.AddScript", "./vendors/vfs_fonts.js");
+            //await JS.InvokeAsync<string>("blazorExtensions.AddScript", "./vendors/pdfmake.min.js");
             _UserAM = await _UserApi.GetUsers();
             StateHasChanged();
-
         }
     }
 
-
-}
+    private void exportCSV()
+    {
+        table.ExportData("csv", "table", true, null);
+    }
+    private void exportHTML()
+    {
+        table.ExportData("html", "table", true, null);
+    }
+    private void exportJSON()
+    {
+        table.ExportData("json", "table", true, null);
+    }
+    private void exportPDF()
+    {
+        table.ExportData("pdf", "table", true, null);
+    }
+    private void exportXLSX()
+    {
+        table.ExportData("xlsx", "table", true, null);
+    }
+    private void exportXML()
+    {
+        table.ExportData("xml", "table", true, null);
+    }}

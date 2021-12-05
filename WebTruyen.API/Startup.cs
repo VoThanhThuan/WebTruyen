@@ -41,8 +41,7 @@ namespace WebTruyen.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ComicDbContext>(options =>
-            {
+            services.AddDbContext<ComicDbContext>(options => {
                 options.UseSqlServer(Configuration.GetConnectionString("ConnectComic"));
             });
 
@@ -52,11 +51,9 @@ namespace WebTruyen.API
                 .AddDefaultTokenProviders();
 
 
-            services.AddCors(options =>
-            {
+            services.AddCors(options => {
                 options.AddPolicy("CorsPolicy",
-                    builder =>
-                    {
+                    builder => {
                         builder.SetIsOriginAllowed(origin => true);
                         builder.AllowAnyMethod();
                         builder.AllowAnyHeader();
@@ -71,7 +68,10 @@ namespace WebTruyen.API
 
 
             services.AddControllers();
-            services.AddTransient<IStorageService, FileService>();
+
+            //services.AddTransient<IStorageService, FileService>();
+            services.AddImageService();
+
             services.AddTransient<IAnnouncementService, AnnouncementService>();
             services.AddTransient<IBookmarkService, BookmarkService>();
             services.AddTransient<IChapterService, ChapterService>();
@@ -95,12 +95,10 @@ namespace WebTruyen.API
             //services.AddTransient<RoleManager<Role>, RoleManager<Role>>();
 
 
-            services.AddSwaggerGen(c =>
-            {
+            services.AddSwaggerGen(c => {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebTruyen.API", Version = "v1" });
 
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
                     Description = @"JWT Authorization header using the Bearer scheme. 
                       Nhập 'Bearer' [space] và sau đó nhập token như ví dụ bên dưới.
                       Example: 'Bearer 12345abcdef'",
@@ -132,18 +130,15 @@ namespace WebTruyen.API
             var issuer = Configuration.GetValue<string>("Tokens:Issuer");
             var signingKey = Configuration.GetValue<string>("Tokens:Key");
             var signingKeyBytes = System.Text.Encoding.UTF8.GetBytes(signingKey);
-            
-            services.AddAuthentication(opt =>
-                {
-                    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(options =>
-                {
+
+            services.AddAuthentication(opt => {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options => {
                     options.RequireHttpsMetadata = false;
                     options.SaveToken = true;
-                    options.TokenValidationParameters = new TokenValidationParameters()
-                    {
+                    options.TokenValidationParameters = new TokenValidationParameters() {
                         ValidateIssuer = true,
                         ValidIssuer = issuer,
                         ValidateAudience = true,
@@ -162,8 +157,7 @@ namespace WebTruyen.API
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
 
-            if (env.IsDevelopment())
-            {
+            if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebTruyen.API v1"));
@@ -183,8 +177,7 @@ namespace WebTruyen.API
 
             app.UseImageSharp();
 
-            app.UseEndpoints(endpoints =>
-            {
+            app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();
             });
         }

@@ -43,13 +43,13 @@
                     <!-- Navbar items -->
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item">
-                            <a class="nav-link nav-link-icon" href="#">
+                            <a class="nav-link nav-link-icon" href="/register">
                                 <i class="ni ni-circle-08"></i>
                                 <span class="nav-link-inner--text">Đăng ký</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link nav-link-icon" href="#">
+                            <a class="nav-link nav-link-icon" href="/login">
                                 <i class="ni ni-key-25"></i>
                                 <span class="nav-link-inner--text">Đăng nhập</span>
                             </a>
@@ -110,5 +110,10 @@
 
 
 @code {
+    [Inject] IJSRuntime JS { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {   
+        await JS.InvokeAsync<string>("blazorExtensions.AddScript", "./vendors/Cropprjs/croppr.min.js");
+    }
 }

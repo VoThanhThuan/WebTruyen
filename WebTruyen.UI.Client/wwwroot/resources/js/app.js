@@ -66,7 +66,7 @@ window.blazorExtensions = {
             expires = "";
         }
         document.cookie = name + "=" + value + expires + "; path=/";
-    }, 
+    },
     ReadCookie: function (name) {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
@@ -75,6 +75,18 @@ window.blazorExtensions = {
     },
     DeleteCookie: function (name) {
         document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    },
+    IsScriptAdd: true,
+    AddScript: (src) => {
+        if (blazorExtensions.IsScriptAdd) {
+            console.log(blazorExtensions.IsScriptAdd)
+            const head = document.getElementsByTagName('head')[0];
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = src;
+            head.appendChild(script);
+            blazorExtensions.IsScriptAdd = false
+        }
     }
 }
 

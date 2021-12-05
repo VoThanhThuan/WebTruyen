@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Net.Http.Headers;
 using WebTruyen.UI.Admin.Service;
+using Smart.Blazor;
 
 namespace WebTruyen.UI.Admin
 {
@@ -39,13 +40,11 @@ namespace WebTruyen.UI.Admin
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.ConfigureApplicationCookie(options =>
-            {
+            services.ConfigureApplicationCookie(options => {
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
                 options.SlidingExpiration = true;
             });
-            services.AddSession(options => 
-            { 
+            services.AddSession(options => {
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
             });
             services.AddHttpContextAccessor();
@@ -63,17 +62,14 @@ namespace WebTruyen.UI.Admin
             var issuer = Configuration.GetValue<string>("Tokens:Issuer");
             var signingKey = Configuration.GetValue<string>("Tokens:Key");
             var signingKeyBytes = System.Text.Encoding.UTF8.GetBytes(signingKey);
-            services.AddAuthentication(opt =>
-                {
-                    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(options =>
-                {
+            services.AddAuthentication(opt => {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options => {
                     options.RequireHttpsMetadata = false;
                     options.SaveToken = true;
-                    options.TokenValidationParameters = new TokenValidationParameters()
-                    {
+                    options.TokenValidationParameters = new TokenValidationParameters() {
                         ValidateIssuer = true,
                         ValidIssuer = issuer,
                         ValidateAudience = true,
@@ -85,7 +81,7 @@ namespace WebTruyen.UI.Admin
                     };
                 }).AddCookie();
 
-            
+
             services.AddTransient<IImageService, ImageService>();
             services.AddTransient<IComicApiClient, ComicApiClient>();
             services.AddTransient<IChapterService, ChapterService>();
@@ -95,18 +91,15 @@ namespace WebTruyen.UI.Admin
             services.AddTransient<IRoleService, RoleService>();
 
             services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-
+            services.AddSmart();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
+            if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
-            }
-            else
-            {
+            } else {
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
@@ -125,8 +118,7 @@ namespace WebTruyen.UI.Admin
 
 
 
-            app.UseEndpoints(endpoints =>
-            {
+            app.UseEndpoints(endpoints => {
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");

@@ -43,8 +43,7 @@ namespace WebTruyen.API.Controllers
 
             var result = await _user.Authenticate(request);
 
-            if (string.IsNullOrEmpty(result))
-            {
+            if (string.IsNullOrEmpty(result)) {
                 return BadRequest(result);
             }
             return Ok(result);
@@ -67,14 +66,12 @@ namespace WebTruyen.API.Controllers
         {
 
             var userID = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userID))
-            {
+            if (string.IsNullOrEmpty(userID)) {
                 return NoContent();
             }
             var user = await _user.GetUser(Guid.Parse(userID));
 
-            if (user != null)
-            {
+            if (user != null) {
                 return Ok(user);
             }
             return NoContent();
@@ -84,8 +81,7 @@ namespace WebTruyen.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserAM>>> GetUsers()
         {
-            if (HttpContext.User.Identity is ClaimsIdentity identity)
-            {
+            if (HttpContext.User.Identity is ClaimsIdentity identity) {
                 var claims = identity.Claims;
 
             }
@@ -110,11 +106,10 @@ namespace WebTruyen.API.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> PutUser(Guid id, [FromForm]UserRequest user)
+        public async Task<IActionResult> PutUser(Guid id, [FromForm] UserRequest user)
         {
 
-            if (id != user.Id)
-            {
+            if (id != user.Id) {
                 return BadRequest();
             }
 
@@ -149,6 +144,7 @@ namespace WebTruyen.API.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<UserAM>> Register([FromForm] RegisterRequest request)
         {
+            if (!ModelState.IsValid) return BadRequest();
             if (request.Password != request.ConfirmPassword)
                 return BadRequest();
 
@@ -209,8 +205,7 @@ namespace WebTruyen.API.Controllers
         public async Task<IActionResult> DeleteUser(Guid id)
         {
             var result = await _user.DeleteUser(id);
-            return result switch
-            {
+            return result switch {
                 StatusCodes.Status404NotFound => NotFound(),
                 StatusCodes.Status500InternalServerError => StatusCode(500),
                 _ => NoContent()

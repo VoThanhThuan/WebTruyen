@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.UI.Client.Model;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace WebTruyen.UI.Client.Service.UserService
 {
@@ -17,7 +18,7 @@ namespace WebTruyen.UI.Client.Service.UserService
         public Task<UserAM> GetUser(Guid id);
 
         public Task<(int statusCode, string mess)> UpdateInfoUser(Guid idUser, InfoUser info);
-        public Task<(int statusCode, string mess)> UpdateAvatar(Guid idUser, (string data, string filename) Avatar);
+        public Task<(int statusCode, string mess)> UpdateAvatar(Guid idUser, IBrowserFile avatar);
         public Task<(int statusCode, string mess)> UpdatePassword(Guid idUser, ChangePasswordRequest password);
 
         public Task<(int apiResult, string mess, UserAM user)> Register(RegisterRequestClient request);
