@@ -123,9 +123,12 @@
                                                 <div class="card-info p-2 mt-2">
                                                     Truyện đang theo dõi
                                                 </div>
-                                                <div class="card-info p-2 mt-2">
-                                                    Cài đặt tài khoản
-                                                </div>
+                                                <a href="./users">
+                                                    <div class="card-info p-2 mt-2">
+                                                        Cài đặt tài khoản
+                                                    </div>
+                                                </a>
+
                                                 <a href="#" class="text">
                                                     <div class="card-info p-2 mt-2" @onclick="SignOut">
                                                         Đăng Xuất
@@ -319,7 +322,7 @@
             Console.WriteLine($"NavMenu > GetUserByToken > user.Avatar: {user.Avatar}");
             _element.IsSignIn = true;
             _element.User = user;
-            
+
             var jsonUser = JsonSerializer.Serialize(user);
             Console.WriteLine($"NavMenu > GetUserByToken > jsonUser: {jsonUser}");
 

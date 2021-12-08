@@ -1,18 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using SixLabors.ImageSharp.Web.DependencyInjection;
 using WebTruyen.API.Repository.Announcement;
 using WebTruyen.API.Repository.Bookmark;
 using WebTruyen.API.Repository.Chapter;
@@ -29,6 +26,8 @@ using WebTruyen.API.Repository.User;
 using WebTruyen.API.Service;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Google;
 
 namespace WebTruyen.API
 {
@@ -44,39 +43,6 @@ namespace WebTruyen.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            services.AddControllers();
-            services.AddSwaggerGen(c => {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebTruyen.API", Version = "v1" });
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
-                    Description = @"JWT Authorization header using the Bearer scheme. 
-                      Nhập 'Bearer' [space] và sau đó nhập token như ví dụ bên dưới.
-                      Example: 'Bearer 12345abcdef'",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
-                });
-
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            },
-                            Scheme = "oauth2",
-                            Name = "Bearer",
-                            In = ParameterLocation.Header,
-                        },
-                        new List<string>()
-                    }
-                });
-            });
-
             services.AddDbContext<ComicDbContext>(options => {
                 options.UseSqlServer(Configuration.GetConnectionString("ConnectComic"));
             });
@@ -85,6 +51,7 @@ namespace WebTruyen.API
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<ComicDbContext>()
                 .AddDefaultTokenProviders();
+
 
             services.AddCors(options => {
                 options.AddPolicy("CorsPolicy",
@@ -101,6 +68,10 @@ namespace WebTruyen.API
                     });
             });
 
+
+            services.AddControllers();
+
+            //services.AddTransient<IStorageService, FileService>();
             services.AddImageService();
 
             services.AddTransient<IAnnouncementService, AnnouncementService>();
@@ -121,8 +92,49 @@ namespace WebTruyen.API
 
             services.AddTransient<IWaterMarkService, WaterMarkService>();
 
-            services.AddAuthentication("Bearer")
-                .AddCookie("Bearer")
+            //services.AddTransient<UserManager<User>, UserManager<User>>();
+            //services.AddTransient<SignInManager<User>, SignInManager<User>>();
+            //services.AddTransient<RoleManager<Role>, RoleManager<Role>>();
+
+
+            services.AddSwaggerGen(c => {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebTruyen.API", Version = "v1" });
+
+                //c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
+                //    Description = @"JWT Authorization header using the Bearer scheme. 
+                //      Nhập 'Bearer' [space] và sau đó nhập token như ví dụ bên dưới.
+                //      Example: 'Bearer 12345abcdef'",
+                //    Name = "Authorization",
+                //    In = ParameterLocation.Header,
+                //    Type = SecuritySchemeType.ApiKey,
+                //    Scheme = "Bearer"
+                //});
+
+                //c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                //{
+                //    {
+                //        new OpenApiSecurityScheme
+                //        {
+                //            Reference = new OpenApiReference
+                //            {
+                //                Type = ReferenceType.SecurityScheme,
+                //                Id = "Bearer"
+                //            },
+                //            Scheme = "oauth2",
+                //            Name = "Bearer",
+                //            In = ParameterLocation.Header,
+                //        },
+                //        new List<string>()
+                //    }
+                //});
+            });
+
+            var issuer = Configuration.GetValue<string>("Tokens:Issuer");
+            var signingKey = Configuration.GetValue<string>("Tokens:Key");
+            var signingKeyBytes = System.Text.Encoding.UTF8.GetBytes(signingKey);
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddCookie(JwtBearerDefaults.AuthenticationScheme)
                 .AddGoogle(options => {
                     // Đọc thông tin Authentication:Google từ appsettings.json
                     var googleAuthNSection = Configuration.GetSection("Authentication:Google");
@@ -139,11 +151,28 @@ namespace WebTruyen.API
                     // Cấu hình Url callback lại từ Google (không thiết lập thì mặc định là /signin-google)
                     options.CallbackPath = "/api/Authenticates/signin-google";
                 });
+            //.AddJwtBearer(options => {
+            //    options.RequireHttpsMetadata = false;
+            //    options.SaveToken = true;
+            //    options.TokenValidationParameters = new TokenValidationParameters() {
+            //        ValidateIssuer = true,
+            //        ValidIssuer = issuer,
+            //        ValidateAudience = true,
+            //        ValidAudience = issuer,
+            //        ValidateLifetime = true,
+            //        ValidateIssuerSigningKey = true,
+            //        ClockSkew = System.TimeSpan.Zero,
+            //        IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes)
+            //    };
+            //});
+
+            services.AddImageSharp();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
@@ -156,11 +185,13 @@ namespace WebTruyen.API
 
             app.UseAuthentication();
 
-            app.UseCors("CorsPolicy");
-
             app.UseRouting();
 
+            app.UseCors("CorsPolicy");
+
             app.UseAuthorization();
+
+            app.UseImageSharp();
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();
