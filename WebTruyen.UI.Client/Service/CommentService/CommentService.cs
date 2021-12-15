@@ -16,8 +16,8 @@ namespace WebTruyen.UI.Client.Service.CommentService
 {
     public class CommentService : ICommentService
     {
-        private HttpClient _http;
-        ISessionStorageService _sessionStorage { get; set; }
+        private readonly HttpClient _http;
+        private readonly ISessionStorageService _sessionStorage;
 
         public CommentService(HttpClient http, ISessionStorageService sessionStorage)
         {

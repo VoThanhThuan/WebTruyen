@@ -29,9 +29,9 @@ namespace WebTruyen.API.Repository.User
         private readonly SignInManager<Library.Entities.User> _signInManager; //Thư viên đăng nhập
         private readonly IConfiguration _config; //lấy config từ appsetting.config
 
-        public UserService(ComicDbContext context, 
-            IStorageService storageService, 
-            SignInManager<Library.Entities.User> signInManager, 
+        public UserService(ComicDbContext context,
+            IStorageService storageService,
+            SignInManager<Library.Entities.User> signInManager,
             UserManager<Library.Entities.User> userManager,
             RoleManager<Library.Entities.Role> roleManager,
             IConfiguration config)
@@ -47,8 +47,7 @@ namespace WebTruyen.API.Repository.User
         {
             var users = await _context.Users.Skip(skip).Take(take).Select(x => x).ToListAsync();
             var UserAM = new List<UserAM>();
-            foreach (var user in users)
-            {
+            foreach (var user in users) {
                 UserAM.Add(await user.ToApiModel(_userManager));
             }
             return UserAM;
@@ -84,8 +83,7 @@ namespace WebTruyen.API.Repository.User
 
 
             //Role assign
-            if (request.IdRole == Guid.Empty)
-            {
+            if (request.IdRole == Guid.Empty) {
                 var roles = await _context.Roles.Select(x => x).ToListAsync();
                 var userRole = await _context.AppUserRole.FindAsync(id, request.IdRole);
                 if (userRole == null) {
@@ -102,13 +100,10 @@ namespace WebTruyen.API.Repository.User
             }
 
 
-            try
-            {
+            try {
                 await _userManager.UpdateAsync(user);
                 //await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
+            } catch (DbUpdateConcurrencyException) {
                 if (!UserExists(id))
                     return false;
                 throw;
@@ -127,15 +122,13 @@ namespace WebTruyen.API.Repository.User
             user.Avatar = await SaveFile(request.Avatar);
             user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
             var result = await _userManager.CreateAsync(user);
-            if (!result.Succeeded)
-            {
+            if (!result.Succeeded) {
                 return (StatusCodes.Status409Conflict, "Tạo tài khoản thất bại", null);
             }
 
             //Role assign
             var role = await _context.Roles.FindAsync(request.IdRole);
-            if (request.IdRole == Guid.Empty || role == null)
-            {
+            if (request.IdRole == Guid.Empty || role == null) {
                 role = await _roleManager.FindByNameAsync("Guest");
             }
 
@@ -144,7 +137,7 @@ namespace WebTruyen.API.Repository.User
             //_context.Users.Add(user);
             //await _context.SaveChangesAsync();
 
-            return (StatusCodes.Status200OK, "Ok",user.ToApiModel());
+            return (StatusCodes.Status200OK, "Ok", user.ToApiModel());
         }
 
         public async Task<(int apiResult, string mess, UserAM user)> Register(UserRequest request)
@@ -157,8 +150,7 @@ namespace WebTruyen.API.Repository.User
             user.Avatar = await SaveFile(request.Avatar);
             user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
             var result = await _userManager.CreateAsync(user);
-            if (!result.Succeeded)
-            {
+            if (!result.Succeeded) {
                 return (StatusCodes.Status409Conflict, "Tạo tài khoản thất bại", null);
             }
 
@@ -176,8 +168,7 @@ namespace WebTruyen.API.Repository.User
         public async Task<int> DeleteUser(Guid id)
         {
             var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
+            if (user == null) {
                 return StatusCodes.Status404NotFound;
             }
 
@@ -199,7 +190,7 @@ namespace WebTruyen.API.Repository.User
 
         private async Task<string> SaveFile(IFormFile file)
         {
-            return  await _storageService.SaveFile(file, @"avatar/");
+            return await _storageService.SaveFile(file, @"avatar/");
         }
         private async Task<int> DeleteFile(string fileName)
         {
@@ -212,14 +203,14 @@ namespace WebTruyen.API.Repository.User
             if (user == null) return null;
 
             var result = await _signInManager.PasswordSignInAsync(user, request.Password, request.RememberMe, true);
-            if (!result.Succeeded)
-            {
+            if (!result.Succeeded) {
                 return null;
             }
 
             var roles = await _userManager.GetRolesAsync(user); //lấy quyền người dùng
             var claims = new[]
             {
+                new Claim("picture", user.Avatar),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, string.IsNullOrEmpty(user.Email) ? "" : user.Email),
                 new Claim(ClaimTypes.GivenName, user.Nickname),
@@ -262,9 +253,9 @@ namespace WebTruyen.API.Repository.User
 
         public async Task<(int apiResult, string mess)> UpdateAvatar(Guid idUser, IFormFile file)
         {
-            if(file == null) return ((int)StatusCodes.Status400BadRequest, "File không được rỗng");
+            if (file == null) return ((int)StatusCodes.Status400BadRequest, "File không được rỗng");
             var user = _context.Users.Find(idUser);
-            if (user == null) return ((int) StatusCodes.Status404NotFound, "Không tìm thấy user");
+            if (user == null) return ((int)StatusCodes.Status404NotFound, "Không tìm thấy user");
 
             //Xóa avatar cũ
             await _storageService.DeleteFileAsync(user.Avatar);
@@ -279,7 +270,7 @@ namespace WebTruyen.API.Repository.User
         public async Task<(int apiResult, string mess)> UpdatePassword(Guid idUser, ChangePasswordRequest request)
         {
             var user = await _context.Users.FindAsync(idUser);
-            if (user == null) return ((int) StatusCodes.Status404NotFound, "Không tìm thấy user");
+            if (user == null) return ((int)StatusCodes.Status404NotFound, "Không tìm thấy user");
             var result = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.Password);
             return (200, "Đổi mật khẩu thành công");
         }

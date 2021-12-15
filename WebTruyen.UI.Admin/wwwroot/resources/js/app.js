@@ -30,6 +30,17 @@ window.blazorExtensions = {
     }
 }
 
+//Hack banr quyen
+function crackkey() {
+    const smartbutton = $$("smart-button");
+    console.log(smartbutton);
+    if (smartbutton.length > 0) {
+        smartbutton.forEach(item => {
+            item.setAttribute("Title", "Đây là đồ án của Võ Thành Thuận");
+        });
+    }
+}
+
 var cropvalue;
 function Cropper(parameters) {
     let check = $(parameters);

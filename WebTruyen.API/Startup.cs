@@ -11,8 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using WebTruyen.API.Repository.Announcement;
 using WebTruyen.API.Repository.Bookmark;
 using WebTruyen.API.Repository.Chapter;
@@ -29,6 +28,8 @@ using WebTruyen.API.Repository.User;
 using WebTruyen.API.Service;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
+using Microsoft.IdentityModel.Tokens;
+using SixLabors.ImageSharp.Web.DependencyInjection;
 
 namespace WebTruyen.API
 {
@@ -90,10 +91,11 @@ namespace WebTruyen.API
                 options.AddPolicy("CorsPolicy",
                     builder => {
                         builder.SetIsOriginAllowed(origin => true);
+                        //builder.AllowAnyOrigin();
                         builder.AllowAnyMethod();
                         builder.AllowAnyHeader();
                         builder.AllowCredentials();
-                        //builder.WithOrigins("https://localhost:5001", "https://localhost:5002", "https://localhost:5003")
+                        //builder.WithOrigins("https://localhost:5001", "https://localhost:5002", "https://localhost:5003", "http://0831-14-173-206-162.ngrok.io", "http://90af-14-173-206-162.ngrok.io")
                         //    .AllowAnyHeader()
                         //    .AllowAnyMethod()
                         //    .AllowCredentials();
@@ -121,24 +123,29 @@ namespace WebTruyen.API
 
             services.AddTransient<IWaterMarkService, WaterMarkService>();
 
-            services.AddAuthentication("Bearer")
-                .AddCookie("Bearer")
-                .AddGoogle(options => {
-                    // Đọc thông tin Authentication:Google từ appsettings.json
-                    var googleAuthNSection = Configuration.GetSection("Authentication:Google");
 
-                    // Thiết lập ClientID và ClientSecret để truy cập API google
-                    options.ClientId = googleAuthNSection["ClientId"];
-                    options.ClientSecret = googleAuthNSection["ClientSecret"];
-                    options.Scope.Add("profile");
-                    options.Events.OnCreatingTicket = context => {
-                        string picuri = context.User.GetProperty("picture").GetString();
-                        context.Identity.AddClaim(new System.Security.Claims.Claim("picture", picuri));
-                        return Task.CompletedTask;
-                    };
-                    // Cấu hình Url callback lại từ Google (không thiết lập thì mặc định là /signin-google)
-                    options.CallbackPath = "/api/Authenticates/signin-google";
-                });
+            var issuer = Configuration.GetValue<string>("Tokens:Issuer");
+            var signingKey = Configuration.GetValue<string>("Tokens:Key");
+            var signingKeyBytes = System.Text.Encoding.UTF8.GetBytes(signingKey);
+            services.AddAuthentication(opt => {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options => {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters() {
+                    ValidateIssuer = true,
+                    ValidIssuer = issuer,
+                    ValidateAudience = true,
+                    ValidAudience = issuer,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ClockSkew = System.TimeSpan.Zero,
+                    IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes)
+                };
+            });
+            services.AddImageSharp();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -156,11 +163,13 @@ namespace WebTruyen.API
 
             app.UseAuthentication();
 
-            app.UseCors("CorsPolicy");
-
             app.UseRouting();
 
+            app.UseCors("CorsPolicy");
+
             app.UseAuthorization();
+
+            app.UseImageSharp();
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();

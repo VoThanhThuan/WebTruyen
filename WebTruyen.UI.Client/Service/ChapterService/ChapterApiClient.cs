@@ -19,8 +19,8 @@ namespace WebTruyen.UI.Client.Service.ChapterService
     public class ChapterApiClient : IChapterApiClient
     {
 
-        private HttpClient _http;
-        ISessionStorageService _sessionStorage { get; set; }
+        private readonly HttpClient _http;
+        private readonly ISessionStorageService _sessionStorage;
 
         public ChapterApiClient(HttpClient http, ISessionStorageService sessionStorage)
         {

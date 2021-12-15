@@ -14,6 +14,7 @@ namespace WebTruyen.UI.Client.Service.UserService
     {
         public Task<List<UserAM>> GetUsers();
         public Task<string> Authenticate(LoginRequest request);
+        public Task Logout();
         public Task<UserAM> GetUserByAccessTokenAsync(string accessToken);
         public Task<UserAM> GetUser(Guid id);
 

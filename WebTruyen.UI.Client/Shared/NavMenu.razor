@@ -1,4 +1,5 @@
 ﻿@using Blazored.SessionStorage
+@using System.Security.Claims
 @using WebTruyen.Library.Entities.Request
 @using WebTruyen.Library.Entities.ApiModel;
 @using WebTruyen.UI.Client.Service.UserService
@@ -95,11 +96,20 @@
 
             </form>
             <div class="d-flex justify-content-end">
-                @if (_element.IsSignIn) {
+                <AuthorizeView>
+                    <Authorized>
+                        <img class="avatar-sm rounded-circle cursor-pointer" src="@_element.User.Avatar" alt="avatar" @onclick="OpenUserMenu">
+                    </Authorized>
+                    <NotAuthorized>
+                        <a @onclick="SignIn" class="btn btn-primary" style="white-space: nowrap;">Đăng Nhập</a>
+                    </NotAuthorized>
+
+                </AuthorizeView>
+@*                @if (_element.IsSignIn) {
                     <img class="avatar-sm rounded-circle cursor-pointer" src="@_element.User.Avatar" alt="avatar" @onclick="OpenUserMenu">
                 } else {
                     <a @onclick="SignIn" class="btn btn-primary" style="white-space: nowrap;">Đăng Nhập</a>
-                }
+                }*@
                 @if (_element.pop_user) {
                     <div class="pop-menu pop-menu-right">
                         <div class="d-flex">
@@ -108,8 +118,9 @@
                                     <div class="rounded-5 p-2 border-bottom">
                                         <a class="navbar-brand" href="#">Thông Tin</a>
                                     </div>
-                                    @if (_element.IsSignIn) {
-                                        <div class="mt-2">
+                                    <AuthorizeView>
+                                        <Authorized>
+                                           <div class="mt-2">
                                             <div class="row card-info m-1 mb-3 p-2">
                                                 <div class="col-auto m-auto p-0">
                                                     <img class="avatar-md rounded-circle" src="@_element.User.Avatar" alt="avatar">
@@ -123,7 +134,7 @@
                                                 <div class="card-info p-2 mt-2">
                                                     Truyện đang theo dõi
                                                 </div>
-                                                <a href="./users">
+                                                <a href="./user">
                                                     <div class="card-info p-2 mt-2">
                                                         Cài đặt tài khoản
                                                     </div>
@@ -137,6 +148,10 @@
                                             </div>
 
                                         </div>
+
+                                        </Authorized>
+                                    </AuthorizeView>
+                                    @if (_element.IsSignIn) {
 
                                     } else {
                                         <!--
@@ -205,13 +220,20 @@
     [Inject] ILocalStorageService _localStorage { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IJSRuntime JS { get; set; }
-
+    [Inject] AuthenticationStateProvider User { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender) {
+            var context = await User.GetAuthenticationStateAsync();
+            //var id = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            //foreach(var i in context.User.Claims) {
+            //    Console.WriteLine($"NavMenu >> User>> {i.Type} : {i.Value}");
+            //}
             //var token = await _localStorage.GetItemAsStringAsync("Token");
             var token = await JS.InvokeAsync<string>("blazorExtensions.ReadCookie", "Token");
+            Console.WriteLine($"NavMenu >> OnAfterRenderAsync >> Token: {token}");
             var isdark = await _localStorage.GetItemAsStringAsync("dark");
             OnDarkMode(isdark != "1");
             if (!string.IsNullOrEmpty(token)) {
@@ -219,6 +241,7 @@
                 StateHasChanged();
             }
             FuncCode.SignOut = () => {
+                _userApi.Logout();
                 JS.InvokeVoidAsync("blazorExtensions.DeleteCookie", "Token");
                 _sessionStorage.ClearAsync();
                 //_localStorage.ClearAsync();
@@ -283,10 +306,11 @@
         _navigationManager.NavigateTo($"/login?ReturnUrl=/{returnUrl}");
     }
 
-    void SignOut()
+    async Task SignOut()
     {
-        JS.InvokeVoidAsync("blazorExtensions.DeleteCookie", "Token");
-        _sessionStorage.ClearAsync();
+        await _userApi.Logout();
+        await JS.InvokeVoidAsync("blazorExtensions.DeleteCookie", "Token");
+        await _sessionStorage.ClearAsync();
         //_localStorage.ClearAsync();
         _element.IsSignIn = false;
         _element.User = new UserAM();

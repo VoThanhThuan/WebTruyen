@@ -13,7 +13,7 @@ namespace WebTruyen.UI.Client.Service.ImageService
     public class ImageService : IImageService
     {
         private readonly HttpClient _http;
-        ISessionStorageService _sessionStorage { get; set; }
+        private readonly ISessionStorageService _sessionStorage;
 
         public ImageService(HttpClient http, ISessionStorageService sessionStorage)
         {

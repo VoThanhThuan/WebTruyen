@@ -1,4 +1,6 @@
-﻿using Blazored.SessionStorage;
+﻿using Blazored.LocalStorage;
+using Blazored.SessionStorage;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using System;
 using System.Collections.Generic;
@@ -13,6 +15,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.Library.Entities.Request;
+using WebTruyen.UI.Client.Authentication;
 using WebTruyen.UI.Client.Model;
 using WebTruyen.UI.Client.Service.ImageService;
 
@@ -20,15 +23,19 @@ namespace WebTruyen.UI.Client.Service.UserService
 {
     public class UserService : IUserService
     {
-        private HttpClient _http;
-        ISessionStorageService _sessionStorage { get; set; }
-        IImageService _image { get; set; }
+        private readonly HttpClient _http;
+        private readonly ISessionStorageService _sessionStorage;
+        private readonly ILocalStorageService _localStorage;
+        private readonly IImageService _image;
+        private readonly AuthenticationStateProvider _authStateProivder;
 
-        public UserService(HttpClient http, ISessionStorageService sessionStorage, IImageService image)
+        public UserService(HttpClient http, ISessionStorageService sessionStorage, IImageService image, ILocalStorageService localStorage, AuthenticationStateProvider authStateProivder)
         {
             _http = http;
             _sessionStorage = sessionStorage;
+            _localStorage = localStorage;
             _image = image;
+            _authStateProivder = authStateProivder;
         }
 
         private async Task GetSession()
@@ -44,16 +51,30 @@ namespace WebTruyen.UI.Client.Service.UserService
 
             var response = await _http.PostAsync(@"/api/Users/authenticate", httpContent);
             if (response.IsSuccessStatusCode) {
-                return await response.Content.ReadAsStringAsync();
+                var token = await response.Content.ReadAsStringAsync();
+
+                await _localStorage.SetItemAsync("authToken", token);
+
+                ((AuthStateProvider)_authStateProivder).NotifyUserAuthentication(token);
+
+                _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                Console.WriteLine($"UserService >>Authenticate >>token: {token}");
+                return token;
             }
 
             return null;
+        }
+        public async Task Logout()
+        {
+            await _localStorage.RemoveItemAsync("authToken");
+            ((AuthStateProvider)_authStateProivder).NotifyUserLogout();
+            _http.DefaultRequestHeaders.Authorization = null;
+
         }
 
         public async Task<UserAM> GetUserByAccessTokenAsync(string accessToken)
         {
             _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
             var response = await _http.GetAsync(@"/api/Users/GetUserByAccessToken");
             if (response.StatusCode == HttpStatusCode.OK) {
                 var user = await response.Content.ReadFromJsonAsync<UserAM>();
@@ -190,5 +211,6 @@ namespace WebTruyen.UI.Client.Service.UserService
             return ((int)response.StatusCode, response.RequestMessage.ToString());
 
         }
+
     }
 }

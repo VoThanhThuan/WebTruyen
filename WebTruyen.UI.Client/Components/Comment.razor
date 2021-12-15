@@ -17,19 +17,25 @@
                         <img src="@_UserAM.Avatar" alt="avatar" class="avatar-md rounded-circle ">
                     </div>
                     <div class="mb-3 col">
-                        <EditForm model="_CommentRequest" OnValidSubmit="PostNewComment">
-                            <label for="exampleFormControlTextarea1" class="form-label">Để lại bình luận của bạn ở đây</label>
-                            <InputTextArea class="form-control" rows="2" maxlength="500" @bind-Value="_CommentRequest.Content"></InputTextArea>
-                            @if (!_isSignIn) {
+                        <AuthorizeView>
+                            <Authorized Context="Auth">                               
+                                <EditForm model="_CommentRequest" OnValidSubmit="PostNewComment">
+                                    <label for="exampleFormControlTextarea1" class="form-label">Để lại bình luận của bạn ở đây</label>
+                                    <InputTextArea class="form-control" rows="2" maxlength="500" @bind-Value="_CommentRequest.Content"></InputTextArea>
+
+                                    <button type="submit" class="btn btn-primary mt-1">Bình Loạn</button>
+                                    <span>(Bình luận không quá 500 ký tự)</span>
+                                    @if (_element.ErrorComment.isError) {
+                                        <span class="text-danger">Lỗi: @_element.ErrorComment.Messages</span>
+                                    }
+                                </EditForm>
+
+                            </Authorized>
+                            <NotAuthorized>
                                 <span>Bạn cần đăng nhập để bình luận</span>
-                            } else {
-                                <button type="submit" class="btn btn-primary mt-1">Bình Loạn</button>
-                                <span>(Bình luận không quá 500 ký tự)</span>
-                                if (_element.ErrorComment.isError) {
-                                    <span class="text-danger">Lỗi: @_element.ErrorComment.Messages</span>
-                                }
-                            }
-                        </EditForm>
+                            </NotAuthorized>
+                        </AuthorizeView>
+
                     </div>
                 </div>
             </div>

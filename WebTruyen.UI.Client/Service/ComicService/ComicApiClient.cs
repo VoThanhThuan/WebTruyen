@@ -15,8 +15,8 @@ namespace WebTruyen.UI.Client.Service.ComicService
 {
     public class ComicApiClient : IComicApiClient
     {
-        private HttpClient _http;
-        ISessionStorageService _sessionStorage { get; set; }
+        private readonly HttpClient _http;
+        private readonly ISessionStorageService _sessionStorage;
 
         public ComicApiClient(HttpClient http, ISessionStorageService sessionStorage)
         {
@@ -41,8 +41,7 @@ namespace WebTruyen.UI.Client.Service.ComicService
         public async Task<ComicAM> GetComic(Guid id)
         {
             var result = await _http.GetFromJsonAsync<ComicAM>($"/api/Comics/{id}");
-            if (result != null)
-            {
+            if (result != null) {
                 result.Thumbnail = $"{_http.BaseAddress}{result.Thumbnail}";
             }
             return result;
@@ -51,8 +50,7 @@ namespace WebTruyen.UI.Client.Service.ComicService
         public async Task<ComicAM> GetComic(string nameAlias)
         {
             var result = await _http.GetFromJsonAsync<ComicAM>($"/api/Comics/detail?nameAlias={nameAlias}");
-            if (result != null)
-            {
+            if (result != null) {
                 result.Thumbnail = $"{_http.BaseAddress}{result.Thumbnail}";
             }
             return result;
