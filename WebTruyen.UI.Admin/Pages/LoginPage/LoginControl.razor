@@ -24,12 +24,12 @@
                         <EditForm Model="@_loginRequest" OnSubmit="@SignIn">
                             <ChildContent Context="another_name">
                                 <div class="form-floating mb-3">
-                                    <InputText type="text" class="form-control" id="floatingNickName" placeholder="Username" @bind-Value="_loginRequest.Username"/>
-                                    <label for="floatingNickName">Nick Name</label>
+                                    <InputText type="text" class="form-control" id="floatingUsername" placeholder="Username" @bind-Value="_loginRequest.Username"/>
+                                    <label for="floatingUsername">Tên đăng nhập</label>
                                 </div>
                                 <div class="form-floating mb-3">
-                                    <InputText type="text" class="form-control" id="floatingUsername" placeholder="Password" @bind-Value="_loginRequest.Password"/>
-                                    <label for="floatingUsername">Tên Đăng Nhập</label>
+                                    <InputText type="password" class="form-control" id="floatingPassword" placeholder="Password" @bind-Value="_loginRequest.Password"/>
+                                    <label for="floatingPassword">Mật khẩu</label>
                                 </div>
                                 <input type="submit" class="form-control" placeholder="Password" value="Đăng Nhập"/>
                             </ChildContent>

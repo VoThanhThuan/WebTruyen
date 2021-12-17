@@ -8,7 +8,7 @@ using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.UI.Client.Service.PageService
 {
-    public interface IPageService
+    public interface IPageApiClient
     {
         public Task<List<PageAM>> GetPages();
         public Task<PageAM> GetPage(Guid id);

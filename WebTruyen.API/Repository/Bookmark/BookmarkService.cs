@@ -23,6 +23,13 @@ namespace WebTruyen.API.Repository.Bookmark
             return await _context.Bookmarks.Select(x => x.ToApiModel()).ToListAsync();
         }
 
+
+        public async Task<BookmarkAM> GetBookmarkOfAccount(Guid idComic, Guid idUser)
+        {
+            var bookmark = await _context.Bookmarks.FirstOrDefaultAsync(x => x.IdUser == idUser && x.IdComic == idComic);
+            return bookmark?.ToApiModel();
+        }
+
         public async Task<BookmarkAM> GetBookmark(Guid id)
         {
             var bookmark = await _context.Bookmarks.FindAsync(id);
@@ -76,9 +83,9 @@ namespace WebTruyen.API.Repository.Bookmark
             return true;
         }
 
-        public async Task<bool> DeleteBookmark(Guid id)
+        public async Task<bool> DeleteBookmark(Guid idUser, Guid idComic)
         {
-            var bookmark = await _context.Bookmarks.FindAsync(id);
+            var bookmark = await _context.Bookmarks.FindAsync(idUser, idComic);
             if (bookmark == null)
             {
                 return false;
@@ -94,5 +101,7 @@ namespace WebTruyen.API.Repository.Bookmark
         {
             return _context.Bookmarks.Any(e => e.IdUser == id);
         }
+
+
     }
 }

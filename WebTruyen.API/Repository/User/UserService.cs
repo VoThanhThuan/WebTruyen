@@ -56,6 +56,8 @@ namespace WebTruyen.API.Repository.User
         public async Task<UserAM> GetUser(Guid id)
         {
             var user = await _context.Users.FindAsync(id);
+            if (user == null)
+                return null;
             return await user.ToApiModel(_userManager);
         }
 
@@ -129,7 +131,7 @@ namespace WebTruyen.API.Repository.User
             //Role assign
             var role = await _context.Roles.FindAsync(request.IdRole);
             if (request.IdRole == Guid.Empty || role == null) {
-                role = await _roleManager.FindByNameAsync("Guest");
+                role = await _roleManager.FindByNameAsync("Reader");
             }
 
             await _userManager.AddToRoleAsync(user, role.Name);

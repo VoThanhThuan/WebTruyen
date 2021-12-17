@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Components.Forms;
 
 namespace WebTruyen.UI.Client.Service.UserService
 {
-    public interface IUserService
+    public interface IUserApiClient
     {
         public Task<List<UserAM>> GetUsers();
         public Task<string> Authenticate(LoginRequest request);

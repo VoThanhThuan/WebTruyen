@@ -36,7 +36,7 @@ namespace WebTruyen.UI.Admin.Service.ImageService
         {
 
             var buffer = new byte[img.Size]; // Tạo bộ nhớ đệm
-            await using var br = img.OpenReadStream();
+            await using var br = img.OpenReadStream(maxAllowedSize: 2048000L);
             await br.ReadAsync(buffer); //ghi dữ liệu vào bộ nhớ đệm
             GC.Collect();
             return buffer;

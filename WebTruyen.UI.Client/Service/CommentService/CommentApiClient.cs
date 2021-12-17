@@ -14,12 +14,12 @@ using WebTruyen.Library.Entities.ViewModel;
 
 namespace WebTruyen.UI.Client.Service.CommentService
 {
-    public class CommentService : ICommentService
+    public class CommentApiClient : ICommentApiClient
     {
         private readonly HttpClient _http;
         private readonly ISessionStorageService _sessionStorage;
 
-        public CommentService(HttpClient http, ISessionStorageService sessionStorage)
+        public CommentApiClient(HttpClient http, ISessionStorageService sessionStorage)
         {
             _http = http;
             _sessionStorage = sessionStorage;

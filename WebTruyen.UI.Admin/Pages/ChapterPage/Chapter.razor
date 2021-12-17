@@ -20,20 +20,17 @@
             <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
         </symbol>
     </svg>
-    @if (_element.Apiresult is >= 200 and <= 299)
-    {<div>
-         <div class="alert alert-success d-flex align-items-center alert-dismissible" role="alert">
-             <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill" /></svg>
-             <div>
-                 Cập nhật thành công.
-             </div>
-             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-         </div>
+    @if (_element.Apiresult is >= 200 and <= 299) {<div>
+            <div class="alert alert-success d-flex align-items-center alert-dismissible" role="alert">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill" /></svg>
+                <div>
+                    Cập nhật thành công.
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
 
-     </div>
-    }
-    else if (_element.Apiresult != 0)
-    {
+        </div>
+    } else if (_element.Apiresult != 0) {
         <div>
             <div class="alert alert-danger d-flex align-items-center alert-dismissible" role="alert">
                 <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill" /></svg>
@@ -75,24 +72,18 @@
                                 </div>
                                 <div class="row g-2">
                                     <div class="mb-3">
-                                        @if (string.IsNullOrEmpty(idChaper))
-                                        {
+                                        @if (string.IsNullOrEmpty(idChaper)) {
                                             <label for="formFileMultiple" class="form-label">Upload Trang Truyện</label>
-                                        }
-                                        else
-                                        {
+                                        } else {
                                             <label for="formFileMultiple" class="form-label">Upload Lại Các Trang Truyện</label>
                                         }
                                         <InputFile class="form-control" type="file" id="formFileMultiple" multiple OnChange="InputImage" />
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center mb-3">
-                                    @if (!_element.IsLoadImage)
-                                    {
+                                    @if (!_element.IsLoadImage) {
                                         <button class="btn btn-primary" type="submit">Submit</button>
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         <button class="btn btn-primary" type="submit" disabled>
                                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                             Loading...
@@ -100,7 +91,7 @@
                                     }
 
                                     <div class="form-check form-switch d-inline-flex">
-                                        <InputCheckbox class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind-Value="_ChapterAM.IsLock"/>
+                                        <InputCheckbox class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind-Value="_ChapterAM.IsLock" />
                                         <label class="form-check-label" for="flexSwitchCheckDefault">Bật nếu muốn khóa chap này lại</label>
                                     </div>
                                 </div>
@@ -111,29 +102,23 @@
                 </div>
             </div>
 
-            <div class="d-flex justify-content-center">
-                @if (!_Pages.Any())
-                {
-                    <div class="d-block @_element.visibility">Không có hình ảnh!</div>
-                }
-                else
-                {
-                    <div class="d-block @_element.visibility">Loading....</div>
-                    <div class="d-flex flex-wrap">
-                        @{
-                            var index = 0;
-                            foreach (var page in _Pages)
-                            {
-                                <div class="card">
-                                    <img src="@(page.Image)" class="img-thumbnail preview-image lazy-loading" loading="lazy" />
-                                    <span class="badge bg-secondary">@(++index)</span>
-                                </div>
-                            }
+            @if (!_Pages.Any()) {
+                <div class="d-block @_element.visibility">Không có hình ảnh!</div>
+            } else {
+                <div class="d-block @_element.visibility">Loading....</div>
+                <div class="d-flex flex-wrap justify-content-evenly">
+                    @{
+                        var index = 0;
+                        foreach (var page in _Pages) {
+                            <div class="card">
+                                <img src="@(page.Image)" class="img-thumbnail preview-image lazy-loading" loading="lazy" />
+                                <span class="badge bg-secondary">@(++index)</span>
+                            </div>
                         }
+                    }
 
-                    </div>
-                }
-            </div>
+                </div>
+            }
 
         </div>
 
@@ -176,19 +161,16 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender)
-        {
+        if (firstRender) {
             StateHasChanged();
         }
     }
 
     async Task LoadPages()
     {
-        if (!string.IsNullOrEmpty(idChaper))
-        {
+        if (!string.IsNullOrEmpty(idChaper)) {
             var result = _PageApi.GetPagesInChapterYeild(Guid.Parse(idChaper));
-            await foreach (var page in result)
-            {
+            await foreach (var page in result) {
                 _Pages.Add(page);
                 StateHasChanged();
             }
@@ -201,18 +183,15 @@
         _element.Apiresult = 0;
         _element.IsLoadImage = true;
         StateHasChanged();
-        if (!_isUpdate)
-        {
-            var result = await _ChapterApi.PostChapter(_ChapterAM, _imageValues);;
-            _element.Apiresult = (int) result.StatusCode;
+        if (!_isUpdate) {
+            var result = await _ChapterApi.PostChapter(_ChapterAM, _imageValues); ;
+            _element.Apiresult = (int)result.StatusCode;
             StateHasChanged();
             await Task.Delay(500);
-            if(result.StatusCode == HttpStatusCode.OK)
+            if (result.StatusCode == HttpStatusCode.OK)
                 _navigationManager.NavigateTo($@"comic/detail?id={result.Content.IdComic}");
             _element.Apiresult = 0;
-        }
-        else
-        {
+        } else {
             _element.Apiresult = await _ChapterApi.PutChapter(Guid.Parse(idChaper), _ChapterAM, _imageValues);
             StateHasChanged();
             await Task.Delay(500);
@@ -236,10 +215,9 @@
         StateHasChanged();
 
         _imageValues = new List<IBrowserFile>();
-        foreach (var image in images)
-        {
+        foreach (var image in images) {
             var base64image = await _image.ImageToString(image);
-            _Pages.Add(new PageAM() { Image =  base64image});
+            _Pages.Add(new PageAM() { Image = base64image });
             //Cập nhât UI
             StateHasChanged();
             _imageValues.Add(image);
@@ -255,26 +233,22 @@
     {
         var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
         // Phân tích query
-        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("comic", out var comic))
-        {
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("comic", out var comic)) {
             _ChapterAM.IdComic = Guid.Parse((ReadOnlySpan<char>)comic.First());
         }
 
-        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("idChaper", out var chapter))
-        {
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("idChaper", out var chapter)) {
             idChaper = chapter.First();
             _ChapterAM = await _ChapterApi.GetChapter(Guid.Parse(idChaper));
         }
 
         //chuyển trang nếu query comic rỗng
-        if (_ChapterAM.IdComic == Guid.Empty)
-        {
+        if (_ChapterAM.IdComic == Guid.Empty) {
             _navigationManager.NavigateTo("comic");
             return;
         }
         //nếu idChapter rỗng nghĩa là đang tạo chapter mới // tự động đánh số thứ tự chap
-        if (string.IsNullOrEmpty(idChaper))
-        {
+        if (string.IsNullOrEmpty(idChaper)) {
             var result = await _ChapterApi.GetLastChapter(_ChapterAM.IdComic);
             _ChapterAM.Ordinal = result?.Ordinal + 1 ?? 0;
             _isUpdate = false;

@@ -9,12 +9,12 @@ using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.UI.Client.Service.PageService
 {
-    public class PageService : IPageService
+    public class PageApiClient : IPageApiClient
     {
 
         private readonly HttpClient _http;
 
-        public PageService(HttpClient http)
+        public PageApiClient(HttpClient http)
         {
             _http = http;
         }

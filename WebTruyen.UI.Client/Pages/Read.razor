@@ -8,6 +8,8 @@
 @using Microsoft.Data.SqlClient
 @using WebTruyen.UI.Client.Service.ImageService
 @using Blazored.SessionStorage
+@using WebTruyen.UI.Client.Service.HistoryService
+@using System.Security.Claims
 
 @if (_fixImage)
 {
@@ -130,10 +132,14 @@
         //
         [Inject] IComicApiClient _comicApi { get; set; }
         [Inject] IChapterApiClient _chapterApi { get; set; }
-        [Inject] IPageService _pageService { get; set; }
+        [Inject] IPageApiClient _pageService { get; set; }
         [Inject] IImageService _imageApi { get; set; }
         [Inject] ISessionStorageService _sessionStorage { get; set; }
+        [Inject] IHistoryReadApiClient _historyReadApi { get; set; }
         [Inject] NavigationManager _navigationManager { get; set; }
+        [Inject] AuthenticationStateProvider _User { get; set; }
+        [Inject] IToastService _toastService { get; set; }
+
 
         public ComicAM _Comic { get; set; } = new();
         public ChapterAM _Chapter { get; set; } = new();
@@ -149,6 +155,7 @@
             if (firstRender)
             {
                 await GetDataChapter();
+                await AddReadHistory();
             }
         }
 
@@ -229,6 +236,24 @@
                 StateHasChanged();
             }
 
+        }
+
+        async Task AddReadHistory()
+        {
+            var context = await _User.GetAuthenticationStateAsync();
+            var idUser = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if(string.IsNullOrEmpty(idUser))
+                return;
+            var result = await _historyReadApi.AddHistory(new HistoryReadAM()
+            {
+                IdComic = _Comic.Id,
+                LastReadChapter = _Chapter.Id,
+                IdUser = Guid.Parse(idUser)
+            });
+            if (result == 200)
+            {
+                _toastService.ShowSuccess("Đã thêm lịch sử đọc thành công");
+            }
         }
 
         #endregion

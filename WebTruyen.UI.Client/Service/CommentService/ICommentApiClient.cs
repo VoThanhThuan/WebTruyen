@@ -8,7 +8,7 @@ using WebTruyen.Library.Entities.ViewModel;
 
 namespace WebTruyen.UI.Client.Service.CommentService
 {
-    public interface ICommentService
+    public interface ICommentApiClient
     {
         public Task<IEnumerable<CommentVM>> GetComments();
         public Task<CommentAM> GetComment(Guid id);

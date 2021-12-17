@@ -21,6 +21,8 @@ using Blazored.Toast;
 using Microsoft.AspNetCore.Components.Authorization;
 using WebTruyen.UI.Client.Authentication;
 using WebTruyen.UI.Client.Contant;
+using WebTruyen.UI.Client.Service.BookmarkService;
+using WebTruyen.UI.Client.Service.HistoryService;
 
 namespace WebTruyen.UI.Client
 {
@@ -46,11 +48,13 @@ namespace WebTruyen.UI.Client
 
             builder.Services.AddTransient<IComicApiClient, ComicApiClient>();
             builder.Services.AddTransient<IChapterApiClient, ChapterApiClient>();
-            builder.Services.AddTransient<IPageService, PageService>();
-            builder.Services.AddTransient<IGenreService, GenreService>();
+            builder.Services.AddTransient<IPageApiClient, PageApiClient>();
+            builder.Services.AddTransient<IGenreApiClient, GenreApiClient>();
             builder.Services.AddTransient<IImageService, ImageService>();
-            builder.Services.AddTransient<IUserService, UserService>();
-            builder.Services.AddTransient<ICommentService, CommentService>();
+            builder.Services.AddTransient<IUserApiClient, UserApiClient>();
+            builder.Services.AddTransient<ICommentApiClient, CommentApiClient>();
+            builder.Services.AddTransient<IBookmarkApiClient, BookmarkApiClient>();
+            builder.Services.AddTransient<IHistoryReadApiClient, HistoryReadApiClient>();
 
             builder.Services.AddBlazoredToast();
 

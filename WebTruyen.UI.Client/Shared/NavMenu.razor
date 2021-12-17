@@ -6,6 +6,7 @@
 @using Blazored.LocalStorage
 @using System.Threading
 @using System.Text.Json
+@using WebTruyen.UI.Client.Authentication
 @if (_element.OnDark) {
     <link rel="stylesheet" href="./resources/css/dark.css">
 } else {
@@ -215,17 +216,17 @@
 
     public LoginRequest LoginRequest { get; set; } = new();
 
-    [Inject] IUserService _userApi { get; set; }
+    [Inject] IUserApiClient _userApi { get; set; }
     [Inject] ISessionStorageService _sessionStorage { get; set; }
     [Inject] ILocalStorageService _localStorage { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IJSRuntime JS { get; set; }
-    [Inject] AuthenticationStateProvider User { get; set; }
+    [Inject] AuthenticationStateProvider _authStateProivder { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender) {
-            var context = await User.GetAuthenticationStateAsync();
+            var context = await _authStateProivder.GetAuthenticationStateAsync();
             //var id = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
 
             //foreach(var i in context.User.Claims) {
@@ -357,6 +358,7 @@
         } else {
             await JS.InvokeVoidAsync("blazorExtensions.DeleteCookie", "Token");
             await _localStorage.RemoveItemAsync("Token");
+            ((AuthStateProvider)_authStateProivder).NotifyUserLogout();
 
         }
         StateHasChanged();

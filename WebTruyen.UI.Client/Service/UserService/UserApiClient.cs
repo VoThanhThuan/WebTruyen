@@ -21,7 +21,7 @@ using WebTruyen.UI.Client.Service.ImageService;
 
 namespace WebTruyen.UI.Client.Service.UserService
 {
-    public class UserService : IUserService
+    public class UserApiClient : IUserApiClient
     {
         private readonly HttpClient _http;
         private readonly ISessionStorageService _sessionStorage;
@@ -29,7 +29,7 @@ namespace WebTruyen.UI.Client.Service.UserService
         private readonly IImageService _image;
         private readonly AuthenticationStateProvider _authStateProivder;
 
-        public UserService(HttpClient http, ISessionStorageService sessionStorage, IImageService image, ILocalStorageService localStorage, AuthenticationStateProvider authStateProivder)
+        public UserApiClient(HttpClient http, ISessionStorageService sessionStorage, IImageService image, ILocalStorageService localStorage, AuthenticationStateProvider authStateProivder)
         {
             _http = http;
             _sessionStorage = sessionStorage;

@@ -43,6 +43,19 @@ namespace WebTruyen.API.Controllers
             return Ok(result);
         }
 
+        // GET: api/Bookmarks/GetBookmarkOfAccount?idComic=[]&idUser=[]
+        [HttpGet("GetBookmarkOfAccount")]
+        public async Task<ActionResult<BookmarkAM>> GetBookmarkOfAccount(Guid idComic, Guid idUser)
+        {
+            var result = await _bookmark.GetBookmarkOfAccount(idComic, idUser);
+
+            if (result == null) {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
+
         // PUT: api/Bookmarks/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -74,19 +87,20 @@ namespace WebTruyen.API.Controllers
                 return NotFound();
             }
 
-            return CreatedAtAction("GetBookmark", new { id = bookmark.IdUser }, bookmark);
+            //return CreatedAtAction("GetBookmark", new { id = bookmark.IdUser }, bookmark);
+            return Ok(bookmark);
         }
 
-        // DELETE: api/Bookmarks/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBookmark(Guid id)
+        // DELETE: api/Bookmarks?idUser=[]&idComic=[]
+        [HttpDelete()]
+        public async Task<IActionResult> DeleteBookmark(Guid idUser, Guid idComic)
         {
-            var result = await _bookmark.DeleteBookmark(id);
+            var result = await _bookmark.DeleteBookmark(idUser, idComic);
             if (result == false)
             {
                 return NotFound();
             }
-            return NoContent();
+            return Ok();
         }
 
     }

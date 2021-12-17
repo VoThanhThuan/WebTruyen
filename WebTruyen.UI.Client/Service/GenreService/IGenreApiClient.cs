@@ -6,7 +6,7 @@ using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.UI.Client.Service.GenreService
 {
-    public interface IGenreService
+    public interface IGenreApiClient
     {
         public Task<List<GenreAM>> GetGenres();
         public Task<GenreAM> GetGenre(int id);

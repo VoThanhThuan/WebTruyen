@@ -10,7 +10,7 @@ using WebTruyen.Library.Data;
 namespace WebTruyen.Library.Migrations
 {
     [DbContext(typeof(ComicDbContext))]
-    [Migration("20211022102630_db1")]
+    [Migration("20211217051851_db1")]
     partial class db1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -252,8 +252,12 @@ namespace WebTruyen.Library.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("CommentReplyId")
+                    b.Property<Guid?>("CommentId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime>("DateTimeUp")
                         .HasColumnType("datetime2");
@@ -275,7 +279,7 @@ namespace WebTruyen.Library.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CommentReplyId");
+                    b.HasIndex("CommentId");
 
                     b.HasIndex("IdChapter");
 
@@ -315,6 +319,11 @@ namespace WebTruyen.Library.Migrations
 
                     b.Property<Guid>("LastReadChapter")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("TimeCreate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.HasKey("IdUser", "IdComic");
 
@@ -546,9 +555,9 @@ namespace WebTruyen.Library.Migrations
 
             modelBuilder.Entity("WebTruyen.Library.Entities.Comment", b =>
                 {
-                    b.HasOne("WebTruyen.Library.Entities.Comment", "CommentReply")
-                        .WithMany()
-                        .HasForeignKey("CommentReplyId");
+                    b.HasOne("WebTruyen.Library.Entities.Comment", null)
+                        .WithMany("CommentReply")
+                        .HasForeignKey("CommentId");
 
                     b.HasOne("WebTruyen.Library.Entities.Chapter", "Chapter")
                         .WithMany("Comments")
@@ -567,8 +576,6 @@ namespace WebTruyen.Library.Migrations
                     b.Navigation("Chapter");
 
                     b.Navigation("Comic");
-
-                    b.Navigation("CommentReply");
 
                     b.Navigation("User");
                 });
@@ -667,6 +674,11 @@ namespace WebTruyen.Library.Migrations
                     b.Navigation("NewComicAnnouncements");
 
                     b.Navigation("TranslationOfUsers");
+                });
+
+            modelBuilder.Entity("WebTruyen.Library.Entities.Comment", b =>
+                {
+                    b.Navigation("CommentReply");
                 });
 
             modelBuilder.Entity("WebTruyen.Library.Entities.Genre", b =>

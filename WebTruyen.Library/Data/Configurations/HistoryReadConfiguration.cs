@@ -19,6 +19,8 @@ namespace WebTruyen.Library.Data.Configurations
             builder.HasOne(x => x.Comic).WithMany(x => x.HistoryReads)
                 .HasForeignKey(x => x.IdComic);
 
+            builder.Property(x => x.TimeCreate).HasDefaultValueSql("GETDATE()");
+
         }
     }
 }

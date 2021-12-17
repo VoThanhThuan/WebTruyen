@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31912.275
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebTruyen.Library", "WebTruyen.Library\WebTruyen.Library.csproj", "{6FEA9519-844F-4A67-A804-2FAA784809D6}"
 EndProject
@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebTruyen.UI.Admin", "WebTr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebTruyen.UI.Client", "WebTruyen.UI.Client\WebTruyen.UI.Client.csproj", "{8C6BA43A-A245-4915-816C-2F8FE9DEBD8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebTruyen.API", "WebTruyen.API\WebTruyen.API.csproj", "{3C14F650-5572-4A88-82C0-06C978598114}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebTruyen.API", "WebTruyen.API\WebTruyen.API.csproj", "{3C14F650-5572-4A88-82C0-06C978598114}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

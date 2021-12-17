@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using WebTruyen.API.Repository.HistoryRead;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.ApiModel;
+using WebTruyen.Library.Entities.ViewModel;
 
 namespace WebTruyen.API.Controllers
 {
@@ -43,6 +44,14 @@ namespace WebTruyen.API.Controllers
             return historyRead;
         }
 
+        // GET: api/HistoryReads/GetHistoryReadsOfAccount?idUser=[]&skip=[]&take=[]
+        [HttpGet("GetHistoryReadsOfAccount")]
+        public async Task<ActionResult<List<HistoryReadVM>>> GetHistoryReadsOfAccount(Guid idUser, int skip, int take)
+        {
+            var histories = await _historyRead.GetHistoryReadsOfAccount(idUser, skip, take);
+            return Ok(histories);
+        }
+
         // PUT: api/HistoryReads/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -70,7 +79,8 @@ namespace WebTruyen.API.Controllers
             if (!result)
                 return Conflict();
 
-            return CreatedAtAction("GetHistoryRead", new { id = historyRead.IdUser }, historyRead);
+            //return CreatedAtAction("GetHistoryRead", new { id = historyRead.IdUser }, historyRead);
+            return Ok(historyRead);
         }
 
         // DELETE: api/HistoryReads/5

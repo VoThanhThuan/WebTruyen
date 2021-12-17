@@ -145,8 +145,8 @@
                         foreach (var genre in _element.GenreAM) {
                             <div class="form-check form-switch border border-1 rounded-pill m-1">
                                 <div class="m-1">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @onclick="() => AddGenre(genre)" checked="@genre.check">
-                                    <label class="form-check-label" for="flexSwitchCheckDefault">@genre.value.Name</label>
+                                    <input class="form-check-input" type="checkbox" id="@genre.value.Id" @onclick="() => AddGenre(genre)" checked="@genre.check">
+                                    <label class="form-check-label" for="@genre.value.Id">@genre.value.Name</label>
                                 </div>
                             </div>
                         }

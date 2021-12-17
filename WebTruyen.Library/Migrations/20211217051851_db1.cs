@@ -234,7 +234,8 @@ namespace WebTruyen.Library.Migrations
                 {
                     IdComic = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IdUser = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LastReadChapter = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    LastReadChapter = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TimeCreate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
                 },
                 constraints: table =>
                 {
@@ -285,10 +286,11 @@ namespace WebTruyen.Library.Migrations
                     DateTimeUp = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Level = table.Column<int>(type: "int", nullable: false),
                     IdCommentReply = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Content = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     IdComic = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IdChapter = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IdUser = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CommentReplyId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    CommentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -306,8 +308,8 @@ namespace WebTruyen.Library.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Comment_Comment_CommentReplyId",
-                        column: x => x.CommentReplyId,
+                        name: "FK_Comment_Comment_CommentId",
+                        column: x => x.CommentId,
                         principalTable: "Comment",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -418,9 +420,9 @@ namespace WebTruyen.Library.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comment_CommentReplyId",
+                name: "IX_Comment_CommentId",
                 table: "Comment",
-                column: "CommentReplyId");
+                column: "CommentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comment_IdChapter",

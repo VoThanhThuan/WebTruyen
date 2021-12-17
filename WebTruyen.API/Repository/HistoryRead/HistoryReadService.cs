@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.ApiModel;
+using WebTruyen.Library.Entities.ViewModel;
 
 namespace WebTruyen.API.Repository.HistoryRead
 {
@@ -19,6 +20,29 @@ namespace WebTruyen.API.Repository.HistoryRead
         public async Task<IEnumerable<HistoryReadAM>> GetHistoryReads()
         {
             return await _context.HistoryReads.Select(x => x.ToApiModel()).ToListAsync();
+        }
+
+        public async Task<List<HistoryReadVM>> GetHistoryReadsOfAccount(Guid idUser, int skip, int take)
+        {
+            var histories = await _context.HistoryReads.Where(x => x.IdUser == idUser).OrderByDescending(x => x.TimeCreate)
+                .Skip(skip).Take(take)
+                .Select(x => x.ToApiModel()).ToListAsync();
+            var _listHistoryVM = new List<HistoryReadVM>();
+            foreach (var item in histories)
+            {
+                var comic = await _context.Comics.FindAsync(item.IdComic);
+                var chapter = await _context.Chapters.FindAsync(item.LastReadChapter);
+                _listHistoryVM.Add(new HistoryReadVM()
+                {
+                    IdComic = item.IdComic,
+                    IdUser = item.IdUser,
+                    IdLastReadChapter = item.LastReadChapter,
+                    TimeCreate = item.TimeCreate,
+                    Comic = comic.ToApiModel(),
+                    Chapter = chapter.ToApiModel()
+                });
+            }
+            return _listHistoryVM;
         }
 
         public async Task<HistoryReadAM> GetHistoryRead(Guid id)
@@ -53,7 +77,16 @@ namespace WebTruyen.API.Repository.HistoryRead
 
         public async Task<bool> PostHistoryRead(HistoryReadAM request)
         {
-            _context.HistoryReads.Add(request.ToHistoryRead());
+
+            var history = await _context.HistoryReads.FindAsync(request.IdUser, request.IdComic);
+            if (history is null)
+            {
+                _context.HistoryReads.Add(request.ToHistoryRead());
+            }
+            else
+            {
+                history.LastReadChapter = request.LastReadChapter;
+            }
             try
             {
                 await _context.SaveChangesAsync();

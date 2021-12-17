@@ -9,11 +9,11 @@ using WebTruyen.Library.Entities.ApiModel;
 
 namespace WebTruyen.UI.Client.Service.GenreService
 {
-    public class GenreService : IGenreService
+    public class GenreApiClient : IGenreApiClient
     {
         private readonly HttpClient _http;
 
-        public GenreService(HttpClient http)
+        public GenreApiClient(HttpClient http)
         {
             _http = http;
         }

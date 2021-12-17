@@ -222,7 +222,7 @@
 
     [Inject] IJSRuntime JS { get; set; }
     [Inject] private IImageService _image { get; set; }
-    [Inject] private IUserService _userApi { get; set; }
+    [Inject] private IUserApiClient _userApi { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
 
     RegisterRequestClient _userRequest = new();

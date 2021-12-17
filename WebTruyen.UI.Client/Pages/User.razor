@@ -130,7 +130,7 @@
 @code {
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IJSRuntime JS { get; set; }
-    [Inject] IUserService _userApi { get; set; }
+    [Inject] IUserApiClient _userApi { get; set; }
     [Inject] IToastService toastService { get; set; }
     public UserAM _UserAM { get; set; } = null;
 

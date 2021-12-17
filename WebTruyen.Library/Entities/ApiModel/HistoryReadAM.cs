@@ -13,12 +13,15 @@ namespace WebTruyen.Library.Entities.ApiModel
             {
                 IdUser = IdUser,
                 IdComic = IdComic,
-                LastReadChapter = LastReadChapter
+                LastReadChapter = LastReadChapter,
+                TimeCreate = TimeCreate
             };
         }
         public Guid LastReadChapter { get; set; }
 
         public Guid IdComic { get; set; }
         public Guid IdUser { get; set; }
+        public DateTime TimeCreate { get; set; } = DateTime.Now;
+
     }
 }

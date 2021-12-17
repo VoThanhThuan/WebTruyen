@@ -14,7 +14,8 @@ namespace WebTruyen.Library.Entities
             {
                 IdUser = IdUser,
                 IdComic = IdComic,
-                LastReadChapter = LastReadChapter
+                LastReadChapter = LastReadChapter,
+                TimeCreate = TimeCreate
             };
         }
 
@@ -22,6 +23,8 @@ namespace WebTruyen.Library.Entities
 
         public Guid IdComic { get; set; }
         public Guid IdUser { get; set; }
+
+        public DateTime TimeCreate { get; set; } = DateTime.Now;
         public virtual Comic Comic { get; set; }
         public virtual User User { get; set; }
     }

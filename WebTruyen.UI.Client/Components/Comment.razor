@@ -133,8 +133,8 @@
 
 
     [Inject] ISessionStorageService _sessionStorage { get; set; }
-    [Inject] ICommentService _commentApi { get; set; }
-    [Inject] IUserService _userApi { get; set; }
+    [Inject] ICommentApiClient _commentApi { get; set; }
+    [Inject] IUserApiClient _userApi { get; set; }
     [Inject] IJSRuntime JS { get; set; }
 
     private Guid _idShowComment;

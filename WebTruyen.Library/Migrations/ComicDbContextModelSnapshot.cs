@@ -318,6 +318,11 @@ namespace WebTruyen.Library.Migrations
                     b.Property<Guid>("LastReadChapter")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("TimeCreate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
                     b.HasKey("IdUser", "IdComic");
 
                     b.HasIndex("IdComic");

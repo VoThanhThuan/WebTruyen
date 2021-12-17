@@ -124,7 +124,7 @@
 
     public LoginRequest LoginRequest { get; set; } = new();
 
-    [Inject] IUserService _userApi { get; set; }
+    [Inject] IUserApiClient _userApi { get; set; }
     [Inject] ISessionStorageService _sessionStorage { get; set; }
     [Inject] ILocalStorageService _localStorage { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
