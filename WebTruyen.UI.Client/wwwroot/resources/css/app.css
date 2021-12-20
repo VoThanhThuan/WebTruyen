@@ -92,13 +92,14 @@ ul {
     display: block;
     transition: top 0.3s;
     z-index: 9999;
-    margin: 0px 5px 0px 5px
+    margin: 0px 5px 0px 5px;
+    backdrop-filter: blur(20px);
+    background: var(--bg-transparent);
 }
 
 .search-bar {
     background: var(--bg);
     display: flex;
-    border: 1px solid var(--bg-medium);
     box-shadow: none;
     border-radius: 24px;
     z-index: 3;
@@ -109,7 +110,9 @@ ul {
     flex: 0 1 728px;
     position: relative;
 }
-
+.search-bar-ouline {
+    border: 1px solid var(--bg-medium);
+}
 .search-content {
     flex: 1;
     display: flex;
@@ -149,6 +152,19 @@ ul {
     height: 34px;
     font-size: 16px;
 }
+
+.notify-icon {
+    fill: var(--fg);
+}
+
+    .notify-icon:hover {
+        border: 1px solid var(--fg);
+        background-color: var(--bg);
+    }
+
+    .notify-icon svg {
+        fill: var(--fg);
+    }
 /* end nav */
 /* Card */
 
@@ -383,7 +399,7 @@ ul.list-chapters {
 .comment .btn-reply {
     display: flex;
     justify-content: flex-end;
-    color: blue;
+    color: var(--bs-primary);
     align-items: center;
     cursor: pointer;
 }

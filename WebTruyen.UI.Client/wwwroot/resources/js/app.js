@@ -94,6 +94,14 @@ function Click(parameters) {
     $(parameters).click();
 }
 
+function GetValue(parameters) {
+    var element = $(parameters);
+    if (element == null) {
+        return "";
+    }
+    return element.value;
+}
+
 var cropvalue;
 function Cropper(parameters) {
     let check = $(parameters);

@@ -54,17 +54,21 @@
 
 @code {
 
+    [Parameter] public string TextSearch { get; set; }
+    [Parameter] public string GenreSearch { get; set; }
+
+
     [Inject] IComicApiClient _comicApi { get; set; }
     [Inject] IChapterApiClient _chapterApi { get; set; }
 
     private List<(ComicAM comic, List<ChapterAM> chapters, bool isLoad)> _listComic = new List<(ComicAM comic, List<ChapterAM> chapters, bool)>();
 
     private int skip { get; set; } = 0;
-    private int take { get; set; } = 40;
+    private int take { get; set; } = 20;
 
     protected override Task OnInitializedAsync()
     {
-        for (var i = 0; i < 40; i++) {
+        for (var i = 0; i < take; i++) {
             (ComicAM comic, List<ChapterAM> chapters, bool isLoad) null_comic = (null, null, true);
             _listComic.Add(null_comic);
         }
@@ -72,21 +76,25 @@
 
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnParametersSetAsync()
     {
-        if (firstRender) {
-            var comics = await _comicApi.GetComics(skip, take);
-            for (var i = 0; i < comics.Count; i++) {
-                var chapters = await _chapterApi.GetChaptersInComic(comics[i].Id, skip: 0, take: 3);
-                _listComic[i] = (comics[i], chapters, false);
+        var comics = new ListComicAM();
+            if (!string.IsNullOrWhiteSpace(TextSearch)) {
+                comics = await _comicApi.SearchComics(TextSearch);
+            }else if (!string.IsNullOrWhiteSpace(GenreSearch)) {
+                comics = await _comicApi.GetComicsInGenre(int.Parse(GenreSearch), skip, take);
+            } else {                
+                comics = await _comicApi.GetComics(skip, take);
+            }
+            for (var i = 0; i < take; i++) {
+                (ComicAM comic, List<ChapterAM> chapters, bool isLoad) null_comic = (null, null, true);
+                _listComic[i] = null_comic;
+            }
+            for (var i = 0; i < comics.Total; i++) {
+                var chapters = await _chapterApi.GetChaptersInComic(comics.Comic[i].Id, skip: 0, take: 3);
+                _listComic[i] = (comics.Comic[i], chapters, false);
                 StateHasChanged();
             }
-            //foreach (var comic in comics) {
-            //    var chapters = await _chapterApi.GetChaptersInComic(comic.Id, skip:0, take:3);
-            //    _listComic.Add((comic, chapters));
-            //}
-        }
-
     }
 
     string CalculateRelativeTime(DateTime dataTime)

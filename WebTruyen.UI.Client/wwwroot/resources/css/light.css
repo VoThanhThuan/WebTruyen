@@ -1,5 +1,6 @@
 :root {
     --bg: #f0f2f5;
+    --bg-transparent: rgba(240, 242, 245, 0.9);
     --bg-content: #fff;
     --bg-hight: #f0f2f5;
     --bg-medium: #f0f5fc;

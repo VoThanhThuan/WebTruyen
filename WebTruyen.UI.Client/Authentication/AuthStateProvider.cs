@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.JSInterop;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -11,16 +12,19 @@ namespace WebTruyen.UI.Client.Authentication
     {
         private readonly HttpClient _httpClient;
         private readonly ILocalStorageService _localStorage;
+        private readonly IJSRuntime JS;
         private AuthenticationState _anonymous { get; set; } = new AuthenticationState(new ClaimsPrincipal());
-        public AuthStateProvider(HttpClient httpClient, ILocalStorageService localStorage)
+        public AuthStateProvider(HttpClient httpClient, ILocalStorageService localStorage, IJSRuntime js)
         {
             _httpClient = httpClient;
             _localStorage = localStorage;
+            JS = js;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var token = await _localStorage.GetItemAsync<string>("authToken");
+            //var token = await _localStorage.GetItemAsync<string>("authToken");
+            var token = await JS.InvokeAsync<string>("blazorExtensions.ReadCookie", "authToken");
             if (string.IsNullOrWhiteSpace(token)) {
                 return _anonymous;
             }

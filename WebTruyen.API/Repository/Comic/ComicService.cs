@@ -25,9 +25,45 @@ namespace WebTruyen.API.Repository.Comic
             _storageService = storageService;
             _chapterService = chapterService;
         }
-        public async Task<IEnumerable<ComicAM>> GetComics(int skip = 0, int take = 50)
+        public async Task<ListComicAM> GetComics(int skip = 0, int take = 50)
         {
-            return await _context.Comics.OrderByDescending(x => x.DateUpdate).Skip(skip).Take(take).Select(x => x.ToApiModel()).ToListAsync();
+            var comic = await _context.Comics.OrderByDescending(x => x.DateUpdate).Skip(skip).Take(take).Select(x => x.ToApiModel()).ToListAsync();
+            var comicPage = new ListComicAM() {
+                Skip = skip,
+                Take = take,
+                Total = comic.Count,
+                Comic = comic
+            };
+            return comicPage;
+        }
+
+        public async Task<ListComicAM> SearchComics(string contenSearch, int skip = 0, int take = 5)
+        {
+            var comics = await _context.Comics.Where(x => x.Name.ToLower().Contains(contenSearch))
+                .Skip(skip).Take(10)
+                .Select(x => x.ToApiModel()).ToListAsync();
+            var comicPage = new ListComicAM() {
+                Skip = skip,
+                Take = take,
+                Total = comics.Count,
+                Comic = comics
+            };
+            return comicPage;
+        }
+
+        public async Task<ListComicAM> GetComicsInGenre(int idGenre, int skip = 0, int take = 20)
+        {
+            var comics = await _context.ComicInGenres.Where(x => x.IdGenre == idGenre)
+                .Include(x => x.Comic)
+                .Skip(skip).Take(take)
+                .Select(x => x.Comic.ToApiModel()).ToListAsync();
+            var comicPage = new ListComicAM() {
+                Skip = skip,
+                Take = take,
+                Total = comics.Count,
+                Comic = comics
+            };
+            return comicPage;
         }
 
         public async Task<ComicAM> GetComic(Guid id)
@@ -44,6 +80,7 @@ namespace WebTruyen.API.Repository.Comic
             return comicView;
         }
 
+
         public async Task<ComicAM> GetComic(string nameAlias)
         {
             var comic = await _context.Comics.FirstOrDefaultAsync(x => x.NameAlias == nameAlias);
@@ -57,6 +94,7 @@ namespace WebTruyen.API.Repository.Comic
             var comicView = comic?.ToApiModel(genres);
             return comicView;
         }
+
 
         public async Task<bool> PutComic(Guid id, ComicRequest request)
         {
@@ -181,5 +219,7 @@ namespace WebTruyen.API.Repository.Comic
         {
             return await _storageService.DeleteFileAsync(fileName, security: true);
         }
+
+ 
     }
 }

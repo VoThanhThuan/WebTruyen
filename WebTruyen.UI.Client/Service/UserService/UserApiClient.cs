@@ -2,6 +2,7 @@
 using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -26,16 +27,18 @@ namespace WebTruyen.UI.Client.Service.UserService
         private readonly HttpClient _http;
         private readonly ISessionStorageService _sessionStorage;
         private readonly ILocalStorageService _localStorage;
+        private readonly IJSRuntime JS;
         private readonly IImageService _image;
         private readonly AuthenticationStateProvider _authStateProivder;
 
-        public UserApiClient(HttpClient http, ISessionStorageService sessionStorage, IImageService image, ILocalStorageService localStorage, AuthenticationStateProvider authStateProivder)
+        public UserApiClient(HttpClient http, ISessionStorageService sessionStorage, IImageService image, ILocalStorageService localStorage, IJSRuntime js, AuthenticationStateProvider authStateProivder)
         {
             _http = http;
             _sessionStorage = sessionStorage;
             _localStorage = localStorage;
             _image = image;
             _authStateProivder = authStateProivder;
+            JS = js;
         }
 
         private async Task GetSession()
@@ -53,8 +56,8 @@ namespace WebTruyen.UI.Client.Service.UserService
             if (response.IsSuccessStatusCode) {
                 var token = await response.Content.ReadAsStringAsync();
 
-                await _localStorage.SetItemAsync("authToken", token);
-
+                //await _localStorage.SetItemAsync("authToken", token);
+                await JS.InvokeAsync<string>("blazorExtensions.WriteCookie", "authToken", token, 1);
                 ((AuthStateProvider)_authStateProivder).NotifyUserAuthentication(token);
 
                 _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);

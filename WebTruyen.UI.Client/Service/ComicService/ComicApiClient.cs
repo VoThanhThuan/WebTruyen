@@ -31,11 +31,25 @@ namespace WebTruyen.UI.Client.Service.ComicService
             _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
         }
 
-        public async Task<List<ComicAM>> GetComics(int skip = 0, int take = 40)
+        public async Task<ListComicAM> GetComics(int skip = 0, int take = 20)
         {
-            var result = await _http.GetFromJsonAsync<List<ComicAM>>($"/api/Comics?skip={skip}&take={take}");
-            var comic = result?.Select(x => { x.Thumbnail = $"{_http.BaseAddress}{x.Thumbnail}"; return x; }).ToList();
-            return comic;
+            var result = await _http.GetFromJsonAsync<ListComicAM>($"/api/Comics?skip={skip}&take={take}");
+            result.Comic = result?.Comic.Select(x => { x.Thumbnail = $"{_http.BaseAddress}{x.Thumbnail}"; return x; }).ToList();
+            return result;
+        }
+
+        public async Task<ListComicAM> GetComicsInGenre(int idGenre, int skip = 0, int take = 20)
+        {
+            var result = await _http.GetFromJsonAsync<ListComicAM>($"api/Comics/GetComicsInGenre?idGenre={idGenre}&skip={skip}&take={take}");
+            result.Comic = result?.Comic.Select(x => { x.Thumbnail = $"{_http.BaseAddress}{x.Thumbnail}"; return x; }).ToList();
+            return result;
+        }
+
+        public async Task<ListComicAM> SearchComics(string contentSearch)
+        {
+            var result = await _http.GetFromJsonAsync<ListComicAM>($"api/Comics/SearchComics?contentSearch={contentSearch}");
+            result.Comic = result?.Comic.Select(x => { x.Thumbnail = $"{_http.BaseAddress}{x.Thumbnail}"; return x; }).ToList();
+            return result;
         }
 
         public async Task<ComicAM> GetComic(Guid id)
@@ -55,6 +69,7 @@ namespace WebTruyen.UI.Client.Service.ComicService
             }
             return result;
         }
+
 
     }
 }

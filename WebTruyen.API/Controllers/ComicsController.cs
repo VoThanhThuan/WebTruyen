@@ -47,9 +47,17 @@ namespace WebTruyen.API.Controllers
         // GET: api/Comics
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<ComicAM>>> GetComics(int skip = 0, int take = 10)
+        public async Task<ActionResult<ListComicAM>> GetComics(int skip = 0, int take = 10)
         {
             return Ok(await _comic.GetComics(skip, take));
+        }
+
+        // GET: api/Comics/SearchComics?contentSearch=
+        [HttpGet("SearchComics")]
+        [AllowAnonymous]
+        public async Task<ActionResult<ListComicAM>> SearchComics(string contentSearch)
+        {
+            return Ok(await _comic.SearchComics(contentSearch));
         }
 
         // GET: api/Comics/xxx-xxx-xxx
@@ -76,6 +84,20 @@ namespace WebTruyen.API.Controllers
 
             if (comic == null)
             {
+                return NotFound();
+            }
+
+            return comic;
+        }
+
+        // GET: api/Comics/GetComicsInGenre?idGenre=1&skip=0&take=20
+        [HttpGet("GetComicsInGenre")]
+        [AllowAnonymous]
+        public async Task<ActionResult<ListComicAM>> GetComicsInGenre(int idGenre, int skip = 0, int take = 20)
+        {
+            var comic = await _comic.GetComicsInGenre(idGenre, skip, take);
+
+            if (comic == null) {
                 return NotFound();
             }
 

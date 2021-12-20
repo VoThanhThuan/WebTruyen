@@ -1,0 +1,27 @@
+﻿@page "/refresh"
+@using Microsoft.AspNetCore.WebUtilities
+
+<div>Tải lại component</div>
+
+@code {
+    [Inject] NavigationManager _navigationManager { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        NavigateToComponent();
+
+        return base.OnInitializedAsync();
+    }
+
+    void NavigateToComponent()
+    {
+        var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
+
+        //if (uri.AbsolutePath.Contains("register"))
+
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("url", out var url)) {
+            _navigationManager.NavigateTo(url);
+        }
+
+    }
+}

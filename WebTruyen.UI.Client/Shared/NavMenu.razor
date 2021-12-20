@@ -1,13 +1,4 @@
-﻿@using Blazored.SessionStorage
-@using System.Security.Claims
-@using WebTruyen.Library.Entities.Request
-@using WebTruyen.Library.Entities.ApiModel;
-@using WebTruyen.UI.Client.Service.UserService
-@using Blazored.LocalStorage
-@using System.Threading
-@using System.Text.Json
-@using WebTruyen.UI.Client.Authentication
-@if (_element.OnDark) {
+﻿@if (_element.OnDark) {
     <link rel="stylesheet" href="./resources/css/dark.css">
 } else {
     <link rel="stylesheet" href="./resources/css/light.css">
@@ -17,22 +8,25 @@
 <nav id="navbar" class="navbar navbar-expand-sm bg-content border-bottom rounded-5">
     <div class="container-fluid">
         <div class="mb-2 mb-md-0">
-            <a class="navbar-brand" href="#">Navbar</a>
+            <a class="navbar-brand" href="/">Navbar</a>
         </div>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <form class="search-bar d-flex justify-content-center mb-2 mt-2 mb-md-0 mt-md-0">
-                <div class="search-bar mb-2 mb-md-0">
+            <div class="search-bar d-flex justify-content-center mb-2 mt-2 mb-md-0 mt-md-0" Model="_element" OnValidSubmit="SearchText">
+                <div class="search-bar search-bar-ouline mb-2 mb-md-0">
                     <div class="search-content">
                         <div class="search-icon">
                             <div class="icon">
                                 <span><svg focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg></span>
                             </div>
                         </div>
-                        <input type="text" class="border-0" placeholder="Search">
+                        @*                        <input id="search-comic" type="text" class="border-0" placeholder="Search" value="@_element.TextSearch" @oninput="OnInputChange">*@
+                        <EditForm Model="_element" OnSubmit="SearchText" style="width:100%">
+                            <InputText @bind-Value="_element.TextSearch" type="text" class="search-comic border-0" placeholder="Search" style="width:100%"></InputText>
+                        </EditForm>
                         <div class="search-icon">
 
                             <div class="icon" @onclick="OpenGenreMenu">
@@ -56,7 +50,7 @@
                                 <div class="card rounded-5 bg-content" name="info">
                                     <div class="p-2">
                                         <div class="rounded-5 p-2 border-bottom d-flex justify-content-between">
-                                            <a class="navbar-brand" href="#">Thông Tin</a>
+                                            <a class="navbar-brand" href="#">Thể loại</a>
                                             <div class="cursor-pointer" @onclick="()=>OnDarkMode(_element.OnDark)">
                                                 @if (_element.OnDark) {
                                                     <div>
@@ -72,22 +66,54 @@
                                             </div>
                                         </div>
 
-                                        <div class="d-flex flex-wrap justify-content-evenly">
-                                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
-                                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
-                                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
-                                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
-                                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
-                                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
-                                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
-                                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
-                                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="OpenGenreMenu">Thể Loại</div>
+                                        <div class="d-flex flex-wrap justify-content-between">
+                                            @foreach (var item in _element.Genres) {
+                                                <div class="btn btn-outline-primary rounded-pill m-1" @onclick="()=>{SearchGenre(item.Id);}">@item.Name</div>
+                                            }
+
                                         </div>
 
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    }
 
+                    @if (_element.ComicSearch.Count > 0) {
+                        <div class="pop-menu pop-menu-center">
+                            <div class="d-flex">
+                                <div class="card rounded-5 bg-content" name="info">
+                                    <div class="p-2">
+                                        <div class="rounded-5 p-2 border-bottom d-flex justify-content-between">
+                                            <a class="navbar-brand" href="#">Thông Tin</a>
+                                            <div style="color: aquamarine;">aaaaaaaaaaaa</div>
+                                        </div>
+
+                                        <div class="p-2">
+                                            <div class="row card-info p-2 mt-2">
+                                                <div class="col-auto m-auto p-0">
+                                                    <img class="rounded-5 img-64" src="truyen.jpg" alt="avatar">
+                                                </div>
+                                                <div class="col">
+                                                    <p class="fs-5 title title-1">Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt</p>
+                                                    <span class="title title-1">chapter 1: Pháp sư gọi bưởi Pháp sư gọi bưởi Pháp sư gọi bưởi</span>
+                                                </div>
+                                            </div>
+                                            <div class="row card-info p-2 mt-2">
+                                                <div class="col-auto m-auto p-0">
+                                                    <img class="rounded-5 img-64" src="truyen.jpg" alt="avatar">
+                                                </div>
+                                                <div class="col">
+                                                    <p class="fs-5 title title-1">Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt</p>
+                                                    <span class="title title-1">chapter 1: Pháp sư gọi bưởi Pháp sư gọi bưởi Pháp sư gọi bưởi</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                     }
@@ -95,10 +121,17 @@
 
                 </div>
 
-            </form>
+            </div>
             <div class="d-flex justify-content-end">
                 <AuthorizeView>
                     <Authorized>
+                        <div class="position-relative rounded-circle me-3 notify-icon" style="height: 32px; width: 32px;">
+                            <svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" focusable="false" class="style-scope yt-icon" style="pointer-events: none; display: block; width: 100%; height: 100%;"><g class="style-scope yt-icon"><path d="M10,20h4c0,1.1-0.9,2-2,2S10,21.1,10,20z M20,17.35V19H4v-1.65l2-1.88v-5.15c0-2.92,1.56-5.22,4-5.98V3.96 c0-1.42,1.49-2.5,2.99-1.76C13.64,2.52,14,3.23,14,3.96l0,0.39c2.44,0.75,4,3.06,4,5.98v5.15L20,17.35z M19,17.77l-2-1.88v-5.47 c0-2.47-1.19-4.36-3.13-5.1c-1.26-0.53-2.64-0.5-3.84,0.03C8.15,6.11,7,7.99,7,10.42v5.47l-2,1.88V18h14V17.77z" class="style-scope yt-icon"></path></g></svg>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                9+
+                                <span class="visually-hidden">unread messages</span>
+                            </span>
+                        </div>
                         <img class="avatar-sm rounded-circle cursor-pointer" src="@_element.User.Avatar" alt="avatar" @onclick="OpenUserMenu">
                     </Authorized>
                     <NotAuthorized>
@@ -106,11 +139,11 @@
                     </NotAuthorized>
 
                 </AuthorizeView>
-@*                @if (_element.IsSignIn) {
+                @*                @if (_element.IsSignIn) {
                     <img class="avatar-sm rounded-circle cursor-pointer" src="@_element.User.Avatar" alt="avatar" @onclick="OpenUserMenu">
-                } else {
+                    } else {
                     <a @onclick="SignIn" class="btn btn-primary" style="white-space: nowrap;">Đăng Nhập</a>
-                }*@
+                    }*@
                 @if (_element.pop_user) {
                     <div class="pop-menu pop-menu-right">
                         <div class="d-flex">
@@ -121,34 +154,34 @@
                                     </div>
                                     <AuthorizeView>
                                         <Authorized>
-                                           <div class="mt-2">
-                                            <div class="row card-info m-1 mb-3 p-2">
-                                                <div class="col-auto m-auto p-0">
-                                                    <img class="avatar-md rounded-circle" src="@_element.User.Avatar" alt="avatar">
+                                            <div class="mt-2">
+                                                <div class="row card-info m-1 mb-3 p-2">
+                                                    <div class="col-auto m-auto p-0">
+                                                        <img class="avatar-md rounded-circle" src="@_element.User.Avatar" alt="avatar">
+                                                    </div>
+                                                    <div class="col d-flex align-items-center">
+                                                        <div class="fs-2">@_element.User.Nickname</div>
+                                                    </div>
                                                 </div>
-                                                <div class="col d-flex align-items-center">
-                                                    <div class="fs-2">@_element.User.Nickname</div>
-                                                </div>
-                                            </div>
-                                            <div class="content mt-1 m-1">
+                                                <div class="content mt-1 m-1">
 
-                                                <div class="card-info p-2 mt-2">
-                                                    Truyện đang theo dõi
-                                                </div>
-                                                <a href="./user">
                                                     <div class="card-info p-2 mt-2">
-                                                        Cài đặt tài khoản
+                                                        Truyện đang theo dõi
                                                     </div>
-                                                </a>
+                                                    <a href="./user">
+                                                        <div class="card-info p-2 mt-2">
+                                                            Cài đặt tài khoản
+                                                        </div>
+                                                    </a>
 
-                                                <a href="#" class="text">
-                                                    <div class="card-info p-2 mt-2" @onclick="SignOut">
-                                                        Đăng Xuất
-                                                    </div>
-                                                </a>
+                                                    <a href="#" class="text">
+                                                        <div class="card-info p-2 mt-2" @onclick="SignOut">
+                                                            Đăng Xuất
+                                                        </div>
+                                                    </a>
+                                                </div>
+
                                             </div>
-
-                                        </div>
 
                                         </Authorized>
                                     </AuthorizeView>
@@ -207,179 +240,3 @@
     <div class="background-click" @onclick="ClosePopMenu"></div>
 }
 
-@code {
-
-    #region initialization
-
-
-    public Element _element { get; set; } = new();
-
-    public LoginRequest LoginRequest { get; set; } = new();
-
-    [Inject] IUserApiClient _userApi { get; set; }
-    [Inject] ISessionStorageService _sessionStorage { get; set; }
-    [Inject] ILocalStorageService _localStorage { get; set; }
-    [Inject] NavigationManager _navigationManager { get; set; }
-    [Inject] IJSRuntime JS { get; set; }
-    [Inject] AuthenticationStateProvider _authStateProivder { get; set; }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender) {
-            var context = await _authStateProivder.GetAuthenticationStateAsync();
-            //var id = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-
-            //foreach(var i in context.User.Claims) {
-            //    Console.WriteLine($"NavMenu >> User>> {i.Type} : {i.Value}");
-            //}
-            //var token = await _localStorage.GetItemAsStringAsync("Token");
-            var token = await JS.InvokeAsync<string>("blazorExtensions.ReadCookie", "Token");
-            Console.WriteLine($"NavMenu >> OnAfterRenderAsync >> Token: {token}");
-            var isdark = await _localStorage.GetItemAsStringAsync("dark");
-            OnDarkMode(isdark != "1");
-            if (!string.IsNullOrEmpty(token)) {
-                await GetUserByToken(token);
-                StateHasChanged();
-            }
-            FuncCode.SignOut = () => {
-                _userApi.Logout();
-                JS.InvokeVoidAsync("blazorExtensions.DeleteCookie", "Token");
-                _sessionStorage.ClearAsync();
-                //_localStorage.ClearAsync();
-                _element.IsSignIn = false;
-                _element.User = new UserAM();
-                _navigationManager.NavigateTo("/");
-                StateHasChanged();
-            };
-        }
-    }
-
-    #endregion
-
-
-
-    #region Xử lý giao diện
-    void OnDarkMode(bool isDark)
-    {
-        _element.OnDark = !isDark;
-        _localStorage.SetItemAsStringAsync("dark", _element.OnDark ? "1" : "0");
-        StateHasChanged();
-    }
-
-    void OpenGenreMenu()
-    {
-        _element.pop_grene = !_element.pop_grene;
-        BackgroundClick();
-        StateHasChanged();
-    }
-    void OpenUserMenu()
-    {
-        _element.pop_user = !_element.pop_user;
-        BackgroundClick();
-        StateHasChanged();
-    }
-
-    void BackgroundClick()
-    {
-        if (!_element.pop_grene && !_element.pop_user) {
-            _element.pop_background_click = false;
-        } else {
-            _element.pop_background_click = true;
-        }
-    }
-
-    void ClosePopMenu()
-    {
-        _element.pop_background_click = false;
-        _element.pop_grene = false;
-        _element.pop_user = false;
-    }
-
-    #endregion
-
-    #region Xử lý dữ liệu
-
-    void SignIn()
-    {
-        var uri = _navigationManager.Uri;
-        var baseUri = _navigationManager.BaseUri;
-        var returnUrl = uri.Replace(baseUri, "");
-        _navigationManager.NavigateTo($"/login?ReturnUrl=/{returnUrl}");
-    }
-
-    async Task SignOut()
-    {
-        await _userApi.Logout();
-        await JS.InvokeVoidAsync("blazorExtensions.DeleteCookie", "Token");
-        await _sessionStorage.ClearAsync();
-        //_localStorage.ClearAsync();
-        _element.IsSignIn = false;
-        _element.User = new UserAM();
-        StateHasChanged();
-    }
-
-    #endregion
-
-    #region Giao tiếp server
-
-    async Task SignIn(EditContext editContext)
-    {
-        var token = await _userApi.Authenticate(LoginRequest);
-        if (string.IsNullOrEmpty(token)) {
-            Console.WriteLine($">>> [❌] Đăng thập thất bại ");
-        } else {
-            Console.WriteLine($">>> [⭕] Đăng Nhập Thành Công");
-
-            await _localStorage.SetItemAsStringAsync("Token", token);
-            await _sessionStorage.SetItemAsStringAsync("Token", token);
-            //await GetUserByToken(token);
-            StateHasChanged();
-
-            _navigationManager.NavigateTo(_navigationManager.Uri, forceLoad: true);
-        }
-    }
-
-    async Task GetUserByToken(string token)
-    {
-        var user = await _userApi.GetUserByAccessTokenAsync(token);
-        if (user is not null) {
-            Console.WriteLine($"NavMenu > GetUserByToken > user.Id: {user.Id}");
-            Console.WriteLine($"NavMenu > GetUserByToken > user.Avatar: {user.Avatar}");
-            _element.IsSignIn = true;
-            _element.User = user;
-
-            var jsonUser = JsonSerializer.Serialize(user);
-            Console.WriteLine($"NavMenu > GetUserByToken > jsonUser: {jsonUser}");
-
-            //await _localStorage.SetItemAsStringAsync("Token", token);
-            await JS.InvokeAsync<string>("blazorExtensions.WriteCookie", "Token", token, 1);
-            await _sessionStorage.SetItemAsStringAsync("Token", token);
-            await _sessionStorage.SetItemAsStringAsync("user_webtruyen", jsonUser);
-        } else {
-            await JS.InvokeVoidAsync("blazorExtensions.DeleteCookie", "Token");
-            await _localStorage.RemoveItemAsync("Token");
-            ((AuthStateProvider)_authStateProivder).NotifyUserLogout();
-
-        }
-        StateHasChanged();
-    }
-
-    #endregion
-
-
-
-    public class Element
-    {
-        public bool OnDark { get; set; } = false;
-
-        public bool IsSignIn { get; set; } = false;
-
-        public bool pop_grene { get; set; } = false;
-        public bool pop_user { get; set; } = false;
-        public bool pop_background_click { get; set; } = false;
-
-        public UserAM User { get; set; } = new UserAM();
-
-    }
-
-}
