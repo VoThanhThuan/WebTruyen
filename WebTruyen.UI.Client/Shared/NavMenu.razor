@@ -1,4 +1,4 @@
-﻿@if (_element.OnDark) {
+﻿ @if (_element.OnDark) {
     <link rel="stylesheet" href="./resources/css/dark.css">
 } else {
     <link rel="stylesheet" href="./resources/css/light.css">
@@ -44,80 +44,6 @@
 
                     </div>
 
-                    @if (_element.pop_grene) {
-                        <div class="pop-menu pop-menu-center">
-                            <div class="d-flex">
-                                <div class="card rounded-5 bg-content" name="info">
-                                    <div class="p-2">
-                                        <div class="rounded-5 p-2 border-bottom d-flex justify-content-between">
-                                            <a class="navbar-brand" href="#">Thể loại</a>
-                                            <div class="cursor-pointer" @onclick="()=>OnDarkMode(_element.OnDark)">
-                                                @if (_element.OnDark) {
-                                                    <div>
-                                                        <i class="fad fa-moon"></i> Dark Mode
-                                                    </div>
-
-                                                } else {
-                                                    <div>
-                                                        <i class="fad fa-sun"></i> Light Mode
-                                                    </div>
-
-                                                }
-                                            </div>
-                                        </div>
-
-                                        <div class="d-flex flex-wrap justify-content-between">
-                                            @foreach (var item in _element.Genres) {
-                                                <div class="btn btn-outline-primary rounded-pill m-1" @onclick="()=>{SearchGenre(item.Id);}">@item.Name</div>
-                                            }
-
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    }
-
-                    @if (_element.ComicSearch.Count > 0) {
-                        <div class="pop-menu pop-menu-center">
-                            <div class="d-flex">
-                                <div class="card rounded-5 bg-content" name="info">
-                                    <div class="p-2">
-                                        <div class="rounded-5 p-2 border-bottom d-flex justify-content-between">
-                                            <a class="navbar-brand" href="#">Thông Tin</a>
-                                            <div style="color: aquamarine;">aaaaaaaaaaaa</div>
-                                        </div>
-
-                                        <div class="p-2">
-                                            <div class="row card-info p-2 mt-2">
-                                                <div class="col-auto m-auto p-0">
-                                                    <img class="rounded-5 img-64" src="truyen.jpg" alt="avatar">
-                                                </div>
-                                                <div class="col">
-                                                    <p class="fs-5 title title-1">Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt</p>
-                                                    <span class="title title-1">chapter 1: Pháp sư gọi bưởi Pháp sư gọi bưởi Pháp sư gọi bưởi</span>
-                                                </div>
-                                            </div>
-                                            <div class="row card-info p-2 mt-2">
-                                                <div class="col-auto m-auto p-0">
-                                                    <img class="rounded-5 img-64" src="truyen.jpg" alt="avatar">
-                                                </div>
-                                                <div class="col">
-                                                    <p class="fs-5 title title-1">Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt</p>
-                                                    <span class="title title-1">chapter 1: Pháp sư gọi bưởi Pháp sư gọi bưởi Pháp sư gọi bưởi</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    }
-
 
                 </div>
 
@@ -125,13 +51,7 @@
             <div class="d-flex justify-content-end">
                 <AuthorizeView>
                     <Authorized>
-                        <div class="position-relative rounded-circle me-3 notify-icon" style="height: 32px; width: 32px;">
-                            <svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" focusable="false" class="style-scope yt-icon" style="pointer-events: none; display: block; width: 100%; height: 100%;"><g class="style-scope yt-icon"><path d="M10,20h4c0,1.1-0.9,2-2,2S10,21.1,10,20z M20,17.35V19H4v-1.65l2-1.88v-5.15c0-2.92,1.56-5.22,4-5.98V3.96 c0-1.42,1.49-2.5,2.99-1.76C13.64,2.52,14,3.23,14,3.96l0,0.39c2.44,0.75,4,3.06,4,5.98v5.15L20,17.35z M19,17.77l-2-1.88v-5.47 c0-2.47-1.19-4.36-3.13-5.1c-1.26-0.53-2.64-0.5-3.84,0.03C8.15,6.11,7,7.99,7,10.42v5.47l-2,1.88V18h14V17.77z" class="style-scope yt-icon"></path></g></svg>
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                9+
-                                <span class="visually-hidden">unread messages</span>
-                            </span>
-                        </div>
+                        <Announcements></Announcements>
                         <img class="avatar-sm rounded-circle cursor-pointer" src="@_element.User.Avatar" alt="avatar" @onclick="OpenUserMenu">
                     </Authorized>
                     <NotAuthorized>
@@ -144,97 +64,209 @@
                     } else {
                     <a @onclick="SignIn" class="btn btn-primary" style="white-space: nowrap;">Đăng Nhập</a>
                     }*@
-                @if (_element.pop_user) {
-                    <div class="pop-menu pop-menu-right">
-                        <div class="d-flex">
-                            <div class="card rounded-5 bg-content" name="info">
-                                <div class="p-2">
-                                    <div class="rounded-5 p-2 border-bottom">
-                                        <a class="navbar-brand" href="#">Thông Tin</a>
-                                    </div>
-                                    <AuthorizeView>
-                                        <Authorized>
-                                            <div class="mt-2">
-                                                <div class="row card-info m-1 mb-3 p-2">
-                                                    <div class="col-auto m-auto p-0">
-                                                        <img class="avatar-md rounded-circle" src="@_element.User.Avatar" alt="avatar">
-                                                    </div>
-                                                    <div class="col d-flex align-items-center">
-                                                        <div class="fs-2">@_element.User.Nickname</div>
-                                                    </div>
-                                                </div>
-                                                <div class="content mt-1 m-1">
-
-                                                    <div class="card-info p-2 mt-2">
-                                                        Truyện đang theo dõi
-                                                    </div>
-                                                    <a href="./user">
-                                                        <div class="card-info p-2 mt-2">
-                                                            Cài đặt tài khoản
-                                                        </div>
-                                                    </a>
-
-                                                    <a href="#" class="text">
-                                                        <div class="card-info p-2 mt-2" @onclick="SignOut">
-                                                            Đăng Xuất
-                                                        </div>
-                                                    </a>
-                                                </div>
-
-                                            </div>
-
-                                        </Authorized>
-                                    </AuthorizeView>
-                                    @if (_element.IsSignIn) {
-
-                                    } else {
-                                        <!--
-                                                                                    <div class="mt-2">
-                                            <div class="content mt-1 m-1">
-                                                <div class="card-info p-2 mt-2">
-                                                    <div class="form-check form-switch">
-                                                        Dảk Mode<input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" @onclick="()=>OnDarkMode(_element.OnDark)">
-                                                    </div>
-                                                </div>
-                                                <EditForm Model="LoginRequest" OnValidSubmit="SignIn">
-                                                    <div class="card-info p-2 mt-2">
-                                                        <div class="form-floating">
-                                                            <InputText @bind-Value="LoginRequest.Username" class="form-control" id="floatingInput" placeholder="Username"></InputText>
-                                                            <label for="floatingInput">Username</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="card-info p-2 mt-2">
-                                                        <div class="form-floating">
-                                                            <InputText @bind-Value="LoginRequest.Password" class="form-control" id="floatingPassword" placeholder="Password"></InputText>
-                                                            <label for="floatingPassword">Password</label>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="card-info p-2 mt-2">
-                                                        <input type="submit" class="btn btn-primary me-5" value="Đăng Nhập" />
-                                                        <button class="btn btn-outline-primary">Đăng Ký</button>
-                                                    </div>
-                                                </EditForm>
-
-                                            </div>
-
-                                        </div>
-
-                                        -->
-                                    }
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                }
 
             </div>
         </div>
 
     </div>
 </nav>
+
+@if (_element.pop_grene) {
+    <div class="pop-menu pop-menu-center">
+        <div class="d-flex">
+            <div class="card rounded-5 bg-content" name="info">
+                <div class="p-2">
+                    <div class="rounded-5 p-2 border-bottom d-flex justify-content-between">
+                        <a class="navbar-brand" href="#">Thể loại</a>
+                        <div class="cursor-pointer" @onclick="()=>OnDarkMode(_element.OnDark)">
+                            @if (_element.OnDark) {
+                                <div>
+                                    <i class="fad fa-moon"></i> Dark Mode
+                                </div>
+
+                            } else {
+                                <div>
+                                    <i class="fad fa-sun"></i> Light Mode
+                                </div>
+
+                            }
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap justify-content-between">
+                        @foreach (var item in _element.Genres) {
+                            <div class="btn btn-outline-primary rounded-pill m-1" @onclick="()=>{SearchGenre(item.Id);}">@item.Name</div>
+                        }
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (_element.ComicSearch.Count > 0) {
+    <div class="pop-menu pop-menu-center">
+        <div class="d-flex">
+            <div class="card rounded-5 bg-content" name="info">
+                <div class="p-2">
+                    <div class="rounded-5 p-2 border-bottom d-flex justify-content-between">
+                        <a class="navbar-brand" href="#">Thông Tin</a>
+                        <div style="color: aquamarine;">aaaaaaaaaaaa</div>
+                    </div>
+
+                    <div class="p-2">
+                        <div class="row card-info p-2 mt-2">
+                            <div class="col-auto m-auto p-0">
+                                <img class="rounded-5 img-64" src="truyen.jpg" alt="avatar">
+                            </div>
+                            <div class="col">
+                                <p class="fs-5 title title-1">Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt</p>
+                                <span class="title title-1">chapter 1: Pháp sư gọi bưởi Pháp sư gọi bưởi Pháp sư gọi bưởi</span>
+                            </div>
+                        </div>
+                        <div class="row card-info p-2 mt-2">
+                            <div class="col-auto m-auto p-0">
+                                <img class="rounded-5 img-64" src="truyen.jpg" alt="avatar">
+                            </div>
+                            <div class="col">
+                                <p class="fs-5 title title-1">Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt</p>
+                                <span class="title title-1">chapter 1: Pháp sư gọi bưởi Pháp sư gọi bưởi Pháp sư gọi bưởi</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (_element.pop_announcement) {
+    <div class="pop-menu pop-menu-right">
+        <div class="d-flex">
+            <div class="card rounded-5 bg-content" name="info">
+                <div class="p-2">
+                    <div class="rounded-5 p-2 border-bottom d-flex justify-content-between">
+                        <a class="navbar-brand" href="#">Thông Tin</a>
+                        <div style="color: aquamarine;">aaaaaaaaaaaa</div>
+                    </div>
+
+                    <div class="p-2">
+                        <div class="row card-info p-2 mt-2">
+                            <div class="col-auto m-auto p-0">
+                                <img class="rounded-5 img-64" src="truyen.jpg" alt="avatar">
+                            </div>
+                            <div class="col">
+                                <p class="fs-5 title title-1">Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt</p>
+                                <span class="title title-1">chapter 1: Pháp sư gọi bưởi Pháp sư gọi bưởi Pháp sư gọi bưởi</span>
+                            </div>
+                        </div>
+                        <div class="row card-info p-2 mt-2">
+                            <div class="col-auto m-auto p-0">
+                                <img class="rounded-5 img-64" src="truyen.jpg" alt="avatar">
+                            </div>
+                            <div class="col">
+                                <p class="fs-5 title title-1">Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt</p>
+                                <span class="title title-1">chapter 1: Pháp sư gọi bưởi Pháp sư gọi bưởi Pháp sư gọi bưởi</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (_element.pop_user) {
+    <div class="pop-menu pop-menu-right">
+        <div class="d-flex">
+            <div class="card rounded-5 bg-content" name="info">
+                <div class="p-2">
+                    <div class="rounded-5 p-2 border-bottom">
+                        <a class="navbar-brand" href="#">Thông Tin</a>
+                    </div>
+                    <AuthorizeView>
+                        <Authorized>
+                            <div class="mt-2">
+                                <div class="row card-info m-1 mb-3 p-2">
+                                    <div class="col-auto m-auto p-0">
+                                        <img class="avatar-md rounded-circle" src="@_element.User.Avatar" alt="avatar">
+                                    </div>
+                                    <div class="col d-flex align-items-center">
+                                        <div class="fs-2">@_element.User.Nickname</div>
+                                    </div>
+                                </div>
+                                <div class="content mt-1 m-1">
+
+                                    <div class="card-info p-2 mt-2">
+                                        Truyện đang theo dõi
+                                    </div>
+                                    <a href="./user">
+                                        <div class="card-info p-2 mt-2">
+                                            Cài đặt tài khoản
+                                        </div>
+                                    </a>
+
+                                    <a href="#" class="text">
+                                        <div class="card-info p-2 mt-2" @onclick="SignOut">
+                                            Đăng Xuất
+                                        </div>
+                                    </a>
+                                </div>
+
+                            </div>
+
+                        </Authorized>
+                    </AuthorizeView>
+                    @if (_element.IsSignIn) {
+
+                    } else {
+                        <!--
+                                                                    <div class="mt-2">
+                            <div class="content mt-1 m-1">
+                                <div class="card-info p-2 mt-2">
+                                    <div class="form-check form-switch">
+                                        Dảk Mode<input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" @onclick="()=>OnDarkMode(_element.OnDark)">
+                                    </div>
+                                </div>
+                                <EditForm Model="LoginRequest" OnValidSubmit="SignIn">
+                                    <div class="card-info p-2 mt-2">
+                                        <div class="form-floating">
+                                            <InputText @bind-Value="LoginRequest.Username" class="form-control" id="floatingInput" placeholder="Username"></InputText>
+                                            <label for="floatingInput">Username</label>
+                                        </div>
+                                    </div>
+                                    <div class="card-info p-2 mt-2">
+                                        <div class="form-floating">
+                                            <InputText @bind-Value="LoginRequest.Password" class="form-control" id="floatingPassword" placeholder="Password"></InputText>
+                                            <label for="floatingPassword">Password</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-info p-2 mt-2">
+                                        <input type="submit" class="btn btn-primary me-5" value="Đăng Nhập" />
+                                        <button class="btn btn-outline-primary">Đăng Ký</button>
+                                    </div>
+                                </EditForm>
+
+                            </div>
+
+                        </div>
+
+                        -->
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 
 @if (_element.pop_background_click) {
     <div class="background-click" @onclick="ClosePopMenu"></div>

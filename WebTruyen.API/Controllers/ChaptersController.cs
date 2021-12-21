@@ -7,12 +7,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using WebTruyen.API.Repository.Chapter;
-using WebTruyen.API.Repository.Page;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
 using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.Library.Entities.Request;
+using WebTruyen.API.Repository.ChapterDI;
+using WebTruyen.API.Repository.PageDI;
 
 namespace WebTruyen.API.Controllers
 {

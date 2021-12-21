@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebTruyen.API.Repository.ComicInGenre;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.ApiModel;
+using WebTruyen.API.Repository.ComicInGenreDI;
 
 namespace WebTruyen.API.Controllers
 {

@@ -13,10 +13,13 @@ namespace WebTruyen.Library.Entities.ApiModel
             {
                 IdUser = IdUser,
                 IsRead = IsRead,
-                IdChapter = IdChapter
+                IdChapter = IdChapter ,
+                TimeCreate = TimeCreate
             };
         }
         public bool IsRead { get; set; } = false;
+        public DateTime TimeCreate { get; set; } = DateTime.Now;
+
         public Guid IdUser { get; set; }
         public Guid IdChapter { get; set; }
 

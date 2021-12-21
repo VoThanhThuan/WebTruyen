@@ -130,6 +130,9 @@ namespace WebTruyen.Library.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<DateTime>("TimeCreate")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("IdChapter", "IdUser");
 
                     b.HasIndex("ComicId");

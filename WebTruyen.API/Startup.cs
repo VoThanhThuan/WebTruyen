@@ -12,24 +12,24 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using WebTruyen.API.Repository.Announcement;
-using WebTruyen.API.Repository.Bookmark;
-using WebTruyen.API.Repository.Chapter;
-using WebTruyen.API.Repository.Comic;
-using WebTruyen.API.Repository.ComicInGenre;
-using WebTruyen.API.Repository.Comment;
-using WebTruyen.API.Repository.Genre;
-using WebTruyen.API.Repository.HistoryRead;
-using WebTruyen.API.Repository.Page;
-using WebTruyen.API.Repository.Report;
-using WebTruyen.API.Repository.Role;
-using WebTruyen.API.Repository.TranslationOfUser;
-using WebTruyen.API.Repository.User;
+using WebTruyen.API.Repository.AnnouncementDI;
 using WebTruyen.API.Service;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
 using Microsoft.IdentityModel.Tokens;
 using SixLabors.ImageSharp.Web.DependencyInjection;
+using WebTruyen.API.Repository.BookmarkDI;
+using WebTruyen.API.Repository.ComicDI;
+using WebTruyen.API.Repository.ComicInGenreDI;
+using WebTruyen.API.Repository.CommentDI;
+using WebTruyen.API.Repository.ChapterDI;
+using WebTruyen.API.Repository.GenreDI;
+using WebTruyen.API.Repository.HistoryReadDI;
+using WebTruyen.API.Repository.PageDI;
+using WebTruyen.API.Repository.ReportDI;
+using WebTruyen.API.Repository.RoleDI;
+using WebTruyen.API.Repository.TranslationOfUserDI;
+using WebTruyen.API.Repository.UserDI;
 
 namespace WebTruyen.API
 {

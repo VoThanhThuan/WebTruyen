@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -82,7 +81,6 @@ namespace WebTruyen.UI.Client.Service.UserService
             if (response.StatusCode == HttpStatusCode.OK) {
                 var user = await response.Content.ReadFromJsonAsync<UserAM>();
                 user.Avatar = $"{_http.BaseAddress}{user.Avatar}";
-                Console.WriteLine($"UserService > GetUserByAccessTokenAsync > userId: {user.Id}");
                 return user;
             }
 
@@ -91,7 +89,7 @@ namespace WebTruyen.UI.Client.Service.UserService
 
         public async Task<List<UserAM>> GetUsers()
         {
-            await GetSession();
+            //await GetSession();
             var result = await _http.GetFromJsonAsync<List<UserAM>>($"/api/GetCommentInComic?");
             var users = result?.Select(x => { x.Avatar = $"{_http.BaseAddress}{x.Avatar}"; return x; }).ToList();
             return users;
@@ -99,18 +97,17 @@ namespace WebTruyen.UI.Client.Service.UserService
 
         public async Task<UserAM> GetUser(Guid id)
         {
-            await GetSession();
+            //await GetSession();
             var result = await _http.GetFromJsonAsync<UserAM>($"/api/Users/{id}");
             if (result == null) return null;
             result.Avatar = $"{_http.BaseAddress}{result.Avatar}";
-            Console.WriteLine($"UserService > GetUser > result.Id: {result.Id}");
             return result;
 
         }
 
         public async Task<(int apiResult, string mess, UserAM user)> Register(RegisterRequestClient request)
         {
-            await GetSession();
+           // await GetSession();
             var requestContent = new MultipartFormDataContent();
 
             if (!string.IsNullOrEmpty(request.Avatar.data)) {
@@ -156,7 +153,7 @@ namespace WebTruyen.UI.Client.Service.UserService
 
         public async Task<(int statusCode, string mess)> UpdateInfoUser(Guid idUser, InfoUser info)
         {
-            await GetSession();
+            //await GetSession();
             //var requestContent = new MultipartFormDataContent
             //{
             //    {new StringContent(request.Nickname), "Nickname"},
@@ -181,7 +178,7 @@ namespace WebTruyen.UI.Client.Service.UserService
 
         public async Task<(int statusCode, string mess)> UpdateAvatar(Guid idUser, IBrowserFile avatar)
         {
-            await GetSession();
+            //await GetSession();
             var requestContent = new MultipartFormDataContent();
 
             if (avatar != null) {
@@ -203,7 +200,7 @@ namespace WebTruyen.UI.Client.Service.UserService
 
         public async Task<(int statusCode, string mess)> UpdatePassword(Guid idUser, ChangePasswordRequest password)
         {
-            await GetSession();
+            //await GetSession();
 
             var json = JsonSerializer.Serialize(password);
             var response = await _http.PutAsJsonAsync($"/api/Users/UpdatePassword/{idUser}", json);

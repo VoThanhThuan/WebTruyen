@@ -131,7 +131,7 @@
                             <ValidationMessage For="() => _userRequest.Dob" />
                         </div>
                     </div>
-                    <div class="form-group">
+@*                    <div class="form-group">
                         <div class="input-group input-group-alternative mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
@@ -139,7 +139,7 @@
                             <InputText type="text" class="form-control" placeholder="Số điện thoại" @bind-Value="_userRequest.PhoneNumber" />
                             <ValidationMessage For="() => _userRequest.PhoneNumber" />
                         </div>
-                    </div>
+                    </div>*@
                     <div class="form-group">
                         <div class="input-group input-group-alternative mb-3">
                             <div class="input-group-prepend">
@@ -149,7 +149,7 @@
                             <ValidationMessage For="() => _userRequest.Email" />
                         </div>
                     </div>
-                    <div class="form-group">
+@*                    <div class="form-group">
                         <div class="input-group input-group-alternative mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
@@ -166,7 +166,7 @@
                             <InputText type="text" class="form-control" placeholder="Trang web hoặc fanpage" @bind-Value="_userRequest.Fanpage" />
                             <ValidationMessage For="() => _userRequest.Fanpage" />
                         </div>
-                    </div>
+                    </div>*@
 
                     <div class="form-floating mb-3">
                         <select class="form-select" id="floatingSelect" aria-label="Floating label select example" @onchange="(e) => { var v = e.Value.ToString();_userRequest.sex = string.IsNullOrEmpty(v) || bool.Parse(v); }">

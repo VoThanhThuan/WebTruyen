@@ -11,10 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using WebTruyen.API.Repository.Page;
 using WebTruyen.API.Service;
 using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.Library.Entities.Request;
+using WebTruyen.API.Repository.PageDI;
 
 namespace WebTruyen.API.Controllers
 {

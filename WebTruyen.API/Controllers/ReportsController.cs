@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebTruyen.API.Repository.Report;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
 using WebTruyen.Library.Entities.ApiModel;
+using WebTruyen.API.Repository.ReportDI;
 
 namespace WebTruyen.API.Controllers
 {

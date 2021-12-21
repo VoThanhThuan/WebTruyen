@@ -14,12 +14,13 @@ namespace WebTruyen.Library.Entities
             {
                 IsRead = IsRead,
                 IdUser = IdUser,
-                IdChapter = IdChapter
+                IdChapter = IdChapter,
+                TimeCreate = TimeCreate
             };
         }
 
         public bool IsRead { get; set; } = false;
-
+        public DateTime TimeCreate { get; set; } = DateTime.Now;
         public Guid IdUser { get; set; }
         public Guid IdChapter { get; set; }
         public virtual User User { get; set; }

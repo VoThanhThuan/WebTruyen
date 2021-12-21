@@ -36,12 +36,12 @@ namespace WebTruyen.UI.Admin.Service.ComicService
             _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
         }
 
-        public async Task<IEnumerable<ComicAM>> GetComics()
+        public async Task<List<ComicAM>> GetComics()
         {
             await GetSession();
 
-            var result = await _http.GetFromJsonAsync<List<ComicAM>>("/api/Comics");
-            var comic = result?.Select(x => { x.Thumbnail = $"{_http.BaseAddress}{x.Thumbnail}"; return x; }).ToList();
+            var result = await _http.GetFromJsonAsync<ListComicAM>("/api/Comics");
+            var comic = result.Comic?.Select(x => { x.Thumbnail = $"{_http.BaseAddress}{x.Thumbnail}"; return x; }).ToList();
             return comic;
         }
 
@@ -143,5 +143,7 @@ namespace WebTruyen.UI.Admin.Service.ComicService
             var response = await _http.DeleteAsync($"/api/Comics/{id}");
             return (int)response.StatusCode;
         }
+
+
     }
 }

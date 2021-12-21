@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebTruyen.API.Repository.Comic;
-using WebTruyen.API.Repository.ComicInGenre;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
 using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ApiModel;
+using WebTruyen.API.Repository.ComicDI;
+using WebTruyen.API.Repository.ComicInGenreDI;
 
 namespace WebTruyen.API.Controllers
 {
@@ -49,7 +49,8 @@ namespace WebTruyen.API.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<ListComicAM>> GetComics(int skip = 0, int take = 10)
         {
-            return Ok(await _comic.GetComics(skip, take));
+            var comic = await _comic.GetComics(skip, take);
+            return Ok(comic);
         }
 
         // GET: api/Comics/SearchComics?contentSearch=

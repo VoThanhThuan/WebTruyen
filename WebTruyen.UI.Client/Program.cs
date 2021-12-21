@@ -23,6 +23,7 @@ using WebTruyen.UI.Client.Authentication;
 using WebTruyen.UI.Client.Contant;
 using WebTruyen.UI.Client.Service.BookmarkService;
 using WebTruyen.UI.Client.Service.HistoryService;
+using WebTruyen.UI.Client.Service.AnnouncementService;
 
 namespace WebTruyen.UI.Client
 {
@@ -55,6 +56,7 @@ namespace WebTruyen.UI.Client
             builder.Services.AddTransient<ICommentApiClient, CommentApiClient>();
             builder.Services.AddTransient<IBookmarkApiClient, BookmarkApiClient>();
             builder.Services.AddTransient<IHistoryReadApiClient, HistoryReadApiClient>();
+            builder.Services.AddTransient<IAnnouncementApiClient, AnnouncementApiClient>();
 
             builder.Services.AddBlazoredToast();
 

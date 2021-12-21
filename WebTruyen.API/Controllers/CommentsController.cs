@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebTruyen.API.Repository.Comment;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ApiModel;
+using WebTruyen.API.Repository.CommentDI;
 
 namespace WebTruyen.API.Controllers
 {

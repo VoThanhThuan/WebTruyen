@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebTruyen.API.Repository.Bookmark;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.ApiModel;
+using WebTruyen.API.Repository.BookmarkDI;
 
 namespace WebTruyen.API.Controllers
 {

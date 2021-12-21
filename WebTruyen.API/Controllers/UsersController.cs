@@ -10,12 +10,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using WebTruyen.API.Repository.User;
 using WebTruyen.API.Service;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
 using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ApiModel;
+using WebTruyen.API.Repository.UserDI;
 
 namespace WebTruyen.API.Controllers
 {
@@ -158,9 +158,8 @@ namespace WebTruyen.API.Controllers
             return CreatedAtAction("GetUser", new { id = result.user.Id }, user);
         }
 
-        // PUT: api/UpdateInfoUser/5
+        // PUT: api/Users/UpdateInfoUser/5
         [HttpPut("UpdateInfoUser/{idUser}")]
-        [Consumes("multipart/form-data")]
         public async Task<IActionResult> UpdateInfoUser(Guid idUser, [FromBody] InfoUser user)
         {
             var tokenUserId = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.NameIdentifier)?.Value;

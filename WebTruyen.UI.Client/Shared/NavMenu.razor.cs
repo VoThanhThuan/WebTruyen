@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
 using WebTruyen.Library.Entities.ApiModel;
@@ -32,6 +34,8 @@ namespace WebTruyen.UI.Client.Shared
         [Inject] NavigationManager _navigationManager { get; set; }
         [Inject] IJSRuntime JS { get; set; }
         [Inject] AuthenticationStateProvider _authStateProivder { get; set; }
+
+        [Inject] HttpClient _http { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -179,9 +183,10 @@ namespace WebTruyen.UI.Client.Shared
                 _element.IsSignIn = true;
                 _element.User = user;
 
-                var jsonUser = JsonSerializer.Serialize(user);
-                Console.WriteLine($"NavMenu > GetUserByToken > jsonUser: {jsonUser}");
+                _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
+                var jsonUser = JsonSerializer.Serialize(user);
+                
                 //await _localStorage.SetItemAsStringAsync("Token", token);
                 await JS.InvokeAsync<string>("blazorExtensions.WriteCookie", "Token", token, 1);
                 await _sessionStorage.SetItemAsStringAsync("Token", token);
@@ -226,6 +231,7 @@ namespace WebTruyen.UI.Client.Shared
             public bool pop_grene { get; set; } = false;
             public bool pop_search { get; set; } = false;
             public bool pop_user { get; set; } = false;
+            public bool pop_announcement { get; set; } = false;
             public bool pop_background_click { get; set; } = false;
 
             public UserAM User { get; set; } = new UserAM();

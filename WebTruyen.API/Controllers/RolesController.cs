@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebTruyen.API.Repository.Role;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
+using WebTruyen.API.Repository.RoleDI;
 
 namespace WebTruyen.API.Controllers
 {

@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebTruyen.API.Repository.HistoryRead;
 using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.Library.Entities.ViewModel;
+using WebTruyen.API.Repository.HistoryReadDI;
 
 namespace WebTruyen.API.Controllers
 {
