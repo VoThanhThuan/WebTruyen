@@ -28,12 +28,14 @@ namespace WebTruyen.UI.Client.Components
 
         private async Task RunEndlesslyWithoutAwait()
         {
-            Console.WriteLine("Announcements>>RunEndlesslyWithoutAwait");
             var result = await _announcementApi.GetAnnouncements();
             if(result.Count > _announcements.Count) {
                 _announcements = result;
                 StateHasChanged();
                 _toastService.ShowInfo("Có truyện mới đã cập nhật","Truyện mới");
+            } else {
+                _announcements = result;
+                StateHasChanged();
             }
         }
     }

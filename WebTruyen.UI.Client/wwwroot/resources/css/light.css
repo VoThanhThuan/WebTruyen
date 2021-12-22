@@ -1,10 +1,10 @@
 :root {
     --bg: #f0f2f5;
-    --bg-transparent: rgba(240, 242, 245, 0.9);
+    --bg-transparent: rgba(240, 242, 245, 0.7);
     --bg-content: #fff;
     --bg-hight: #f0f2f5;
-    --bg-medium: #f0f5fc;
-    --bg-low: #dee4ee;
+    --bg-medium: #dbe0e6;
+    --bg-low: #d1d5dc;
     --fg: #000;
 }
 .bg-pokemon {

@@ -14,7 +14,7 @@ namespace WebTruyen.API.Repository.AnnouncementDI
         public Task<ListChapterAM> GetChapterOfAnnouncements(Guid idUser, int skip = 0, int take = 10);
         public Task<bool> PutAnnouncement(Guid id, AnnouncementAM request);
         public Task<bool> PostAnnouncement(AnnouncementAM request);
-        public Task<bool> DeleteAnnouncement(Guid id);
+        public Task<bool> DeleteAnnouncement(Guid idUser, Guid idChapter);
 
     }
 }

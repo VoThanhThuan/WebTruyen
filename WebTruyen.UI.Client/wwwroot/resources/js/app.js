@@ -1,6 +1,7 @@
 $ = document.querySelector.bind(document);
 $$ = document.querySelectorAll.bind(document);
 
+
 document.addEventListener('error',
     (e) => {
         if (e.target.localName == "img") {

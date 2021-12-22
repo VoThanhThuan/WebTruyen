@@ -98,7 +98,7 @@ ul {
 }
 
 .search-bar {
-    background: var(--bg);
+    background: var(--bg-transparent);
     display: flex;
     box-shadow: none;
     border-radius: 24px;
@@ -165,6 +165,53 @@ ul {
     .notify-icon svg {
         fill: var(--fg);
     }
+
+.hamburger-menu {
+    --size: 30px;
+    height: var(--size);
+    width: var(--size);
+    cursor: pointer;
+    z-index: 101;
+    position: relative;
+    display: none;
+    align-items: center;
+}
+    .hamburger-menu .hamburger, .hamburger-menu .hamburger::before, .hamburger-menu .hamburger::after {
+        width: var(--size);
+        height: 3px;
+        border-radius: 0.5rem;
+        background-color: var(--fg);
+        transition: 0.4s;
+    }
+    .hamburger-menu .hamburger {
+        position: relative;
+    }
+
+        .hamburger-menu .hamburger::before, .hamburger-menu .hamburger::after {
+            content: "";
+            position: absolute;
+            left: 0;
+        }
+        .hamburger-menu .hamburger::before {
+            top: -10px;
+        }
+        .hamburger-menu .hamburger::after {
+            bottom: -10px;
+        } 
+
+    .hamburger-menu.active .hamburger {
+        background-color: transparent;
+    }
+    .hamburger-menu.active .hamburger::after {
+        transform-origin: bottom left;
+        transform: rotate(-45deg);
+        left: 6px;
+    }
+    .hamburger-menu.active .hamburger::before {
+        transform-origin: top left;
+        transform: rotate(45deg);
+        left: 6px;
+    }
 /* end nav */
 /* Card */
 
@@ -178,7 +225,8 @@ main {
 }
 
 .bg-content {
-    background-color: var(--bg-content);
+    background-color: var(--bg-transparent);
+    backdrop-filter: blur(20px);
 }
 
 .content {
@@ -343,12 +391,17 @@ ul.list-chapters {
 /* End List chapter */
 /* POP menu */
 
-
+popmenu {
+    position: fixed;
+    z-index: 9999;
+    width: 100%;
+    top: 10px;
+}
 .pop-menu {
     position: absolute;
+    max-width: 584px;
     top: 50px;
     border-radius: 0.5rem;
-    background-color: rgba(0, 0, 0, 0.5);
     z-index: 9999;
     transition: visibility 0.3s, opacity 0.3s linear;
 }
@@ -626,6 +679,12 @@ ul.list-chapters {
 }
 
 @media only screen and (max-width: 576px) {
+    popmenu {
+        top: 60px;
+    }
+    .hamburger-menu {
+        display: grid;
+    }
 }
 
 @media only screen and (max-width: 787px) {

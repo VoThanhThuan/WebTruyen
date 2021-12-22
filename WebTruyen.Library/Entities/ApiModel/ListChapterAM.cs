@@ -11,6 +11,6 @@ namespace WebTruyen.Library.Entities.ApiModel
         public int Total { get; set; } = 0;
         public int skip { get; set; } = 0;
         public int Take { get; set; } = 0;
-        public List<ChapterAM> Chapters { get; set; }
+        public List<ChapterAM> Chapters { get; set; }= new ();
     }
 }

@@ -45,7 +45,7 @@ namespace WebTruyen.API.Controllers
                 return NotFound();
             }
 
-            return newComicAnnouncement;
+            return Ok(newComicAnnouncement);
         }
 
         // GET: api/Announcements/GetAnnouncementOfUser
@@ -60,7 +60,7 @@ namespace WebTruyen.API.Controllers
                 return NoContent();
             }
 
-            return newComicAnnouncement;
+            return Ok(newComicAnnouncement);
         }
 
         // GET: api/Announcements/GetChapterOfAnnouncements
@@ -75,10 +75,10 @@ namespace WebTruyen.API.Controllers
                 return NoContent();
             }
 
-            return listChapter;
+            return Ok(listChapter);
         }
 
-        // PUT: api/Announcementss/5
+        // PUT: api/Announcements/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAnnouncement(Guid id, AnnouncementAM announcement)
@@ -95,7 +95,7 @@ namespace WebTruyen.API.Controllers
             return NoContent();
         }
 
-        // POST: api/NewComicAnnouncements
+        // POST: api/Announcements
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Announcement>> PostAnnouncement(AnnouncementAM announcement)
@@ -108,11 +108,13 @@ namespace WebTruyen.API.Controllers
             return CreatedAtAction("GetAnnouncement", new { id = announcement.IdUser }, announcement);
         }
 
-        // DELETE: api/NewComicAnnouncements/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAnnouncement(Guid id)
+        // DELETE: api/Announcements/5
+        [HttpDelete("{idChapter}")]
+        public async Task<IActionResult> DeleteAnnouncement(Guid idChapter)
         {
-            var result = await _announcement.DeleteAnnouncement(id);
+            var userID = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            var result = await _announcement.DeleteAnnouncement(Guid.Parse(userID), idChapter);
             if (!result)
             {
                 return NotFound();

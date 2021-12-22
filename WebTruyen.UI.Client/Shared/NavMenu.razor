@@ -6,13 +6,15 @@
 
 
 <nav id="navbar" class="navbar navbar-expand-sm bg-content border-bottom rounded-5">
+
     <div class="container-fluid">
         <div class="mb-2 mb-md-0">
             <a class="navbar-brand" href="/">Navbar</a>
         </div>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+
+                <div @onclick="HambugerClick" class="hamburger-menu @_element.Active" id="hamburger-menu" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <div class="hamburger"></div>
+                </div>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <div class="search-bar d-flex justify-content-center mb-2 mt-2 mb-md-0 mt-md-0" Model="_element" OnValidSubmit="SearchText">
@@ -51,7 +53,9 @@
             <div class="d-flex justify-content-end">
                 <AuthorizeView>
                     <Authorized>
-                        <Announcements></Announcements>
+                        <div @onclick="OpenNotificationMenu">
+                            <Announcements></Announcements>
+                        </div>
                         <img class="avatar-sm rounded-circle cursor-pointer" src="@_element.User.Avatar" alt="avatar" @onclick="OpenUserMenu">
                     </Authorized>
                     <NotAuthorized>
@@ -70,7 +74,7 @@
 
     </div>
 </nav>
-
+<popmenu>
 @if (_element.pop_grene) {
     <div class="pop-menu pop-menu-center">
         <div class="d-flex">
@@ -144,42 +148,8 @@
     </div>
 }
 
-@if (_element.pop_announcement) {
-    <div class="pop-menu pop-menu-right">
-        <div class="d-flex">
-            <div class="card rounded-5 bg-content" name="info">
-                <div class="p-2">
-                    <div class="rounded-5 p-2 border-bottom d-flex justify-content-between">
-                        <a class="navbar-brand" href="#">Thông Tin</a>
-                        <div style="color: aquamarine;">aaaaaaaaaaaa</div>
-                    </div>
-
-                    <div class="p-2">
-                        <div class="row card-info p-2 mt-2">
-                            <div class="col-auto m-auto p-0">
-                                <img class="rounded-5 img-64" src="truyen.jpg" alt="avatar">
-                            </div>
-                            <div class="col">
-                                <p class="fs-5 title title-1">Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt</p>
-                                <span class="title title-1">chapter 1: Pháp sư gọi bưởi Pháp sư gọi bưởi Pháp sư gọi bưởi</span>
-                            </div>
-                        </div>
-                        <div class="row card-info p-2 mt-2">
-                            <div class="col-auto m-auto p-0">
-                                <img class="rounded-5 img-64" src="truyen.jpg" alt="avatar">
-                            </div>
-                            <div class="col">
-                                <p class="fs-5 title title-1">Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt Thần Đồng Đất Việt</p>
-                                <span class="title title-1">chapter 1: Pháp sư gọi bưởi Pháp sư gọi bưởi Pháp sư gọi bưởi</span>
-                            </div>
-                        </div>
-                    </div>
-
-
-                </div>
-            </div>
-        </div>
-    </div>
+@if (_element.pop_notification) {
+    <NotificationContent></NotificationContent>
 }
 
 @if (_element.pop_user) {
@@ -266,6 +236,8 @@
         </div>
     </div>
 }
+</popmenu>
+
 
 
 @if (_element.pop_background_click) {

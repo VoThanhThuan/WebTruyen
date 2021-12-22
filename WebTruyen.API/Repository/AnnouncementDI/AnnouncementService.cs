@@ -44,6 +44,7 @@ namespace WebTruyen.API.Repository.AnnouncementDI
                 .OrderByDescending(x => x.TimeCreate)
                 .Skip(skip).Take(take)
                 .Include(x => x.Chapter)
+                .ThenInclude(x=>x.Comic)
                 .Select(x => x.Chapter.ToApiModel())
                 .ToListAsync();
             var listChapter = new ListChapterAM() {
@@ -100,13 +101,12 @@ namespace WebTruyen.API.Repository.AnnouncementDI
             return true;
         }
 
-        public async Task<bool> DeleteAnnouncement(Guid id)
+        public async Task<bool> DeleteAnnouncement(Guid idUser, Guid idChapter)
         {
-            var newComicAnnouncement = await _context.NewComicAnnouncements.FindAsync(id);
+            
+            var newComicAnnouncement = await _context.NewComicAnnouncements.FirstOrDefaultAsync(x => x.IdUser == idUser && x.IdChapter == idChapter);
             if (newComicAnnouncement == null)
-            {
                 return false;
-            }
 
             _context.NewComicAnnouncements.Remove(newComicAnnouncement);
             await _context.SaveChangesAsync();

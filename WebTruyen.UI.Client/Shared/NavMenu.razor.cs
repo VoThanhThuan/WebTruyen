@@ -97,6 +97,12 @@ namespace WebTruyen.UI.Client.Shared
             BackgroundClick();
             StateHasChanged();
         }
+        void OpenNotificationMenu()
+        {
+            _element.pop_notification = !_element.pop_notification;
+            BackgroundClick();
+            StateHasChanged();
+        }
 
         void BackgroundClick()
         {
@@ -112,6 +118,15 @@ namespace WebTruyen.UI.Client.Shared
             _element.pop_background_click = false;
             _element.pop_grene = false;
             _element.pop_user = false;
+        }
+
+        void HambugerClick()
+        {
+            if(_element.Active == "") {
+                _element.Active = "active";
+            } else {
+                _element.Active = "";
+            }
         }
 
         #endregion
@@ -224,14 +239,14 @@ namespace WebTruyen.UI.Client.Shared
         public class Element
         {
             public bool OnDark { get; set; } = false;
-
+            public string Active { get; set; } = "";
             public bool IsSignIn { get; set; } = false;
             public List<ComicAM> ComicSearch { get; set; } = new List<ComicAM>();
             public string TextSearch { get; set; } = "";
             public bool pop_grene { get; set; } = false;
             public bool pop_search { get; set; } = false;
             public bool pop_user { get; set; } = false;
-            public bool pop_announcement { get; set; } = false;
+            public bool pop_notification { get; set; } = false;
             public bool pop_background_click { get; set; } = false;
 
             public UserAM User { get; set; } = new UserAM();
