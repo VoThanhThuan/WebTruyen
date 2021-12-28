@@ -33,11 +33,12 @@ namespace WebTruyen.API.Repository.ComicDI
         }
         public async Task<ListComicAM> GetComics(int skip = 0, int take = 20)
         {
+            var total = await _context.Comics.CountAsync();
             var comic = await _context.Comics.OrderByDescending(x => x.DateUpdate).Skip(skip).Take(take).Select(x => x.ToApiModel()).ToListAsync();
             var comicPage = new ListComicAM() {
                 Skip = skip,
                 Take = take,
-                Total = comic.Count,
+                Total = total,
                 Comic = comic
             };
             return comicPage;

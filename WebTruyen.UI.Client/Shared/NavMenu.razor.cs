@@ -53,7 +53,6 @@ namespace WebTruyen.UI.Client.Shared
                 //}
                 //var token = await _localStorage.GetItemAsStringAsync("Token");
                 var token = await JS.InvokeAsync<string>("blazorExtensions.ReadCookie", "Token");
-                Console.WriteLine($"NavMenu >> OnAfterRenderAsync >> Token: {token}");
                 var isdark = await _localStorage.GetItemAsStringAsync("dark");
                 OnDarkMode(isdark != "1");
                 if (!string.IsNullOrEmpty(token)) {

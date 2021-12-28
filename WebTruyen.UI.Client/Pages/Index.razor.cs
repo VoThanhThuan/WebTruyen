@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.WebUtilities;
+using System;
 using System.Threading.Tasks;
 
 namespace WebTruyen.UI.Client.Pages
@@ -10,6 +11,7 @@ namespace WebTruyen.UI.Client.Pages
 
         [Parameter] public string _textSearch { get; set; } = "";
         [Parameter] public string _genreSearch { get; set; } = "";
+        [Parameter] public int _page { get; set; } = 0;
 
         protected override Task OnParametersSetAsync()
         {

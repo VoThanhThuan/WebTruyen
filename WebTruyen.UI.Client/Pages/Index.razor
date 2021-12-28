@@ -1,6 +1,7 @@
 ﻿@page "/"
 @page "/search/{_textSearch}"
 @page "/genre/{_genreSearch}"
+@page "/page/{_page:int}"
 
 @using WebTruyen.Library.Entities.ApiModel;
 @using WebTruyen.UI.Client.Service.ChapterService
@@ -10,13 +11,13 @@
         <div class="row g-2 gx-4">
             <!-- Danh sách truyện -->
 
-            <ListComic TextSearch="@_textSearch" GenreSearch="@_genreSearch"></ListComic>
+            <ListComic TextSearch="@_textSearch" GenreSearch="@_genreSearch" Page="@_page"></ListComic>
 
             <!-- End [Danh sách truyện] -->
             <!-- Card chức năng -->
             <div class="col-lg-4">
                 <!-- Card thông tin -->
-                <div class="card mb-3 rounded-5 bg-content" name="info">
+                <div class="card mb-3 rounded-5 content" name="info">
                     <div class="p-2">
                         <div class="rounded-5 p-2 border-bottom">
                             <a class="navbar-brand" href="#">Thông Tin</a>

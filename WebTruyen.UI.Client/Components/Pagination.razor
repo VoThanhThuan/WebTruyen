@@ -1,0 +1,54 @@
+﻿<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <li class="page-item"><a class="page-link" href="/page/0">Đầu</a></li>
+        @for (var i = _start; i < _end; i++) {
+            if(i == _currentPage) {
+                <li class="page-item active"><a class="page-link" href="/page/@i">@i</a></li>
+            } else {
+                 <li class="page-item"><a class="page-link" href="/page/@i">@i</a></li>
+            }
+        }
+        <li class="page-item"><a class="page-link" href="/page/@_endList">Cuối</a></li>
+    </ul>
+</nav>
+
+@code {
+
+    [Parameter] public int Skip { get; set; } = 0;
+    [Parameter] public int Take { get; set; } = 10;
+    [Parameter] public int Total { get; set; } = 0;
+
+    public int _numberPage { get; set; }= 0;
+    public int _currentPage { get; set; }= 0;
+    public int _start { get; set; }= 0;
+    public int _end { get; set; }= 0;
+
+    public int _endList { get; set; } = 0;
+
+    protected override Task OnParametersSetAsync()
+    {
+        if(Skip > Total) {
+            Skip = Total - Take;
+        }
+
+        var number = ((double)Total / (double)Take);
+        _endList = (int)number;
+        _numberPage = (int)Math.Ceiling(number);
+        var current = ((double)Skip/ (double)Take);
+        _currentPage = (int)Math.Ceiling(current);
+        _start = _currentPage - 3;
+        _end = _currentPage + 3;
+
+        if (_start < 0) {
+            _start = 0;
+        }
+        if (_end > _numberPage) {
+            var temp = _end - _numberPage;
+            _end = _end - temp;
+        }
+        StateHasChanged();
+        return base.OnParametersSetAsync();
+    }
+
+
+}

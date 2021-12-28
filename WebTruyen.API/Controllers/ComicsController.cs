@@ -47,7 +47,7 @@ namespace WebTruyen.API.Controllers
         // GET: api/Comics
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<ListComicAM>> GetComics(int skip = 0, int take = 10)
+        public async Task<ActionResult<ListComicAM>> GetComics(int skip = 0, int take = 50)
         {
             var comic = await _comic.GetComics(skip, take);
             return Ok(comic);
@@ -55,7 +55,7 @@ namespace WebTruyen.API.Controllers
 
         // GET: api/Comics
         [HttpGet("GetComicsOfUser")]
-        public async Task<ActionResult<ListComicAM>> GetComicsOfUser(int skip = 0, int take = 10)
+        public async Task<ActionResult<ListComicAM>> GetComicsOfUser(int skip = 0, int take = 50)
         {
             var userID = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.NameIdentifier)?.Value;
             var role = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Role)?.Value;

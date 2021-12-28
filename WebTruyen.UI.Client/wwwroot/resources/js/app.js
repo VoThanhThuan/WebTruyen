@@ -1,6 +1,13 @@
 $ = document.querySelector.bind(document);
 $$ = document.querySelectorAll.bind(document);
 
+//Dùng cho báo cáo//
+
+function SetTake(take) {
+    blazorExtensions.WriteCookie("take_page", take, 1);
+}
+//Dùng cho báo cáo//
+
 
 document.addEventListener('error',
     (e) => {

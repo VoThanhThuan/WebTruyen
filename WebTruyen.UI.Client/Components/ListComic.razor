@@ -14,8 +14,7 @@
             <div class="row row-cols-2 row-cols-xs-1 row-cols-sm-3 row-cols-md-4 g-3 gy-5">
 
                 @foreach (var item in _listComic) {
-                    if (item.isLoad == false)
-                    {
+                    if (item.isLoad == false) {
                         <div class="col">
                             <div class="card card-info card-comic shadow-sm">
                                 <a href="/@item.comic.NameAlias">
@@ -35,9 +34,7 @@
                             </div>
                         </div>
 
-                    }
-                    else
-                    {
+                    } else {
                         <div class="col">
                             <div class="card-skeleton"></div>
                         </div>
@@ -47,7 +44,9 @@
 
             </div>
         </div>
-
+        @if (ShowPagin) {
+            <Pagination Skip="skip" Take="take" Total="total" />
+        }
     </div>
 </div>
 
@@ -56,45 +55,71 @@
 
     [Parameter] public string TextSearch { get; set; }
     [Parameter] public string GenreSearch { get; set; }
+    [Parameter] public int Page { get; set; } = 0;
 
 
     [Inject] IComicApiClient _comicApi { get; set; }
     [Inject] IChapterApiClient _chapterApi { get; set; }
+    [Inject] IJSRuntime JS { get; set; }
 
     private List<(ComicAM comic, List<ChapterAM> chapters, bool isLoad)> _listComic = new List<(ComicAM comic, List<ChapterAM> chapters, bool)>();
 
-    private int skip { get; set; } = 0;
-    private int take { get; set; } = 20;
+    public int skip { get; set; } = 0;
+    public int take { get; set; } = 20;
+    public int total { get; set; } = 0;
 
-    protected override Task OnInitializedAsync()
+    public bool ShowPagin { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
     {
-        for (var i = 0; i < take; i++) {
-            (ComicAM comic, List<ChapterAM> chapters, bool isLoad) null_comic = (null, null, true);
-            _listComic.Add(null_comic);
+        //Dùng cho báo cáo
+        var t = await JS.InvokeAsync<string>("blazorExtensions.ReadCookie", "take_page");
+        if(string.IsNullOrEmpty(t)) {
+            await JS.InvokeAsync<string>("blazorExtensions.WriteCookie", "take_page", 4, 1);
+        } else {
+            Console.WriteLine($"t : {t}");
+            take = int.Parse(t);
         }
-        return base.OnInitializedAsync();
+        //Dùng cho báo cáo
 
+
+        //return base.OnInitializedAsync();
     }
 
     protected override async Task OnParametersSetAsync()
     {
+        //Tính toán skip từ page và take
+        skip = Page * take;
+        //Tạo Trước List rỗng
+        _listComic = new List<(ComicAM comic, List<ChapterAM> chapters, bool)>();
+        for (var i = 0; i < take; i++) {
+            (ComicAM comic, List<ChapterAM> chapters, bool isLoad) null_comic = (null, null, true);
+            _listComic.Add(null_comic);
+        }
+        StateHasChanged();
+
+        //Lấy dữ liệu từ API
         var comics = new ListComicAM();
-            if (!string.IsNullOrWhiteSpace(TextSearch)) {
-                comics = await _comicApi.SearchComics(TextSearch);
-            }else if (!string.IsNullOrWhiteSpace(GenreSearch)) {
-                comics = await _comicApi.GetComicsInGenre(int.Parse(GenreSearch), skip, take);
-            } else {                
-                comics = await _comicApi.GetComics(skip, take);
-            }
-            for (var i = 0; i < take; i++) {
-                (ComicAM comic, List<ChapterAM> chapters, bool isLoad) null_comic = (null, null, true);
-                _listComic[i] = null_comic;
-            }
-            for (var i = 0; i < comics.Total; i++) {
-                var chapters = await _chapterApi.GetChaptersInComic(comics.Comic[i].Id, skip: 0, take: 3);
-                _listComic[i] = (comics.Comic[i], chapters, false);
-                StateHasChanged();
-            }
+        if (!string.IsNullOrWhiteSpace(TextSearch)) {
+            comics = await _comicApi.SearchComics(TextSearch);
+        } else if (!string.IsNullOrWhiteSpace(GenreSearch)) {
+            comics = await _comicApi.GetComicsInGenre(int.Parse(GenreSearch), skip, take);
+        } else {
+            comics = await _comicApi.GetComics(skip, take);
+        }
+        total = comics.Total;
+        ShowPagin = true;
+
+        //Đổ dữ liệu vào list rỗng
+        for (var i = 0; i < take; i++) {
+            (ComicAM comic, List<ChapterAM> chapters, bool isLoad) null_comic = (null, null, true);
+            _listComic[i] = null_comic;
+        }
+        for (var i = 0; i < take && i < comics.Comic.Count; i++) {
+            var chapters = await _chapterApi.GetChaptersInComic(comics.Comic[i].Id, skip: 0, take: 3);
+            _listComic[i] = (comics.Comic[i], chapters, false);
+            StateHasChanged();
+        }
     }
 
     string CalculateRelativeTime(DateTime dataTime)

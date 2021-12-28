@@ -52,11 +52,32 @@ a {
     background-color: transparent;
     text-decoration: none;
 }
-
+a:hover{
+    color: var(--a-hover);
+}
 ul {
     list-style: none;
 }
+.logo svg g {
+    fill: var(--fg);
+}
+.logo:hover svg g {
+    fill: var(--bs-primary);
+}
+.footer {
+    background-color: var(--bg);
+    color: var(--fg);
+}
 /*Sửa boostrap*/
+.page-link {
+    background-color: var(--bg);
+    border: 1px solid var(--bg-hight);
+}
+    .page-link:hover {
+        background-color: var(--bs-primary);
+        border: 1px solid var(--fg);
+        color: #fff;
+    }
 .text {
     color: var(--fg);
 }
@@ -260,7 +281,7 @@ main {
         overflow: hidden;
         text-overflow: ellipsis;
         -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
+        -webkit-line-clamp: 1;
         display: -webkit-box;
     }
 
