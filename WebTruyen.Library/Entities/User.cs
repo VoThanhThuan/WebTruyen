@@ -46,7 +46,7 @@ namespace WebTruyen.Library.Entities
         }
 
         public string Nickname { get; set; } = "";
-        public DateTime? Dob { get; set; }
+        public DateTime? Dob { get; set; } = DateTime.Now;
         public string Avatar { get; set; } = "";
         public bool sex { get; set; } = true;
         public string Address { get; set; } = "";

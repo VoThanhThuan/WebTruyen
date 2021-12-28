@@ -6,7 +6,9 @@
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
         <Found Context="routeData">
-            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            <CascadingValue Value="@routeData">
+                <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            </CascadingValue>
         </Found>
         <NotFound>
             <LayoutView Layout="@typeof(MainLayout)">
@@ -16,4 +18,8 @@
     </Router>
 </CascadingAuthenticationState>
 
-
+@code
+{
+    [CascadingParameter]
+    RouteData RouteData { get; set; }
+}

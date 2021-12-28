@@ -21,4 +21,8 @@
     <ProjectReference Include="..\WebTruyen.Library\WebTruyen.Library.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="MyStaticFiles\comic-collection\" />
+  </ItemGroup>
+
 </Project>

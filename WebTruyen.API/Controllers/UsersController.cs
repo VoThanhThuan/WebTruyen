@@ -21,7 +21,7 @@ namespace WebTruyen.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles ="Admin")]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _user;
@@ -64,7 +64,6 @@ namespace WebTruyen.API.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<UserAM>> GetUserByAccessToken()
         {
-
             var userID = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userID)) {
                 return NoContent();

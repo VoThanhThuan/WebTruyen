@@ -14,13 +14,13 @@ using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.API.Repository.ComicDI;
 using WebTruyen.API.Repository.ComicInGenreDI;
+using System.Security.Claims;
 
 namespace WebTruyen.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
-
+    [Authorize(Roles ="Admin,Editer")]
     public class ComicsController : ControllerBase
     {
         private readonly IComicService _comic;
@@ -51,6 +51,20 @@ namespace WebTruyen.API.Controllers
         {
             var comic = await _comic.GetComics(skip, take);
             return Ok(comic);
+        }
+
+        // GET: api/Comics
+        [HttpGet("GetComicsOfUser")]
+        public async Task<ActionResult<ListComicAM>> GetComicsOfUser(int skip = 0, int take = 10)
+        {
+            var userID = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.NameIdentifier)?.Value;
+            var role = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Role)?.Value;
+            var comics = new ListComicAM();
+            if(role == "Admin")
+                comics = await _comic.GetComics(skip, take);
+            else
+                comics = await _comic.GetComicsOfUser(Guid.Parse(userID), skip, take);
+            return Ok(comics);
         }
 
         // GET: api/Comics/SearchComics?contentSearch=
@@ -113,7 +127,9 @@ namespace WebTruyen.API.Controllers
             if (id != request.Id)
                 return BadRequest();
 
-            var result = await _comic.PutComic(id, request);
+            var userID = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            var result = await _comic.PutComic(id, request, Guid.Parse(userID));
 
             if (!result)
                 return NotFound();
@@ -133,11 +149,14 @@ namespace WebTruyen.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ComicAM>> PostComic([FromForm] ComicRequest request, [FromForm] List<int> genres)
         {
-            var comic = await _comic.PostComic(request);
+            var userID = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.NameIdentifier)?.Value;
+            var nameUser = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.GivenName)?.Value;
+
+            var comic = await _comic.PostComic(request, Guid.Parse(userID), nameUser);
 
             var cig = genres.Select(genre => new ComicInGenreAM() { IdComic = comic.Id, IdGenre = genre }).ToList();
 
-            var result = await _comicInGenre.PutComicInGenres(comic.Id, cig);
+            var result = await _comicInGenre.PostComicInGenres(comic.Id, cig);
 
             if (!result)
                 return NotFound();

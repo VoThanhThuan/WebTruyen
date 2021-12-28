@@ -58,7 +58,7 @@ namespace WebTruyen.Library.Data
                     PhoneNumber = "0123456789",
                     UserName = "admin",
                     NormalizedUserName = "ADMIN",
-                    Avatar = "/avatar/45348869-1020-4646-86c3-65a8dde2952f.jpg",
+                    Avatar = "/avatar/thuan.gif",
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
                 user.PasswordHash = _passwordHasher.HashPassword(user, "admin");

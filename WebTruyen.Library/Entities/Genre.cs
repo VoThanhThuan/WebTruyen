@@ -27,6 +27,6 @@ namespace WebTruyen.Library.Entities
         public string Name { get; set; } = "";
         public string Description { get; set; } = "";
 
-        public virtual ComicInGenre ComicInGenre { get; set; }
+        public virtual List<ComicInGenre> ComicInGenre { get; set; }
     }
 }

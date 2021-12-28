@@ -11,6 +11,8 @@ using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.API.Repository.ComicDI;
 using WebTruyen.API.Repository.ChapterDI;
+using Microsoft.AspNetCore.Identity;
+using WebTruyen.Library.Entities;
 
 namespace WebTruyen.API.Repository.ComicDI
 {
@@ -19,16 +21,34 @@ namespace WebTruyen.API.Repository.ComicDI
         private readonly ComicDbContext _context;
         private readonly IStorageService _storageService;
         private readonly IChapterService _chapterService;
+        private readonly UserManager<User> _userManager; //Thư viện quản lý user
 
-        public ComicService(ComicDbContext context, IStorageService storageService, IChapterService chapterService)
+
+        public ComicService(ComicDbContext context, IStorageService storageService, IChapterService chapterService, UserManager<User> userManager)
         {
             _context = context;
             _storageService = storageService;
             _chapterService = chapterService;
+            _userManager = userManager;
         }
-        public async Task<ListComicAM> GetComics(int skip = 0, int take = 50)
+        public async Task<ListComicAM> GetComics(int skip = 0, int take = 20)
         {
             var comic = await _context.Comics.OrderByDescending(x => x.DateUpdate).Skip(skip).Take(take).Select(x => x.ToApiModel()).ToListAsync();
+            var comicPage = new ListComicAM() {
+                Skip = skip,
+                Take = take,
+                Total = comic.Count,
+                Comic = comic
+            };
+            return comicPage;
+        }
+
+        public async Task<ListComicAM> GetComicsOfUser(Guid idUser, int skip = 0, int take = 20)
+        {
+            var comic = await _context.Comics.Where(x => x.IdPoster == idUser)
+                .OrderByDescending(x => x.DateUpdate)
+                .Skip(skip).Take(take)
+                .Select(x => x.ToApiModel()).ToListAsync();
             var comicPage = new ListComicAM() {
                 Skip = skip,
                 Take = take,
@@ -97,12 +117,19 @@ namespace WebTruyen.API.Repository.ComicDI
         }
 
 
-        public async Task<bool> PutComic(Guid id, ComicRequest request)
+        public async Task<bool> PutComic(Guid id, ComicRequest request, Guid idPoster)
         {
             var text = new TextService();
             var comic = await _context.Comics.FindAsync(request.Id);
-            if (comic == null)
+            if (comic == null) {
                 return false;
+            }
+            if (comic.IdPoster != idPoster) {
+                var user = await (await _context.Users.FirstOrDefaultAsync(x => x.Id == comic.IdPoster)).ToApiModel(_userManager);
+                if (user.RoleName != "Admin") {
+                    return false;
+                }
+            }
             comic.AnotherNameOfComic = string.IsNullOrEmpty(text.RemoveSpaces(request.AnotherNameOfComic)) == true ? comic.AnotherNameOfComic : request.AnotherNameOfComic;
             comic.Author = string.IsNullOrEmpty(text.RemoveSpaces(request.Author)) == true ? comic.Author : request.Author;
             comic.Status = request.Status ?? comic.Status;
@@ -135,11 +162,12 @@ namespace WebTruyen.API.Repository.ComicDI
             return true;
         }
 
-        public async Task<ComicAM> PostComic(ComicRequest request)
+        public async Task<ComicAM> PostComic(ComicRequest request, Guid idPoster, string namePoster)
         {
             var comic = request.ToComic();
             comic.Id = Guid.NewGuid();
-
+            comic.IdPoster = idPoster;
+            comic.NamePoster = namePoster;
             //Lưu name alias có dạnh như [ a-b-c ]
             comic.NameAlias = new TextService().ConvertToUnSign(request.Name).Replace(" ", "-");
             var path = $@"comic-collection/{comic.Id}";
@@ -221,6 +249,6 @@ namespace WebTruyen.API.Repository.ComicDI
             return await _storageService.DeleteFileAsync(fileName, security: true);
         }
 
- 
+
     }
 }

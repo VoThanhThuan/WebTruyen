@@ -21,7 +21,9 @@ namespace WebTruyen.Library.Entities.ApiModel
                 Views = Views,
                 Description = Description,
                 Thumbnail = Thumbnail,
-                DateUpdate = DateUpdate
+                DateUpdate = DateUpdate ,
+                IdPoster = IdPoster,
+                NamePoster = NamePoster
             };
         }
         [Key]
@@ -40,6 +42,12 @@ namespace WebTruyen.Library.Entities.ApiModel
 
 
         public List<GenreAM> Genres { get; set; } = new List<GenreAM>();
+
+        //Dữ liệu khóa ngoại không ràng buộc
+        public Guid IdPoster { get; set; }
+        public string NamePoster { get; set; } = "";
+
+
 
     }
 }

@@ -90,7 +90,9 @@ namespace WebTruyen.Library.Migrations
                     Views = table.Column<int>(type: "int", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Thumbnail = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DateUpdate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    DateUpdate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    IdPoster = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    NamePoster = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -328,6 +330,7 @@ namespace WebTruyen.Library.Migrations
                     IdUser = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IdChapter = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IsRead = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    TimeCreate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ComicId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
@@ -412,12 +415,6 @@ namespace WebTruyen.Library.Migrations
                 name: "IX_ComicInGenre_IdComic",
                 table: "ComicInGenre",
                 column: "IdComic");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ComicInGenre_IdGenre",
-                table: "ComicInGenre",
-                column: "IdGenre",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comment_CommentId",

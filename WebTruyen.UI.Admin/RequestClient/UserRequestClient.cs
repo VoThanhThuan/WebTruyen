@@ -20,9 +20,9 @@ namespace WebTruyen.UI.Admin.RequestClient
             this.Dob = user.Dob;
             this.sex = user.sex;
             this.Address = user.Address;
-            this.Fanpage = user.Fanpage;
-            this.Email = user.Email;
-            this.PhoneNumber = user.PhoneNumber;
+            this.Fanpage = string.IsNullOrEmpty(user.Fanpage) ? "" : user.Fanpage;
+            this.Email = string.IsNullOrEmpty(user.Email) ? "" : user.Email;
+            this.PhoneNumber = string.IsNullOrEmpty(user.PhoneNumber) ? "": user.PhoneNumber;
             this.Username = user.Username;
             this.IdRole = user.IdRole;
         }
@@ -44,13 +44,13 @@ namespace WebTruyen.UI.Admin.RequestClient
         public string PhoneNumber { get; set; } = "";
 
         [Required(ErrorMessage = "Tên đăng nhập là bắt buộc")]
-        public string Username { get; set; }
+        public string Username { get; set; } = "";
 
         [Required(ErrorMessage = "Mật khẩu là bắt buộc")]
-        public string Password { get; set; }
+        public string Password { get; set; } = "";
 
         [Required(ErrorMessage = "Xác nhận mật khẩu là bắt buộc")]
-        public string ConfirmPassword { get; set; }
+        public string ConfirmPassword { get; set; } = "";
 
         public Guid IdRole { get; set; } = Guid.Empty;
     }

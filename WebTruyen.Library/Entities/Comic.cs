@@ -10,11 +10,10 @@ namespace WebTruyen.Library.Entities
 {
     public class Comic
     {
-        
+
         public ComicAM ToApiModel()
         {
-            return new ComicAM()
-            {
+            return new ComicAM() {
                 Id = Id,
                 Name = Name,
                 NameAlias = NameAlias,
@@ -24,7 +23,9 @@ namespace WebTruyen.Library.Entities
                 Views = Views,
                 Description = Description,
                 Thumbnail = Thumbnail,
-                DateUpdate = DateUpdate
+                DateUpdate = DateUpdate,
+                IdPoster = IdPoster,
+                NamePoster = NamePoster
             };
         }
 
@@ -49,7 +50,13 @@ namespace WebTruyen.Library.Entities
         public string Thumbnail { get; set; } = "";
         public DateTime DateUpdate { get; set; } = DateTime.Now;
 
+        //Dữ liệu khóa ngoại không ràng buộc
+        public Guid IdPoster { get; set; }
+        public string NamePoster { get; set; } = "";
+
+
         //Khoa ngoai
+
         public virtual List<ComicInGenre> ComicInGenres { get; set; }
         public virtual List<Chapter> Chapters { get; set; }
         public virtual List<TranslationOfUser> TranslationOfUsers { get; set; }

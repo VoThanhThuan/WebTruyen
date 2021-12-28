@@ -40,7 +40,7 @@ namespace WebTruyen.UI.Admin.Service.ComicService
         {
             await GetSession();
 
-            var result = await _http.GetFromJsonAsync<ListComicAM>("/api/Comics");
+            var result = await _http.GetFromJsonAsync<ListComicAM>("/api/Comics/GetComicsOfUser");
             var comic = result.Comic?.Select(x => { x.Thumbnail = $"{_http.BaseAddress}{x.Thumbnail}"; return x; }).ToList();
             return comic;
         }

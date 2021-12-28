@@ -16,8 +16,8 @@ namespace WebTruyen.Library.Data.Configurations
             builder.HasKey(x => new { x.IdGenre, x.IdComic });
             builder
                 .HasOne(x => x.Genre)
-                .WithOne(x => x.ComicInGenre)
-                .HasForeignKey<ComicInGenre>(x => x.IdGenre);
+                .WithMany(x => x.ComicInGenre)
+                .HasForeignKey(x => x.IdGenre);
             builder
                 .HasOne(x => x.Comic)
                 .WithMany(x => x.ComicInGenres)

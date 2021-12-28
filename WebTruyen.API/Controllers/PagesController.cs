@@ -15,11 +15,12 @@ using WebTruyen.API.Service;
 using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.Library.Entities.Request;
 using WebTruyen.API.Repository.PageDI;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebTruyen.API.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [Authorize(Roles = "Admin, Editer")]
     public class PagesController : ControllerBase
     {
         private readonly IPageService _page;
@@ -74,6 +75,7 @@ namespace WebTruyen.API.Controllers
         [HttpPost]
         [Route("image")]
         [EnableCors]
+        [AllowAnonymous]
         public IActionResult GetImage([FromQuery] string name)
         {
             //var principal = User as ClaimsPrincipal;

@@ -56,14 +56,30 @@ namespace WebTruyen.API.Repository.ComicInGenreDI
         public async Task<bool> PutComicInGenres(Guid idComic, List<ComicInGenreAM> request)
         {
             if (!request.Any()) return false;
-            var comic = await _context.ComicInGenres.Where(x => x.IdComic == idComic).ToListAsync();
-            if (comic.Any())
+            var comic = await _context.ComicInGenres.FirstOrDefaultAsync(x => x.IdComic == idComic);
+            if (comic != null)
             {
                 _context.ComicInGenres.RemoveRange(comic);
                 await _context.SaveChangesAsync();
             }
 
             var cig = request.Select(x => x.ToComicInGenre()).ToList();
+
+            await _context.AddRangeAsync(cig);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> PostComicInGenres(Guid idComic, List<ComicInGenreAM> request)
+        {
+            if (!request.Any()) return false;
+            var comic = await _context.ComicInGenres.Where(x => x.IdComic == idComic).ToListAsync();
+            if (comic == null) {
+                return false;
+            }
+
+                var cig = request.Select(x => x.ToComicInGenre()).ToList();
 
             await _context.AddRangeAsync(cig);
             await _context.SaveChangesAsync();

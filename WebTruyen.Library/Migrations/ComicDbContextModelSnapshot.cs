@@ -208,11 +208,17 @@ namespace WebTruyen.Library.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("IdPoster")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NameAlias")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NamePoster")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Status")
@@ -240,9 +246,6 @@ namespace WebTruyen.Library.Migrations
                     b.HasKey("IdGenre", "IdComic");
 
                     b.HasIndex("IdComic");
-
-                    b.HasIndex("IdGenre")
-                        .IsUnique();
 
                     b.ToTable("ComicInGenre");
                 });
@@ -544,8 +547,8 @@ namespace WebTruyen.Library.Migrations
                         .IsRequired();
 
                     b.HasOne("WebTruyen.Library.Entities.Genre", "Genre")
-                        .WithOne("ComicInGenre")
-                        .HasForeignKey("WebTruyen.Library.Entities.ComicInGenre", "IdGenre")
+                        .WithMany("ComicInGenre")
+                        .HasForeignKey("IdGenre")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

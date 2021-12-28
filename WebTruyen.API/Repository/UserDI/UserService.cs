@@ -86,7 +86,7 @@ namespace WebTruyen.API.Repository.UserDI
 
 
             //Role assign
-            if (request.IdRole == Guid.Empty) {
+            if (request.IdRole != Guid.Empty) {
                 var roles = await _context.Roles.Select(x => x).ToListAsync();
                 var userRole = await _context.AppUserRole.FindAsync(id, request.IdRole);
                 if (userRole == null) {
