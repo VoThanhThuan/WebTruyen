@@ -12,6 +12,7 @@ namespace WebTruyen.UI.Client.Service.ImageService
         public bool ImageIsValid(string contentType);
         public Task<byte[]> ImageToByte(IBrowserFile img);
         public Task<string> ImageToString(IBrowserFile img);
+        public byte[] Base64ToByte(string imgbase64);
         public string ByteToString(byte[] value);
         public Task<string> GetImageFromUrl(string url);
         public IAsyncEnumerable<byte[]> ImagesToByte(IReadOnlyList<IBrowserFile> imgs);

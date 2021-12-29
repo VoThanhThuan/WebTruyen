@@ -1,4 +1,5 @@
-﻿@using WebTruyen.Library.Entities.ApiModel
+﻿@using System.Security.Claims
+@using WebTruyen.Library.Entities.ApiModel
 @using Blazored.SessionStorage
 @using System.Text.Json
 @using WebTruyen.Library.Entities.Request
@@ -18,7 +19,7 @@
                     </div>
                     <div class="mb-3 col">
                         <AuthorizeView>
-                            <Authorized Context="Auth">                               
+                            <Authorized Context="Auth">
                                 <EditForm model="_CommentRequest" OnValidSubmit="PostNewComment">
                                     <label for="exampleFormControlTextarea1" class="form-label">Để lại bình luận của bạn ở đây</label>
                                     <InputTextArea class="form-control" rows="2" maxlength="500" @bind-Value="_CommentRequest.Content"></InputTextArea>
@@ -54,8 +55,13 @@
                             </div>
                             <div class="btn-reply">
                                 <span @onclick="() => ShowCommentReply(comment.Id)"><i class="fad fa-reply"></i>Trả lời</span>
-                                <span><i class="fad fa-pen"></i>Chỉnh sửa</span>
-                                <span class="remove"><i class="fad fa-trash"></i>Xóa</span>
+                                @if (_element.CurrentIdUser == comment.IdUser) {
+                                    <span><i class="fad fa-pen"></i>Chỉnh sửa</span>
+                                    <span class="remove"><i class="fad fa-trash"></i>Xóa</span>
+                                } else if (_element.CurrentRole == "Admin") {
+                                    <span class="remove" @onclick="() => DeleteComent(comment.Id)"><i class="fad fa-trash"></i>Xóa</span>
+
+                                }
                             </div>
                         </div>
 
@@ -88,10 +94,21 @@
                                     </div>
                                     <div class="mb-1 col">
                                         <p><span class="fs-5 fw-normal">@child.User.Nickname</span> <span class="fw-light text-muted"> 1 ngày trước</span> </p>
-                                        <span>@child.Content</span>
+                                        @if (child.Content == "<AdminDelete>Quản trị viên đã xóa bình luận này!") {
+                                            <span style="font-style: italic;">@child.Content.Replace("<AdminDelete>", "")</span>
+                                        } else {
+                                            <span>@child.Content</span>
+                                        }
                                     </div>
                                     <div class="btn-reply">
                                         @*<span @onclick="() => ShowCommentReply(child.Id)"><i class="fad fa-reply"></i>Trả lời</span>*@
+                                        @if (_element.CurrentIdUser == child.IdUser) {
+                                            @*<span><i class="fad fa-pen"></i>Chỉnh sửa</span>*@
+                                            <span class="remove" @onclick="() => DeleteComent(child.Id)"><i class="fad fa-trash"></i>Xóa</span>
+                                        } else if (_element.CurrentRole == "Admin") {
+                                            <span class="remove" @onclick="() => DeleteComent(child.Id)"><i class="fad fa-trash"></i>Xóa</span>
+
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -136,6 +153,8 @@
     [Inject] ICommentApiClient _commentApi { get; set; }
     [Inject] IUserApiClient _userApi { get; set; }
     [Inject] IJSRuntime JS { get; set; }
+    [Inject] AuthenticationStateProvider _authStateProivder { get; set; }
+    [Inject] IToastService _toastService { get; set; }
 
     private Guid _idShowComment;
 
@@ -149,15 +168,18 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine($">>>Comment: OnInitializedAsync: _IdComic: {_IdComic}");
-        Console.WriteLine($">>>Comment: OnInitializedAsync: _IdChapter: {_IdChapter}");
+        var context = await _authStateProivder.GetAuthenticationStateAsync();
+        _element.CurrentRole = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
+        var idUser = Guid.Empty;
+        _ = Guid.TryParse(context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value, out idUser);
+        _element.CurrentIdUser = idUser;
         if (!string.IsNullOrEmpty(_IdComic)) {
-            Console.WriteLine($">>> comment in Comic");
+            //Console.WriteLine($">>> comment in Comic");
             _CommentRequest.IdComic = Guid.Parse(_IdComic);
             _wherePage = PositionPage.Comic;
         }
         if (!string.IsNullOrEmpty(_IdChapter)) {
-            Console.WriteLine($">>> comment in Chapter");
+            //Console.WriteLine($">>> comment in Chapter");
             _CommentRequest.IdChapter = Guid.Parse(_IdChapter);
             _wherePage = PositionPage.Chapter;
         }
@@ -275,8 +297,15 @@
 
     }
 
-    async Task DeleteComent()
+    async Task DeleteComent(Guid idUser)
     {
+        var result = await _commentApi.DeleteComment(idUser);
+        if (result) {
+            _toastService.ShowSuccess("Xóa thành công");
+            await GetComments();
+        } else {
+            _toastService.ShowError("Xóa thất bại");
+        }
 
     }
 
@@ -301,6 +330,9 @@
         public int Take { get; set; } = 10;
         public int Skip { get; set; } = 0;
         public bool ShowComentReply { get; set; } = false;
+
+        public string CurrentRole { get; set; } = "";
+        public Guid CurrentIdUser { get; set; }
     }
 
 }

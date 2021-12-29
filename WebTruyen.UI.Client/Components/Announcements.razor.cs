@@ -1,5 +1,6 @@
 ﻿using Blazored.Toast.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace WebTruyen.UI.Client.Components
     {
         [Inject] IAnnouncementApiClient _announcementApi { get; set; }
         [Inject] IToastService _toastService { get; set; }
+        [Inject] AuthenticationStateProvider _authStateProivder { get; set; }
 
         public List<AnnouncementAM> _announcements { get; set; } = new();
         Timer timer = new Timer();
@@ -28,14 +30,18 @@ namespace WebTruyen.UI.Client.Components
 
         private async Task RunEndlesslyWithoutAwait()
         {
-            var result = await _announcementApi.GetAnnouncements();
-            if(result.Count > _announcements.Count) {
-                _announcements = result;
-                StateHasChanged();
-                _toastService.ShowInfo("Có truyện mới đã cập nhật","Truyện mới");
-            } else {
-                _announcements = result;
-                StateHasChanged();
+            var context = await _authStateProivder.GetAuthenticationStateAsync();
+            if (context.User.Identity.IsAuthenticated) {
+                //Console.WriteLine("Check thông báo");
+                var result = await _announcementApi.GetAnnouncements();
+                if (result.Count > _announcements.Count) {
+                    _announcements = result;
+                    StateHasChanged();
+                    _toastService.ShowInfo("Có truyện mới đã cập nhật", "Truyện mới");
+                } else {
+                    _announcements = result;
+                    StateHasChanged();
+                }
             }
         }
     }

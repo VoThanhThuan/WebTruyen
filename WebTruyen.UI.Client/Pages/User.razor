@@ -250,7 +250,7 @@
     }
     async Task UpdateAvatar()
     {
-        var result = await _userApi.UpdateAvatar(_UserAM.Id, _avatar);
+        var result = await _userApi.UpdateAvatar(_UserAM.Id, _UserAM.Avatar, _avatar.Name);
         if (result.statusCode == 200) {
             _toastService.ShowSuccess("Đổi avatar thành công");
         }else {

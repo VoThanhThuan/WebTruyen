@@ -198,6 +198,28 @@ namespace WebTruyen.UI.Client.Service.UserService
             return (400, "Avatar không được rỗng");
         }
 
+        public async Task<(int statusCode, string mess)> UpdateAvatar(Guid idUser, string avatar, string imageName)
+        {
+            //await GetSession();
+            var requestContent = new MultipartFormDataContent();
+
+            if (!string.IsNullOrEmpty(avatar)) {
+
+                var data = _image.Base64ToByte(avatar);
+                var bytes = new ByteArrayContent(data);
+                requestContent.Add(bytes, "Avatar", imageName);
+
+                var response = await _http.PutAsync($"/api/Users/UpdateAvater/{idUser}", requestContent);
+                if (response.StatusCode == HttpStatusCode.OK) {
+                    return ((int)response.StatusCode, response.RequestMessage.ToString());
+
+                }
+                return ((int)response.StatusCode, response.RequestMessage.ToString());
+
+            }
+            return (400, "Avatar không được rỗng");
+        }
+
         public async Task<(int statusCode, string mess)> UpdatePassword(Guid idUser, ChangePasswordRequest password)
         {
             //await GetSession();

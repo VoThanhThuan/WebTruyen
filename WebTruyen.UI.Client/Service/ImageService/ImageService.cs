@@ -38,10 +38,10 @@ namespace WebTruyen.UI.Client.Service.ImageService
         public async Task<byte[]> ImageToByte(IBrowserFile img)
         {
             var buffer = new byte[img.Size]; // Tạo bộ nhớ đệm
-            Console.WriteLine($"ImageService > ImageToByte > buffer");
+            //Console.WriteLine($"ImageService > ImageToByte > buffer");
             await using var br = img.OpenReadStream();
             await br.ReadAsync(buffer); //ghi dữ liệu vào bộ nhớ đệm
-            Console.WriteLine($"ImageService > ImageToByte > await br.ReadAsync(buffer);");
+            //Console.WriteLine($"ImageService > ImageToByte > await br.ReadAsync(buffer);");
 
             return buffer;
         }
@@ -51,6 +51,13 @@ namespace WebTruyen.UI.Client.Service.ImageService
             var format = img.ContentType; //lấy định dạng file
 
             return $"data:{format};base64,{Convert.ToBase64String(await ImageToByte(img))}";
+        }
+
+        public byte[] Base64ToByte(string imgbase64)
+        {
+            var base64 = imgbase64.Split(",")[1];
+            var imageBytes = Convert.FromBase64String(base64);
+            return imageBytes;
         }
 
         public string ByteToString(byte[] value)
@@ -66,8 +73,7 @@ namespace WebTruyen.UI.Client.Service.ImageService
             var content = new StringContent(url);
             var result = await _http.PostAsync(url, content);
             //Console.WriteLine($">>> GetImageFromUrl: reusult: {result}");
-            if (result.IsSuccessStatusCode)
-            {
+            if (result.IsSuccessStatusCode) {
                 return ByteToString(await result.Content.ReadAsByteArrayAsync());
             }
             //var result = await _http.GetByteArrayAsync(url);
@@ -77,8 +83,7 @@ namespace WebTruyen.UI.Client.Service.ImageService
 
         public async IAsyncEnumerable<byte[]> ImagesToByte(IReadOnlyList<IBrowserFile> imgs)
         {
-            foreach (var img in imgs)
-            {
+            foreach (var img in imgs) {
                 var data = new byte[img.Size];
                 await using var br = img.OpenReadStream();
                 await br.ReadAsync(data);
@@ -89,8 +94,7 @@ namespace WebTruyen.UI.Client.Service.ImageService
         public async IAsyncEnumerable<((byte[] data, string fileName) image, string stringValue)> ImagesToString(
             IReadOnlyList<IBrowserFile> imgs)
         {
-            foreach (var img in imgs)
-            {
+            foreach (var img in imgs) {
                 if (img.Size > 2048000L)
                     yield return (imge: (data: null, fileName: null), stringValue: null);
                 var buffer = new byte[img.Size];

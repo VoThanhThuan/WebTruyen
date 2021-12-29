@@ -58,6 +58,8 @@ namespace WebTruyen.UI.Client.Shared
                 if (!string.IsNullOrEmpty(token)) {
                     await GetUserByToken(token);
                     StateHasChanged();
+                } else {
+                    await SignOut();
                 }
                 FuncCode.SignOut = () => {
                     _userApi.Logout();
@@ -191,9 +193,10 @@ namespace WebTruyen.UI.Client.Shared
         async Task GetUserByToken(string token)
         {
             var user = await _userApi.GetUserByAccessTokenAsync(token);
+            Console.WriteLine($"NavMenu > GetUserByToken > user: {user.Id}");
             if (user is not null) {
-                Console.WriteLine($"NavMenu > GetUserByToken > user.Id: {user.Id}");
-                Console.WriteLine($"NavMenu > GetUserByToken > user.Avatar: {user.Avatar}");
+                //Console.WriteLine($"NavMenu > GetUserByToken > user.Id: {user.Id}");
+                //Console.WriteLine($"NavMenu > GetUserByToken > user.Avatar: {user.Avatar}");
                 _element.IsSignIn = true;
                 _element.User = user;
 

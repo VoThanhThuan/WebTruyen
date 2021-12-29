@@ -10,6 +10,7 @@ using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities.Request;
 using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.API.Repository.CommentDI;
+using System.Security.Claims;
 
 namespace WebTruyen.API.Controllers
 {
@@ -136,12 +137,15 @@ namespace WebTruyen.API.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteComment(Guid id)
         {
-            var result = await _comment.DeleteComment(id);
+            var userID = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.NameIdentifier)?.Value;
+            var userRole = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Role)?.Value;
+
+            var result = await _comment.DeleteComment(id, Guid.Parse(userID), userRole);
             if (!result) {
-                return NotFound();
+                return NoContent();
             }
 
-            return NoContent();
+            return Ok();
         }
 
     }

@@ -33,7 +33,7 @@ namespace WebTruyen.UI.Client.Service.CommentService
         }
         public async Task<IEnumerable<CommentVM>> GetComments()
         {
-            await GetSession();
+            //await GetSession();
             var result = await _http.GetFromJsonAsync<List<CommentVM>>($"/api/Comments");
             return result;
         }
@@ -45,28 +45,28 @@ namespace WebTruyen.UI.Client.Service.CommentService
 
         public async Task<List<CommentVM>> GetCommentInComic(Guid idComic, int skip = 0, int take = 10)
         {
-            await GetSession();
+            //await GetSession();
             var result = await _http.GetFromJsonAsync<List<CommentVM>>($"/api/Comments/GetCommentInComic?idComic={idComic}&skip={skip}&take={take}");
             return result;
         }
 
         public async Task<List<CommentVM>> GetCommentInChapter(Guid idChapter, int skip = 0, int take = 10)
         {
-            await GetSession();
+            //await GetSession();
             var result = await _http.GetFromJsonAsync<List<CommentVM>>($"/api/Comments/GetCommentInChapter?idChapter={idChapter}&skip={skip}&take={take}");
             return result;
         }
 
         public async Task<List<CommentVM>> GetCommentChildInComic(Guid idComic, Guid idCommentReply, int skip = 0, int take = 10)
         {
-            await GetSession();
+            //await GetSession();
             var result = await _http.GetFromJsonAsync<List<CommentVM>>($"/api/Comments/GetCommentChildInComic?idComic={idComic}&idCommentReply={idCommentReply}&skip={skip}&take={take}");
             return result;
         }
 
         public async Task<List<CommentVM>> GetCommentChildInChapter(Guid idChapter, Guid idCommentReply, int skip = 0, int take = 10)
         {
-            await GetSession();
+            //await GetSession();
             var result = await _http.GetFromJsonAsync<List<CommentVM>>($"/api/Comments/GetCommentChildInChapter?idChapter={idChapter}&idCommentReply={idCommentReply}&skip={skip}&take={take}");
             return result;
         }
@@ -78,7 +78,7 @@ namespace WebTruyen.UI.Client.Service.CommentService
 
         public async Task<(bool isSuccess, string value)> PostComment(CommentRequest request)
         {
-            await GetSession();
+            //await GetSession();
             var json = JsonSerializer.Serialize(request);
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -91,9 +91,14 @@ namespace WebTruyen.UI.Client.Service.CommentService
             return (false, await response.Content.ReadAsStringAsync());
         }
 
-        public Task<bool> DeleteComment(Guid id)
+        public async Task<bool> DeleteComment(Guid id)
         {
-            throw new NotImplementedException();
+            var response = await _http.DeleteAsync($"/api/Comments/{id}");
+            if (response.IsSuccessStatusCode) {
+                return true;
+            }
+            return false;
+
         }
     }
 }

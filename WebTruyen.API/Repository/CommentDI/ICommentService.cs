@@ -17,7 +17,7 @@ namespace WebTruyen.API.Repository.CommentDI
         public Task<List<CommentAM>> GetCommentChildInChapter(Guid idChapter, Guid idCommentReply, int skip = 0, int take = 10);
         public Task<(bool isSuccess, string messages)> PutComment(Guid id, CommentAM request);
         public Task<(bool isSuccess, string messages)> PostComment(CommentRequest request);
-        public Task<bool> DeleteComment(Guid id);
+        public Task<bool> DeleteComment(Guid id, Guid idUser, string role);
 
     }
 }

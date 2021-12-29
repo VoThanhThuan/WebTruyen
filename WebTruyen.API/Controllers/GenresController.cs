@@ -9,6 +9,7 @@ using WebTruyen.Library.Data;
 using WebTruyen.Library.Entities;
 using WebTruyen.Library.Entities.ApiModel;
 using WebTruyen.API.Repository.GenreDI;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebTruyen.API.Controllers
 {
@@ -47,6 +48,7 @@ namespace WebTruyen.API.Controllers
         // PUT: api/Genres/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PutGenre(int id, GenreAM genre)
         {
             if (id != genre.Id)
@@ -65,6 +67,7 @@ namespace WebTruyen.API.Controllers
         // POST: api/Genres
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Genre>> PostGenre(GenreAM genre)
         {
             await _genre.PostGenre(genre);
@@ -74,6 +77,7 @@ namespace WebTruyen.API.Controllers
 
         // DELETE: api/Genres/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteGenre(int id)
         {
             var result = await _genre.DeleteGenre(id);

@@ -203,12 +203,13 @@
         <div class="pop-menu pop-menu-right">
             <div class="d-flex">
                 <div class="card rounded-5 bg-content" name="info">
-                    <div class="p-2">
-                        <div class="rounded-5 p-2 border-bottom">
-                            <a class="navbar-brand" href="#">Thông Tin</a>
-                        </div>
-                        <AuthorizeView>
-                            <Authorized>
+                    <AuthorizeView>
+                        <Authorized>
+                            <div class="p-2">
+                                <div class="rounded-5 p-2 border-bottom">
+                                    <a class="navbar-brand" href="#">Thông Tin</a>
+                                </div>
+
                                 <div class="mt-2">
                                     <div class="row card-info m-1 mb-3 p-2">
                                         <div class="col-auto m-auto p-0">
@@ -238,47 +239,48 @@
 
                                 </div>
 
-                            </Authorized>
-                        </AuthorizeView>
-                        @if (_element.IsSignIn) {
 
-                        } else {
-                            <!--
-                                                                        <div class="mt-2">
-                                <div class="content mt-1 m-1">
-                                    <div class="card-info p-2 mt-2">
-                                        <div class="form-check form-switch">
-                                            Dảk Mode<input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" @onclick="()=>OnDarkMode(_element.OnDark)">
+                                @if (_element.IsSignIn) {
+
+                                } else {
+                                    <!--
+                                                                                <div class="mt-2">
+                                        <div class="content mt-1 m-1">
+                                            <div class="card-info p-2 mt-2">
+                                                <div class="form-check form-switch">
+                                                    Dảk Mode<input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" @onclick="()=>OnDarkMode(_element.OnDark)">
+                                                </div>
+                                            </div>
+                                            <EditForm Model="LoginRequest" OnValidSubmit="SignIn">
+                                                <div class="card-info p-2 mt-2">
+                                                    <div class="form-floating">
+                                                        <InputText @bind-Value="LoginRequest.Username" class="form-control" id="floatingInput" placeholder="Username"></InputText>
+                                                        <label for="floatingInput">Username</label>
+                                                    </div>
+                                                </div>
+                                                <div class="card-info p-2 mt-2">
+                                                    <div class="form-floating">
+                                                        <InputText @bind-Value="LoginRequest.Password" class="form-control" id="floatingPassword" placeholder="Password"></InputText>
+                                                        <label for="floatingPassword">Password</label>
+                                                    </div>
+                                                </div>
+
+                                                <div class="card-info p-2 mt-2">
+                                                    <input type="submit" class="btn btn-primary me-5" value="Đăng Nhập" />
+                                                    <button class="btn btn-outline-primary">Đăng Ký</button>
+                                                </div>
+                                            </EditForm>
+
                                         </div>
+
                                     </div>
-                                    <EditForm Model="LoginRequest" OnValidSubmit="SignIn">
-                                        <div class="card-info p-2 mt-2">
-                                            <div class="form-floating">
-                                                <InputText @bind-Value="LoginRequest.Username" class="form-control" id="floatingInput" placeholder="Username"></InputText>
-                                                <label for="floatingInput">Username</label>
-                                            </div>
-                                        </div>
-                                        <div class="card-info p-2 mt-2">
-                                            <div class="form-floating">
-                                                <InputText @bind-Value="LoginRequest.Password" class="form-control" id="floatingPassword" placeholder="Password"></InputText>
-                                                <label for="floatingPassword">Password</label>
-                                            </div>
-                                        </div>
 
-                                        <div class="card-info p-2 mt-2">
-                                            <input type="submit" class="btn btn-primary me-5" value="Đăng Nhập" />
-                                            <button class="btn btn-outline-primary">Đăng Ký</button>
-                                        </div>
-                                    </EditForm>
-
-                                </div>
+                                    -->
+                                }
 
                             </div>
-
-                            -->
-                        }
-
-                    </div>
+                        </Authorized>
+                    </AuthorizeView>
                 </div>
             </div>
         </div>

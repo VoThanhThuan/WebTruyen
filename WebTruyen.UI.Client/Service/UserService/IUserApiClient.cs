@@ -20,6 +20,7 @@ namespace WebTruyen.UI.Client.Service.UserService
 
         public Task<(int statusCode, string mess)> UpdateInfoUser(Guid idUser, InfoUser info);
         public Task<(int statusCode, string mess)> UpdateAvatar(Guid idUser, IBrowserFile avatar);
+        public Task<(int statusCode, string mess)> UpdateAvatar(Guid idUser, string avatar, string imageName);
         public Task<(int statusCode, string mess)> UpdatePassword(Guid idUser, ChangePasswordRequest password);
 
         public Task<(int apiResult, string mess, UserAM user)> Register(RegisterRequestClient request);

@@ -79,18 +79,12 @@ namespace WebTruyen.API.Repository.CommentDI
         {
             _context.Entry(request.ToComment()).State = EntityState.Modified;
 
-            try
-            {
+            try {
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CommentExists(id))
-                {
+            } catch (DbUpdateConcurrencyException) {
+                if (!CommentExists(id)) {
                     return (false, "Lỗi hệ thống khi sửa dữ liệu");
-                }
-                else
-                {
+                } else {
                     throw;
                 }
             }
@@ -100,22 +94,19 @@ namespace WebTruyen.API.Repository.CommentDI
 
         public async Task<(bool isSuccess, string messages)> PostComment(CommentRequest request)
         {
-            if (request.IdCommentReply is not null)
-            {
+            if (request.IdCommentReply is not null) {
                 var cmtReply = await _context.Comments.FirstOrDefaultAsync(x => x.Id == request.IdCommentReply);
                 if (cmtReply is null)
                     return (false, "Comment trả lời không tồn tại");
             }
 
-            if (request.IdComic != null && request.IdComic != Guid.Empty)
-            {
+            if (request.IdComic != null && request.IdComic != Guid.Empty) {
                 var comic = await _context.Comics.FirstOrDefaultAsync(x => x.Id == request.IdComic);
                 if (comic is null)
                     return (false, "Comic không tồn tại");
             }
 
-            if (request.IdChapter != null && request.IdChapter != Guid.Empty)
-            {
+            if (request.IdChapter != null && request.IdChapter != Guid.Empty) {
                 var chapter = await _context.Chapters.FirstOrDefaultAsync(x => x.Id == request.IdChapter);
                 if (chapter is null)
                     return (false, "Chapter không tồn tại");
@@ -131,17 +122,24 @@ namespace WebTruyen.API.Repository.CommentDI
             return (true, "Ok");
         }
 
-        public async Task<bool> DeleteComment(Guid id)
+        public async Task<bool> DeleteComment(Guid id, Guid idUser, string role)
         {
             var comment = await _context.Comments.FindAsync(id);
-            if (comment == null)
-            {
+
+            if (comment == null) {
                 return false;
             }
-
+            if (comment.IdUser != idUser) {
+                if (role == "Admin") {
+                    comment.Content = "Quản trị viên đã xóa bình luận này!";
+                    await _context.SaveChangesAsync();
+                    return true;
+                } else {
+                    return false;
+                }
+            }
             _context.Comments.Remove(comment);
             await _context.SaveChangesAsync();
-
             return true;
         }
 

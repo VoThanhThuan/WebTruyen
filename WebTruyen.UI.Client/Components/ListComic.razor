@@ -77,7 +77,6 @@
         if(string.IsNullOrEmpty(t)) {
             await JS.InvokeAsync<string>("blazorExtensions.WriteCookie", "take_page", 4, 1);
         } else {
-            Console.WriteLine($"t : {t}");
             take = int.Parse(t);
         }
         //Dùng cho báo cáo
