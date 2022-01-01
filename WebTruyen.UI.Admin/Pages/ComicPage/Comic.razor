@@ -1,0 +1,56 @@
+﻿@page "/comic"
+@using WebTruyen.Library.Entities.ApiModel
+@using WebTruyen.UI.Admin.Components;
+@using WebTruyen.UI.Admin.Service.ComicService
+@using WebTruyen.UI.Admin.Service.ImageService
+
+
+<div class="container-xl mt-2">
+    <div class="content rounded-3 p-1 overflow-auto">
+        <a href="comic/create" class="btn btn-info text-decoration-none text-dark"><i class="far fa-plus"></i>Thêm Truyện</a>
+        <Button OnClick="exportCSV">Export to CSV</Button>
+        <Button OnClick="exportHTML">Export to HTML</Button>
+        <Button OnClick="exportJSON">Export to JSON</Button>
+        <Button OnClick="exportXLSX">Export to XLSX</Button>
+        <Button OnClick="exportXML">Export to XML</Button>
+        @if (_comics == null) {
+            <Loading></Loading>
+        } else {
+            <Table Id="tableComic" @ref="table" class="table rounded-3 overflow-hidden mt-3" ColumnReorder="true" ColumnResize="true" Filtering="true" SortMode="TableSortMode.One" Paging="true" AutoSaveState AutoLoadState>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Hình Ảnh</th>
+                            <th style="min-width: 10rem;">Tên</th>
+                            <th>Tên Khác</th>
+                            <th>Tác Giả</th>
+                            <th>Tình Trạng</th>
+                            <th>Lượt Xem</th>
+                            <th style="min-width: 10rem;">Người Đăng</th>
+                            <th style="min-width: 120px;">#</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var comic in _comics) {
+                            <tr>
+                                <td><img src="@comic.Thumbnail" alt="@comic.NameAlias" height="64" /></td>
+                                <td>@comic.Name</td>
+                                <td>@comic.AnotherNameOfComic</td>
+                                <td>@comic.Author</td>
+                                <td>@comic.Status</td>
+                                <td>@comic.Views</td>
+                                <td>@comic.NamePoster</td>
+                                <td>
+                                    <a href="comic/detail?name=@comic.NameAlias" class="btn btn-info text-decoration-none text-dark"><i class="far fa-info-circle"></i> Chi Tiết</a>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </Table>
+
+        }
+
+    </div>
+</div>

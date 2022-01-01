@@ -1,0 +1,296 @@
+﻿@page "/user/create"
+@using SixLabors.ImageSharp
+@using SixLabors.ImageSharp.Advanced
+@using SixLabors.ImageSharp.Processing
+@using WebTruyen.UI.Admin.RequestClient
+@using WebTruyen.UI.Admin.Service.ImageService
+@using System.IO
+@using Microsoft.Extensions.Logging
+@using WebTruyen.UI.Admin.Service.UserService
+
+<link rel="stylesheet" href="./vendors/Cropprjs/croppr.min.css">
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+    </symbol>
+    <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+    </symbol>
+    <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+    </symbol>
+</svg>
+@if (_element.Apiresult is >= 200 and <= 299)
+{
+    <div>
+        <div class="alert alert-success d-flex align-items-center alert-dismissible" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill" /></svg>
+            <div>
+                Cập nhật thành công.
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+
+}
+else if (_element.Apiresult != 0)
+{
+    <div>
+        <div class="alert alert-danger d-flex align-items-center alert-dismissible" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill" /></svg>
+            <div>
+                Cập nhật thất bại (@_element.Apiresult).
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+
+}
+
+<div class="container overflow-auto mt-2">
+    <div class="content rounded-3 p-1">
+
+        <div class="row">
+            <div class="col-auto">
+                <img src="@_element.Avatar" alt="" class="img-thumbnail rounded" style="width: 480px; height: 480px;">
+                <div class="mb-3">
+                    <label for="formFile" class="form-label mt-2">Ảnh Đại Diện</label>
+                    <InputFile class="form-control" type="file" id="formFile" OnChange="InputImage" />
+                </div>
+            </div>
+            <div class="col">
+                <EditForm Model="_userRequest" OnValidSubmit="Update">
+                    <DataAnnotationsValidator></DataAnnotationsValidator>
+                    <div class="form-floating mb-3">
+                        <InputText type="text" class="form-control" id="floatingNickName" placeholder="name@example.com" @bind-Value="_userRequest.Nickname"/>
+                        <label for="floatingNickName">Nick Name</label>
+                        <ValidationMessage For="() => _userRequest.Nickname"/>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <InputText type="text" class="form-control" id="floatingUsername" placeholder="Password" @bind-Value="_userRequest.Username"/>
+                        <label for="floatingUsername">Tên Đăng Nhập</label>
+                        <ValidationMessage For="() => _userRequest.Username"/>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <InputText type="password" class="form-control" id="floatingPassword" placeholder="name@example.com" @bind-Value="_userRequest.Password"/>
+                        <label for="floatingPassword">Mật Khẩu</label>
+                        <ValidationMessage For="() => _userRequest.Password"/>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <InputText type="password" class="form-control" id="floatingConfirmPassword" placeholder="Password" @bind-Value="_userRequest.ConfirmPassword"/>
+                        <label for="floatingConfirmPassword">Xác Nhận Mật Khẩu</label>
+                        <ValidationMessage For="() => _userRequest.ConfirmPassword"/>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <InputDate type="date" class="form-control" id="floatingDob" placeholder="Ngày sinh" @bind-Value="_userRequest.Dob"/>
+                        <label for="floatingDob">Ngày Sinh</label>
+                        <ValidationMessage For="() => _userRequest.Dob"/>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="floatingSelect" aria-label="Floating label select example" @onchange="(e) => { var v = e.Value.ToString();_userRequest.sex = string.IsNullOrEmpty(v) || bool.Parse(v); }">
+                            <option value="True">Nam</option>
+                            <option value="False">Nữ</option>
+                        </select>
+                        <label for="floatingSelect">Giới Tính</label>
+                        <ValidationMessage For="() => _userRequest.Nickname"/>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <InputText type="text" class="form-control" id="floatingAddress" placeholder="Địa Chỉ" @bind-Value="_userRequest.Address"/>
+                        <label for="floatingAddress">Địa Chỉ</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <InputText type="text" class="form-control" id="floatingPhoneNumber" placeholder="Số điện thoại" @bind-Value="_userRequest.PhoneNumber"/>
+                        <label for="floatingPhoneNumber">Số Điện Thoại</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <InputText type="text" class="form-control" id="floatingWebsite" placeholder="Website" @bind-Value="_userRequest.Fanpage"/>
+                        <label for="floatingWebsite">Link Website</label>
+                    </div>
+
+                    @if (_element.IsSubmit)
+                    {
+                        <input type="submit" class="btn btn-primary mt-2" value="Save"/>
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary mt-2" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Loading...
+                        </button>
+                    }
+                </EditForm>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<button id="open-crop-image" data-bs-toggle="modal" data-bs-target="#POPcrop" hidden></button>
+@if (_element.CropOn)
+{
+    <!-- Modal Crop hình -->
+    <div class="modal fade" id="POPcrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Xác Nhận Xóa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+                </div>
+                <div class="modal-body">
+                    <img id="cropper" src="@_element.AvatarCrop" alt="" class="img-thumbnail rounded" style="max-width: 500px;">
+                </div>
+                <div class="modal-footer">
+                    <button id="close-ask-modal" type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Đóng</button>
+                    <button type="button" class="btn btn-primary" @onclick="CropImage">Xác Nhận</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Modal Crop hình -->
+}
+
+
+@code {
+
+    #region Initialization
+
+    [Inject] IJSRuntime JS { get; set; }
+    [Inject] private IImageService _image { get; set; }
+    [Inject] private IUserService _userApi { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
+
+    UserRequestClient _userRequest = new UserRequestClient();
+    ViewElement _element = new ViewElement();
+
+    IBrowserFile _valueImage = null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+    }
+
+    #endregion
+
+    #region Giao Tiếp Server
+
+    /// <summary>
+    /// Cập nhật dữ liệu lên server
+    /// </summary>
+    private async void Update()
+    {
+        _element.IsSubmit = false;
+        StateHasChanged();
+        var (statusCode, content) = await _userApi.PostUser(_userRequest);
+
+        _element.Apiresult = 0;
+        StateHasChanged();
+        _element.Apiresult = (int)statusCode;
+        if (_element.Apiresult >= 200 && _element.Apiresult < 299)
+        {
+            await Task.Delay(200);
+            _navigationManager.NavigateTo($"/user");
+        }
+        _element.IsSubmit = true;
+        StateHasChanged();
+    }
+
+    #endregion
+
+    #region Xử Lý Dữ Liệu
+
+    /// <summary>
+    /// Hiển thị image preview và lấy dữ liệu image
+    /// </summary>
+    /// <param name="e"></param>
+    private async void InputImage(InputFileChangeEventArgs e)
+    {
+        _element.CropOn = false;
+        StateHasChanged();
+        if (e == null)
+        {
+            //await JS.InvokeVoidAsync("Click", "#close-ask-modal");
+            return;
+        }
+        _element.CropOn = true;
+        StateHasChanged();
+        await JS.InvokeVoidAsync("Click", "#open-crop-image");
+
+        _valueImage = e.File;
+        if (!_image.ImageIsValid(_valueImage.ContentType))
+            return;
+        var imageDataUrl = await _image.ImageToString(e.File);
+
+        _element.AvatarCrop = imageDataUrl;
+        //Cập nhât UI
+        StateHasChanged();
+        await Task.Delay(400);
+        await JS.InvokeVoidAsync("Cropper", "#cropper");
+
+    }
+
+    private async void CropImage()
+    {
+        if (_valueImage == null)
+            return;
+        if (!_image.ImageIsValid(_valueImage.ContentType))
+            return;
+        var valueCrop = await JS.InvokeAsync<ValueCrop>("GetValueCrop");
+
+        if (valueCrop.width < 1 || valueCrop.height < 1)
+            return;
+
+        using (var image = Image.Load(await _image.ImageToByte(_valueImage), out var format))
+        {
+            //var ratioX = (double)500 / image.Width;
+            //var ratioY = (double)500 / image.Height;
+            //var ratio = Math.Min(ratioX, ratioY);
+
+            //var newWidth = (int)(image.Width * ratio);
+            //var newHeight = (int)(image.Height * ratio);
+
+            //var constrainValue = height > width ? image.Height / width : width / height;
+            image.Mutate(x =>
+                x.Crop(new Rectangle(
+                    valueCrop.x,
+                    valueCrop.y,
+                    valueCrop.width,
+                    valueCrop.height
+                        )).Resize(500, 500));
+            _element.Avatar = $"{image.ToBase64String(format)}";
+            await JS.InvokeVoidAsync("Click", "#close-ask-modal");
+
+            _userRequest.Avatar = (_element.Avatar, _valueImage.Name);
+
+            image.Dispose();
+        }
+        StateHasChanged();
+    }
+    #endregion
+
+
+    protected class ViewElement
+    {
+        public bool IsShow = false;
+        public bool IsSubmit { get; set; } = true;
+        public string TextButtonUpdate = "Cập Nhật";
+        public bool CropOn = false;
+        public string Avatar { get; set; } = "https://unsplash.it/500/500/?random";
+        public string AvatarCrop { get; set; } = "https://unsplash.it/500/500/?random";
+        public (int x, int y, int width, int height) AvatarCropValue { get; set; } = (0, 0, 0, 0);
+        public int Apiresult { get; set; } = 0;
+        public string AllGenreChoose { get; set; } = "";
+
+    }
+
+    protected class ValueCrop
+    {
+        public int x { get; set; }
+        public int y { get; set; }
+        public int width { get; set; }
+        public int height { get; set; }
+    }
+}

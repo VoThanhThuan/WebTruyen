@@ -1,0 +1,269 @@
+﻿@page "/{ComicName}"
+@using WebTruyen.UI.Client.Service.ComicService
+@using WebTruyen.UI.Client.Service.ChapterService
+@using WebTruyen.Library.Entities.ApiModel;
+@using WebTruyen.Library.Enums
+@using WebTruyen.UI.Client.Service.BookmarkService
+@using WebTruyen.UI.Client.Service.GenreService
+@using Polly
+@using System.Security.Claims
+@using Blazored.Toast.Services
+
+@if (_is404)
+{
+    <Error></Error>
+}
+else
+{
+    <main>
+        <div class="container-xl mt-xxl-5 rounded-5 pb-5">
+            <div class="row g-2 gx-4">
+
+                <!-- Thông tin truyện -->
+                <div class="comic-section mb-4">
+                    <div class="content p-2 rounded-5">
+                        <div class="">
+                            <div class="rounded-5 p-2 border-bottom">
+                                <a class="navbar-brand" href="#"><i class="fad fa-info-circle"></i> @_Comic.Name</a>
+                            </div>
+                        </div>
+                        <div class="m-2">
+                            <div class="row">
+                                <div class="feature-section">
+                                    <div class="row">
+                                        <div class="left-column col col-12 col-md-4">
+                                            <div class="rounded series-cover">
+                                                <div class="card card-info shadow-sm">
+                                                    <img src="@_Comic.Thumbnail" alt="@_Comic.NameAlias" style="width: 100%;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col col-12 col-md-8">
+                                            <div class="series-name-group">
+                                                <span class="series-name">
+                                                    <a href="#">@_Comic.Name</a>
+                                                </span>
+                                            </div>
+                                            <div class="series-information mt-4 mb-4">
+                                                <div class="info-item mb-2">
+                                                    <i class="fas fa-hashtag"></i><span class="info-name">Tên khác:</span><span class="info-value ">
+                                                        @if (string.IsNullOrEmpty(_Comic.AnotherNameOfComic))
+                                                        {
+                                                            <span>Đang cập nhật</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>@_Comic.AnotherNameOfComic</span>
+                                                        }
+                                                    </span>
+                                                </div>
+                                                <div class="info-item mb-2">
+                                                    <i class="fas fa-paint-brush"></i><span class="info-name">Tác giả:</span>
+                                                    <span class="info-value "><a href="#">@_Comic.Author</a></span>
+                                                </div>
+                                                <div class="info-item mb-2">
+                                                    <i class="fa fa-rss"> </i><span class="info-name">Tình trạng:</span>
+                                                    <span class="info-value">
+
+                                                        <a href="#">
+                                                            @switch (_Comic.Status)
+                                                            {
+                                                                case Status.InProgress:
+                                                                    <span>Đang Tiến Hành</span>
+                                                                    break;
+                                                                case Status.IsFinish:
+                                                                    <span>Đã Hoàn Thành</span>
+                                                                    break;
+                                                                case Status.Drop:
+                                                                    <span>Đang Hủy bỏ</span>
+                                                                    break;
+                                                            }
+                                                        </a>
+                                                    </span>
+
+                                                </div>
+
+                                                <div class="info-item mb-4">
+                                                    <i class="fab fa-slack-hash"></i><span class="info-name">Thể loại:</span>
+                                                    <div class="mt-2">
+                                                        @foreach (var genre in _Comic.Genres)
+                                                        {
+                                                            <a class="btn btn-outline-primary" href="#">@genre.Name</a>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div class="info-item mb-2">
+                                                    <div class="theodoitruyen" style="margin-top: 10px;">
+                                                        @if (_bookmark != null) {
+                                                            <a class="btn btn-warning" @onclick="RemoveBookmark"><i class="fa fa-bookmark-o" aria-hidden="true"></i>  Bỏ theo dõi</a>
+                                                        } else {
+                                                            <a class="btn btn-primary" @onclick="AddBookmark"><i class="fa fa-bookmark-o" aria-hidden="true"></i> Theo dõi</a>
+                                                        }
+                                                        <span style="padding: 0 5px; white-space: nowrap;"><b>5341</b> Người Đã Theo Dõi</span>
+                                                    </div>
+                                                </div>
+                                                <div class="info-item mb-2">
+                                                    <div style="margin-top: 5px;">
+                                                        <a href="#" style="margin-right: 5px;" class="btn btn-primary">Đọc tiếp</a>
+                                                        <a href="#" style="margin-right: 5px;" class="btn btn-primary"> Đọc Mới Nhất </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="series-description">
+                                                <div class="info-item mb-2">
+                                                    <div>
+                                                        <i class="fas fa-hashtag"></i><span class="info-name">Mô Tả Truyện:</span>
+
+                                                    </div>
+                                                    <span class="info-value "> @_Comic.Description </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                                <div class="listchap-section">
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- End [Thông tin truyện] -->
+                <!-- Danh sách chap truyện -->
+                <div class="listchap-section mb-4">
+                    <div class="content p-2 rounded-5">
+                        <div class="">
+                            <div class="rounded-5 p-2 border-bottom">
+                                <a class="navbar-brand" href="#"><i class="fad fa-book-open"></i> Các Chương</a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <ul class="list-chapters at-series">
+                                @foreach (var chap in _Chapters)
+                                {
+                                    <li>
+                                        <a href="/@ComicName/@chap.Ordinal" title="Chapter @chap.Ordinal">
+                                            <div class="chapter-name text-truncate"> Chapter @chap.Ordinal @chap.Name</div>
+                                            <div class="chapter-time">@chap.DateTimeUp</div>
+                                        </a>
+                                    </li>
+                                }
+ 
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- End [Danh sách chap truyện] -->
+                <!-- Comment -->
+                @if (_Comic.Id != Guid.Empty)
+                {
+                    <Comment _IdComic="@_Comic.Id.ToString()"></Comment>
+                }
+                <!-- End [Comment] -->
+            </div>
+        </div>
+    </main>
+
+}
+
+
+
+@code {
+    [Parameter]
+    public string ComicName { get; set; }
+
+    [Inject] IComicApiClient _comicApi { get; set; }
+    [Inject] IChapterApiClient _chapterApi { get; set; }
+    [Inject] IBookmarkApiClient _bookmarkApi { get; set; }
+    [Inject] AuthenticationStateProvider _User { get; set; }
+    [Inject] IToastService _toastService { get; set; }
+
+    public ComicAM _Comic { get; set; } = new();
+    public List<ChapterAM> _Chapters { get; set; } = new List<ChapterAM>();
+    public bool _is404 { get; set; } = false;
+    public BookmarkAM _bookmark { get; set; } = null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Console.WriteLine(ComicName);
+            await LoadComic();
+            await GetBookmark();
+            StateHasChanged();
+            await LoadChapters(_Comic.Id);
+        }
+
+
+    }
+
+    async Task LoadComic()
+    {
+        _Comic = await _comicApi.GetComic(ComicName);
+        if (_Comic == null)
+        {
+            _is404 = true;
+            StateHasChanged();
+        }
+
+    }
+
+    async Task LoadChapters(Guid idComic)
+    {
+        _Chapters = await _chapterApi.GetChaptersInComic(idComic);
+        StateHasChanged();
+    }
+
+    async Task GetBookmark()
+    {
+        var context = await _User.GetAuthenticationStateAsync();
+        var idUser = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+        if(string.IsNullOrEmpty(idUser))
+            return;
+        var result = await _bookmarkApi.GetBookmarkOfAccount(_Comic.Id, Guid.Parse(idUser));
+        if (result != null)
+            _bookmark = result;
+    }
+
+
+    async Task AddBookmark()
+    {
+        var context = await _User.GetAuthenticationStateAsync();
+        var idUser = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+        if(string.IsNullOrEmpty(idUser))
+            return;
+        var bookmark = new BookmarkAM()
+        {
+            IdComic = _Comic.Id,
+            IdUser = Guid.Parse(idUser)
+        };
+        var result = await _bookmarkApi.AddBookmark(bookmark);
+        if (result == 200)
+        {
+            _toastService.ShowSuccess("Thêm truyện vào bookmark thành công");
+            _bookmark = new BookmarkAM();
+            StateHasChanged();
+        }
+    }
+
+    async Task RemoveBookmark()
+    {
+        var context = await _User.GetAuthenticationStateAsync();
+        var idUser = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+        if(string.IsNullOrEmpty(idUser))
+            return;
+
+        var result = await _bookmarkApi.RemoveBookmark(_Comic.Id, Guid.Parse(idUser));
+        if (result == 200)
+        {
+            _toastService.ShowSuccess("Đã bỏ truyện khỏi bookmark thành công");
+            _bookmark = null;
+            StateHasChanged();
+        }
+    }
+
+}

@@ -1,0 +1,90 @@
+﻿@page "/signin"
+@attribute [AllowAnonymous]
+
+@using System.Web
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Microsoft.Extensions.Configuration
+@using WebTruyen.Library.Entities.Request
+@using WebTruyen.UI.Admin.Data
+@using WebTruyen.UI.Admin.Data.Constants
+@using WebTruyen.UI.Admin.Service
+@using WebTruyen.UI.Admin.Service.UserService
+
+<div>
+    <AuthorizeView>
+        <NotAuthorized>
+            <h3>Login</h3>
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="rounded-3 bg-white">
+                    <div class="m-5" style="width: 396px;">
+                        @if (!_SignInSuccess)
+                        {
+                            <span class="text-danger">Tài khoản hoặc mật khẩu sai!</span>
+                        }
+                        <EditForm Model="@_loginRequest" OnSubmit="@SignIn">
+                            <ChildContent Context="another_name">
+                                <div class="form-floating mb-3">
+                                    <InputText type="text" class="form-control" id="floatingUsername" placeholder="Username" @bind-Value="_loginRequest.Username"/>
+                                    <label for="floatingUsername">Tên đăng nhập</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <InputText type="password" class="form-control" id="floatingPassword" placeholder="Password" @bind-Value="_loginRequest.Password"/>
+                                    <label for="floatingPassword">Mật khẩu</label>
+                                </div>
+                                <input type="submit" class="form-control" placeholder="Password" value="Đăng Nhập"/>
+                            </ChildContent>
+
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+
+
+
+@code
+{
+    [Inject] private IUserService _userApi { get; set; }
+    [Inject] private IConfiguration _configuration { get; set; }
+    [Inject] private HttpContextBlazor _httpContext { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
+    [Inject] ProtectedLocalStorage ProtectedLocalStore { get; set; }
+    [Inject] AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+    private SystemConstants scs = new SystemConstants();
+
+    public LoginRequest _loginRequest { get; set; } = new LoginRequest();
+    public bool _SignInSuccess { get; set; } = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOut();
+        }
+    }
+
+    async void SignIn()
+    {
+        var token = await _userApi.Authenticate(_loginRequest);
+        if (!string.IsNullOrEmpty(token))
+        {
+            await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticated(token);
+            StateHasChanged();
+            _navigationManager.NavigateTo("/", forceLoad: true);
+        }
+        else
+        {
+            _SignInSuccess = false;
+            StateHasChanged();
+        }
+    }
+
+    private string encode(string param)
+    {
+        return HttpUtility.UrlEncode(param);
+    }
+
+}

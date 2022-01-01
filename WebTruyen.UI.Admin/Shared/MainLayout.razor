@@ -1,0 +1,89 @@
+﻿@using WebTruyen.UI.Admin.Data
+@using System.Net.Http.Headers
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using System.Net
+@using WebTruyen.UI.Admin.Pages.LoginPage
+
+@inherits LayoutComponentBase
+
+<div class="page">
+
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <div class="main">
+        <div class="top-row">
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+        @switch (IsAuthorized)
+        {
+            case true:
+                <div class="">
+                    @Body
+                </div>
+                break;
+            case false:
+                <div>
+                    <LoginControl></LoginControl>
+                </div>
+                break;
+            default:
+                <div>Đang kiểm tra quyền truy cập...</div>
+                break;
+        }
+
+
+    </div>
+
+</div>
+@code
+{
+    [Inject] HttpClient _http { get; set; }
+    [Inject] ProtectedLocalStorage _localStorageService { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
+    [Inject] AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+
+    public bool? IsAuthorized { get; set; } = null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        //Console.WriteLine($">>>firstRender: {firstRender}");
+        if (firstRender)
+        {
+            var http = new HttpClient() { BaseAddress = BaseAddressDefault.Address };
+            var sessions = (await _localStorageService.GetAsync<string>("Token")).Value;
+            if (!string.IsNullOrEmpty(sessions))
+            {
+                http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
+                var checkAu = await http.GetAsync("api/Users/CheckAuthenticate");
+                if (checkAu.StatusCode != HttpStatusCode.OK)
+                {
+                    IsAuthorized = false;
+                    StateHasChanged();
+
+                    //_navigationManager.NavigateTo("/signin");
+                }
+                else
+                {
+                    _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
+                    IsAuthorized = true;
+
+                    await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticated(sessions);
+                    //_navigationManager.NavigateTo("/");
+                    await base.OnAfterRenderAsync(true);
+                    StateHasChanged();
+                }
+            }
+            else
+            {
+                IsAuthorized = false;
+                StateHasChanged();
+            }
+
+        }
+
+
+    }
+
+}

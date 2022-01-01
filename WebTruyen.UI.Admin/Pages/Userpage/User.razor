@@ -1,0 +1,121 @@
+﻿@page "/user"
+
+@using WebTruyen.UI.Admin.RequestClient
+@using WebTruyen.UI.Admin.Service.UserService
+@using WebTruyen.Library.Entities.ApiModel;
+@using WebTruyen.UI.Admin.Components;
+@using WebTruyen.UI.Admin.Service.ImageService
+<h3>User</h3>
+
+<div class="container-xl mt-2">
+    <div class="content rounded-3 p-1">
+        <div class="overflow-auto">
+
+
+            <a href="user/create" class="btn btn-info text-decoration-none text-dark"><i class="far fa-plus"></i>Thêm Người Dùng</a>
+            <smart-button @onclick="exportCSV">Export to CSV</smart-button>
+            <smart-button @onclick="exportHTML">Export to HTML</smart-button>
+            <smart-button @onclick="exportJSON">Export to JSON</smart-button>
+            <smart-button @onclick="exportXLSX">Export to XLSX</smart-button>
+            <smart-button @onclick="exportXML">Export to XML</smart-button>
+            @if (_UserAM == null) {
+                <Loading></Loading>
+            } else {
+                <Table Id="tableUser" @ref="table" class="table rounded-3 overflow-hidden mt-3" ColumnReorder="true" ColumnResize="true" Filtering="true" SortMode="TableSortMode.One" Paging="true" AutoSaveState AutoLoadState>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Quyền</th>
+                                <th>Hình Ảnh</th>
+                                <th style="min-width: 10rem;">Tên</th>
+                                <th>Tài Khoản</th>
+                                <th>Ngày Sinh</th>
+                                <th>SĐT</th>
+                                <th>Giới Tính</th>
+                                <th style="min-width: 10rem;">Địa Chỉ</th>
+                                <th style="min-width: 120px;">#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in _UserAM) {
+                                <tr>
+                                    <td>@user.RoleName</td>
+                                    <td><img src="@user.Avatar" alt="Avatar" height="64" /></td>
+                                    <td>@user.Nickname</td>
+                                    <td>@user.Username</td>
+                                    <td>@user.Dob</td>
+                                    <td>@user.PhoneNumber</td>
+                                    <td>@user.sex</td>
+                                    <td>@user.Address</td>
+                                    <td>
+                                        <a href="user/detail?id=@user.Id" class="btn btn-info text-decoration-none text-dark"><i class="far fa-info-circle"></i> Chi Tiết</a>
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </Table>
+            }
+            <Button OnClick="saveSate">Save Sate</Button>
+            <Button OnClick="loadSate">Load Sate</Button>
+
+        </div>
+    </div>
+</div>
+
+@code {
+    [Inject] private IUserService _UserApi { get; set; }
+    [Inject] private IImageService _Image { get; set; }
+    //[Inject] IJSRuntime JS { get; set; }
+
+    private List<UserRequestClient> _userRequest;
+    private List<UserAM> _UserAM;
+
+    Table table;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender) {
+            //await JS.InvokeAsync<string>("blazorExtensions.AddScript", "./vendors/vfs_fonts.js");
+            //await JS.InvokeAsync<string>("blazorExtensions.AddScript", "./vendors/pdfmake.min.js");
+            _UserAM = await _UserApi.GetUsers();
+            StateHasChanged();
+        }
+    }
+
+    private void saveSate()
+    {
+        table.SaveState();
+    }
+    private void loadSate()
+    {
+        table.LoadState();
+    }
+
+    private void exportCSV()
+    {
+        table.ExportData("csv", "table", true, null);
+    }
+    private void exportHTML()
+    {
+        table.ExportData("html", "table", true, null);
+    }
+    private void exportJSON()
+    {
+        table.ExportData("json", "table", true, null);
+    }
+    private void exportPDF()
+    {
+        table.ExportData("pdf", "table", true, null);
+    }
+    private void exportXLSX()
+    {
+        table.ExportData("xlsx", "table", true, null);
+    }
+    private void exportXML()
+    {
+        table.ExportData("xml", "table", true, null);
+    }
+}

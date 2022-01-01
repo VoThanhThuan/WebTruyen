@@ -1,0 +1,13 @@
+:root {
+    --bg: #f0f2f5;
+    --bg-transparent: rgba(240, 242, 245, 0.7);
+    --bg-content: #fff;
+    --bg-hight: #f0f2f5;
+    --bg-medium: #dbe0e6;
+    --bg-low: #d1d5dc;
+    --fg: #000;
+    --a-hover: #0bf;
+}
+.bg-pokemon {
+    background-image: url("/resources/img/background-pokemon-grass-light.png");
+}

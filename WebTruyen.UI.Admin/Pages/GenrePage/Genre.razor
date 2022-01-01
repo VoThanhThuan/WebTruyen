@@ -1,0 +1,160 @@
+﻿@page "/genre"
+@using WebTruyen.Library.Entities.ApiModel;
+@using Microsoft.Data.SqlClient
+@using WebTruyen.UI.Admin.Service.GenreService
+
+@if (_element.Apiresult is >= 200 and <= 299)
+{
+    <div>
+        <div class="alert alert-success d-flex align-items-center alert-dismissible" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill" /></svg>
+            <div>
+                Cập nhật thành công.
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+
+}
+else if (_element.Apiresult != 0)
+{
+    <div>
+        <div class="alert alert-danger d-flex align-items-center alert-dismissible" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill" /></svg>
+            <div>
+                Cập nhật thất bại. (@_element.Apiresult)
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+
+}
+<div class="container overflow-auto mt-2">
+    <div class="content rounded-3 p-1">
+        <div class="row">
+            <form>
+                <input type="text" class="form-control" name="Id" @bind="@_genreRequest.Id" hidden>
+                <label for="name">Tên Thể Loại</label>
+                <input id="name" type="text" class="form-control" name="nameGenre" @bind="@_genreRequest.Name">
+                <label for="description">Mô Tả</label>
+                <textarea name="" id="description" cols="30" rows="5" class="form-control" @bind="_genreRequest.Description"></textarea>
+                <input type="button" class="btn btn-primary mt-2 me-2" @onclick="Submit" value="@_element.txtButtonAdd" />
+            </form>
+        </div>
+        <div class="row mt-5">
+            <div>
+                <div class="form-check form-switch d-inline-flex ms-2">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @onchange="IsUpdate">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">Bật nếu muốn sửa lại thể loại</label>
+                </div>
+            </div>
+            <div class="d-flex flex-wrap">
+                @if (_isUpdate is false)
+                {
+                    foreach (var genre in _genres)
+                    {
+                        <div class="border border-primary rounded-3 d-flex align-items-center p-1 text-primary m-2">
+                            <span class="me-1 ms-1">@genre.Name</span>
+                            <div class="d-flex me-1" data-bs-toggle="modal" data-bs-target="#POPask" @onclick="() => { _element.genreDelete = genre; }"><i class="far fa-times fa-lg"></i></div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    @foreach (var genre in _genres)
+                    {
+                        <button class="btn btn-primary m-2" @onclick="() => FillDataUpdate(genre)">@genre.Name</button>
+                    }
+                }
+
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="POPask" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Xác Nhận Xóa</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Bạn thực sự muốn xóa thể loại truyện (@_element.genreDelete.Name) này ?
+                    </div>
+                    <div class="modal-footer">
+                        <button id="close-ask-modal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-primary" @onclick="Confirm">Xác Nhận</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Modal -->
+    </div>
+</div>
+
+@code {
+    [Inject] IGenreService _genreApi { get; set; }
+    [Inject] IJSRuntime JS { get; set; }
+
+    string value;
+    bool _isUpdate = false;
+    ViewElement _element = new ViewElement();
+    GenreAM _genreRequest = new GenreAM();
+    List<GenreAM> _genres = new List<GenreAM>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadGenre();
+    }
+
+    async Task LoadGenre()
+    {
+        _genres = await _genreApi.GetGenres();
+    }
+
+    void IsUpdate()
+    {
+        _isUpdate = !_isUpdate;
+        if (_isUpdate)
+        {
+            _element.txtButtonAdd = "Sửa";
+        }
+        else
+        {
+            _element.txtButtonAdd = "Thêm";
+        }
+    }
+
+    async Task Confirm()
+    {
+        await JS.InvokeVoidAsync("Click", "#close-ask-modal");
+    }
+
+    async Task FillDataUpdate(GenreAM genre)
+    {
+        _genreRequest = genre;
+
+    }
+
+    async Task Submit()
+    {
+        if (_isUpdate)
+        {
+            _element.Apiresult = await _genreApi.PutGenre(_genreRequest.Id, _genreRequest);
+        }
+        else
+        {
+            _element.Apiresult = await _genreApi.PostGenre(_genreRequest);
+            await LoadGenre();
+        }
+
+    }
+
+
+
+    class ViewElement
+    {
+        public string txtButtonAdd { get; set; } = "Thêm";
+        public int Apiresult { get; set; } = 0;
+        public GenreAM genreDelete = new GenreAM();
+    }
+}

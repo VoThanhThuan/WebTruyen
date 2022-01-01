@@ -1,0 +1,52 @@
+﻿@using WebTruyen.UI.Client.Service.HistoryService
+@using WebTruyen.Library.Entities.ApiModel
+@using System.Security.Claims
+@using WebTruyen.Library.Entities.ViewModel
+<div class="card mb-3 rounded-5 bg-content" name="history">
+    <div class="content rounded-5 p-2 pb-0">
+        <div class="rounded-5 p-2 border-bottom">
+            <a class="navbar-brand" href="#">Lịch Sử Đọc</a>
+        </div>
+        <div class="content m-1 p-2 pt-0">
+            @foreach (var item in _listRead)
+            {
+                <div class="row card-info p-2 my-2">
+                    <div class="col-auto m-auto p-0">
+                        <img class="rounded-5 img-64" src="@item.Comic.Thumbnail" alt="avatar">
+                    </div>
+                    <div class="col">
+                        <p class="fs-5 title title-1">@item.Comic.Name</p>
+                        <span class="title title-1">Chapter @item.Chapter.Ordinal @item.Chapter.Name</span>
+                    </div>
+                </div>
+
+            }
+        </div>
+
+    </div>
+</div>
+
+
+@code {
+    [Inject] IHistoryReadApiClient _historyReadApi { get; set; }
+    [Inject] AuthenticationStateProvider _User { get; set; }
+
+    public List<HistoryReadVM> _listRead { get; set; } = new List<HistoryReadVM>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var context = await _User.GetAuthenticationStateAsync();
+        var idUser = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+        if (!string.IsNullOrEmpty(idUser))
+        {
+            var result = await _historyReadApi.GetHistory(Guid.Parse(idUser), 0, 5);
+            if (result != null)
+            {
+                _listRead = result;
+                StateHasChanged();
+            }
+
+        }
+    }
+
+}

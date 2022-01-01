@@ -1,0 +1,57 @@
+﻿@layout EmptyLayout
+@page "/Authentication"
+@page "/Authentication/login"
+@page "/Authentication/register"
+@using Microsoft.AspNetCore.WebUtilities
+
+<style>
+    iframe{
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+</style>
+@if (isLogin) {
+    <iframe title="Authentication" src="./login"></iframe>
+
+}else{
+    <iframe title="Authentication" src="./register"></iframe>
+
+}
+
+
+@code {
+
+    [Inject] NavigationManager _navigationManager { get; set; }
+    public string ReturnUrl { get; set; } = null;
+
+    bool isLogin = true;
+
+    protected override Task OnInitializedAsync()
+    {
+        NavigateToComponent();
+        return base.OnInitializedAsync();
+    }
+
+    void NavigateToComponent() {
+        var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
+        // Phân tích query
+        //Console.WriteLine($"AbsolutePath {uri.AbsolutePath}");
+        //Console.WriteLine($"AbsoluteUri {uri.AbsoluteUri}");
+        //Console.WriteLine($"Authority {uri.Authority}");
+        //Console.WriteLine($"Fragment {uri.Fragment}");
+        //Console.WriteLine($"Host {uri.Host}");
+        //Console.WriteLine($"LocalPath {uri.LocalPath}");
+        //Console.WriteLine($"Query {uri.Query}");
+        //Console.WriteLine($"Scheme {uri.Scheme}");
+
+        if (uri.AbsolutePath.Contains("register"))
+            isLogin = false;
+
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("ReturnUrl", out var url)) {
+            ReturnUrl = url.First();
+        }
+        if (string.IsNullOrEmpty(ReturnUrl))
+            ReturnUrl = "/";
+    }
+}

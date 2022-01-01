@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <base href="/" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./resources/css/loading.css">
+    <link rel="stylesheet" href="./vendors/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="./resources/css/app.css">
+    <link rel="stylesheet" href="./resources/css/skeleton_loading.css">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous">
+
+    <title>Psy Truyện</title>
+
+    <link href="WebTruyen.UI.Client.styles.css" rel="stylesheet" />
+
+    <link href="_content/Blazored.Toast/blazored-toast.min.css" rel="stylesheet" />
+
+    <script>
+        window.onload = function () {
+            //const addCss = (src) => {
+            //    const head = document.getElementsByTagName('head')[0];
+            //    const link = document.createElement('link');
+            //    link.href = src;
+            //    link.rel = 'stylesheet';
+            //    head.appendChild(link);
+            //}
+            //const addScript = (src) => {
+            //    const head = document.getElementsByTagName('head')[0];
+            //    const script = document.createElement('script');
+            //    script.type = 'text/javascript';
+            //    script.src = src;
+            //    head.appendChild(script);
+            //}
+            //const location = window.location.href.toString();
+            //if (location.indexOf('/Authentication/') < 0) {
+            //    addCss("./vendors/bootstrap/css/bootstrap.css");
+            //    addCss("./resources/css/app.css");
+            //    addCss("./resources/css/skeleton_loading.css");
+            //}
+            //if (location.indexOf('register') >= 0) {
+            //    addScript('./vendors/Cropprjs/croppr.min.js');
+            //}
+        }
+    </script>
+
+</head>
+
+<body class="bg-pokemon">
+    <div id="app">
+        <div class="body">
+            <div class="loader" style="width: 44px; height: 44px;">
+                <svg viewBox="0 0 80 80">
+                    <circle id="test" cx="40" cy="40" r="32"></circle>
+                </svg>
+            </div>
+
+            <div class="loader triangle" style="width: 44px; height: 44px;">
+                <svg viewBox="0 0 86 80">
+                    <polygon points="43 8 79 72 7 72"></polygon>
+                </svg>
+            </div>
+
+            <div class="loader" style="width: 44px; height: 44px;">
+                <svg viewBox="0 0 80 80">
+                    <rect x="8" y="8" width="64" height="64"></rect>
+                </svg>
+            </div>
+
+            <!-- dribbble -->
+            <a class="dribbble" href="#" target="_blank"><img src="/resources/img/spyduck_geometric.svg" alt=""></a>
+        </div>
+    </div>
+
+    <!--<div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>-->
+
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="./vendors/bootstrap/js/bootstrap.min.js"></script>
+
+    <script src="./resources/js/app.js"></script>
+    <!--<script src="./vendors/Cropprjs/croppr.min.js"></script>-->
+
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v12.0&appId=1050071089127677&autoLogAppEvents=1" nonce="JBdYwGab"></script>
+  
+</body>
+
+</html>

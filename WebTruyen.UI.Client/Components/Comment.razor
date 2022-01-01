@@ -1,0 +1,338 @@
+﻿@using System.Security.Claims
+@using WebTruyen.Library.Entities.ApiModel
+@using Blazored.SessionStorage
+@using System.Text.Json
+@using WebTruyen.Library.Entities.Request
+@using WebTruyen.Library.Entities.ViewModel
+@using WebTruyen.UI.Client.Service.CommentService
+@using WebTruyen.UI.Client.Service.UserService
+<div class="comment-section ">
+    <div class="content p-2 rounded-5 ">
+        <div class="rounded-5 p-2 border-bottom ">
+            <a id="comment" class="navbar-brand " href="# "><i class="fad fa-comments"></i> Bình Luận</a>
+        </div>
+        <div class="content">
+            <div class="rounded-5 p-2 border-bottom">
+                <div class="row">
+                    <div class="col-auto">
+                        <img src="@_UserAM.Avatar" alt="avatar" class="avatar-md rounded-circle ">
+                    </div>
+                    <div class="mb-3 col">
+                        <AuthorizeView>
+                            <Authorized Context="Auth">
+                                <EditForm model="_CommentRequest" OnValidSubmit="PostNewComment">
+                                    <label for="exampleFormControlTextarea1" class="form-label">Để lại bình luận của bạn ở đây</label>
+                                    <InputTextArea class="form-control" rows="2" maxlength="500" @bind-Value="_CommentRequest.Content"></InputTextArea>
+
+                                    <button type="submit" class="btn btn-primary mt-1">Bình Loạn</button>
+                                    <span>(Bình luận không quá 500 ký tự)</span>
+                                    @if (_element.ErrorComment.isError) {
+                                        <span class="text-danger">Lỗi: @_element.ErrorComment.Messages</span>
+                                    }
+                                </EditForm>
+
+                            </Authorized>
+                            <NotAuthorized>
+                                <span>Bạn cần đăng nhập để bình luận</span>
+                            </NotAuthorized>
+                        </AuthorizeView>
+
+                    </div>
+                </div>
+            </div>
+
+
+            @foreach (var comment in _ListComment) {
+                <div class="comment mt-2 ">
+                    <div class="mt-1">
+                        <div class="row border-bottom">
+                            <div class="col-auto">
+                                <img src="@comment.User.Avatar" alt="avatar" class="avatar-md rounded-circle ">
+                            </div>
+                            <div class="mb-1 col">
+                                <p><span class="fs-5 fw-normal">@comment.User.Nickname</span> <span class="fw-light text-muted"> @comment.DateTimeUp</span> </p>
+                                <span>@comment.Content</span>
+                            </div>
+                            <div class="btn-reply">
+                                <span @onclick="() => ShowCommentReply(comment.Id)"><i class="fad fa-reply"></i>Trả lời</span>
+                                @if (_element.CurrentIdUser == comment.IdUser) {
+                                    @*<span><i class="fad fa-pen"></i>Chỉnh sửa</span>*@
+                                    <span class="remove"><i class="fad fa-trash"></i>Xóa</span>
+                                } else if (_element.CurrentRole == "Admin") {
+                                    <span class="remove" @onclick="() => DeleteComent(comment.Id)"><i class="fad fa-trash"></i>Xóa</span>
+
+                                }
+                            </div>
+                        </div>
+
+                        @if (comment.Id == _idShowComment) {
+                            <div class="comment-child">
+                                <EditForm model="_CommentRequest" OnValidSubmit="() => PostReplyComment(comment.Id)">
+                                    <label for="exampleFormControlTextarea1" class="form-label">Để lại bình luận của bạn ở đây</label>
+                                    <InputTextArea class="form-control" rows="2" maxlength="500" @bind-Value="_CommentRequest.Content"></InputTextArea>
+                                    @if (!_isSignIn) {
+                                        <span>Bạn cần đăng nhập để bình luận</span>
+                                    } else {
+                                        <button type="submit" class="btn btn-primary mt-1">Bình Loạn</button>
+                                        <span>(Bình luận không quá 500 ký tự)</span>
+                                        if (_element.ErrorComment.isError) {
+                                            <span class="text-danger">Lỗi: @_element.ErrorComment.Messages</span>
+                                        }
+                                    }
+                                </EditForm>
+
+                            </div>
+
+                        }
+
+
+                        @foreach (var child in comment.CommentReply) {
+                            <div class="comment-child">
+                                <div class="row border-bottom mt-2">
+                                    <div class="col-auto">
+                                        <img src="@child.User.Avatar" alt="avatar" class="avatar-md rounded-circle ">
+                                    </div>
+                                    <div class="mb-1 col">
+                                        <p><span class="fs-5 fw-normal">@child.User.Nickname</span> <span class="fw-light text-muted"> 1 ngày trước</span> </p>
+                                        @if (child.Content == "<AdminDelete>Quản trị viên đã xóa bình luận này!") {
+                                            <span style="font-style: italic;">@child.Content.Replace("<AdminDelete>", "")</span>
+                                        } else {
+                                            <span>@child.Content</span>
+                                        }
+                                    </div>
+                                    <div class="btn-reply">
+                                        @*<span @onclick="() => ShowCommentReply(child.Id)"><i class="fad fa-reply"></i>Trả lời</span>*@
+                                        @if (_element.CurrentIdUser == child.IdUser) {
+                                            @*<span><i class="fad fa-pen"></i>Chỉnh sửa</span>*@
+                                            <span class="remove" @onclick="() => DeleteComent(child.Id)"><i class="fad fa-trash"></i>Xóa</span>
+                                        } else if (_element.CurrentRole == "Admin") {
+                                            <span class="remove" @onclick="() => DeleteComent(child.Id)"><i class="fad fa-trash"></i>Xóa</span>
+
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                        }
+
+                    </div>
+                </div>
+            }
+
+
+        </div>
+    </div>
+</div>
+
+<!--Comment Facebook-->
+<div class="comment-section ">
+    <div class="content p-2 rounded-5 ">
+        <div class="rounded-5 p-2 border-bottom ">
+            <a id="comment" class="navbar-brand " href="# "><i class="fad fa-comments"></i> Bình Luận Facebook</a>
+        </div>
+        <div class="content" style="background-color: white">
+            <div class="rounded-5 p-2 border-bottom">
+                <div class="fb-comments" data-href="https://vothanhthuan.github.io/vtt/" data-width="100%" data-numposts="5" data-colorscheme="dark"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--End [Comment Facebook]-->
+@code {
+
+    #region Initialization
+
+    [Parameter]
+    public string _IdComic { get; set; } = null;
+    [Parameter]
+    public string _IdChapter { get; set; } = null;
+
+
+    [Inject] ISessionStorageService _sessionStorage { get; set; }
+    [Inject] ICommentApiClient _commentApi { get; set; }
+    [Inject] IUserApiClient _userApi { get; set; }
+    [Inject] IJSRuntime JS { get; set; }
+    [Inject] AuthenticationStateProvider _authStateProivder { get; set; }
+    [Inject] IToastService _toastService { get; set; }
+
+    private Guid _idShowComment;
+
+    public bool _isSignIn { get; set; } = false;
+    private PositionPage _wherePage { get; set; }
+
+    public CommentRequest _CommentRequest { get; set; } = new();
+    public List<CommentVM> _ListComment { get; set; } = new();
+    public UserAM _UserAM { get; set; } = new();
+    public Element _element { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var context = await _authStateProivder.GetAuthenticationStateAsync();
+        _element.CurrentRole = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
+        var idUser = Guid.Empty;
+        _ = Guid.TryParse(context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value, out idUser);
+        _element.CurrentIdUser = idUser;
+        if (!string.IsNullOrEmpty(_IdComic)) {
+            //Console.WriteLine($">>> comment in Comic");
+            _CommentRequest.IdComic = Guid.Parse(_IdComic);
+            _wherePage = PositionPage.Comic;
+        }
+        if (!string.IsNullOrEmpty(_IdChapter)) {
+            //Console.WriteLine($">>> comment in Chapter");
+            _CommentRequest.IdChapter = Guid.Parse(_IdChapter);
+            _wherePage = PositionPage.Chapter;
+        }
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+
+            await CheckUser();
+            await GetComments();
+            //  FB.XFBML.parse();
+            await JS.InvokeVoidAsync("RefreshCommentFB");
+
+        }
+
+    }
+    #endregion
+
+    #region Xử lý giao diện
+
+    async Task CheckUser()
+    {
+        var jsonUser = await _sessionStorage.GetItemAsStringAsync("user_webtruyen");
+        Console.WriteLine($"Comment > CheckUser > jsonUser:>>> {jsonUser}");
+        if (string.IsNullOrEmpty(jsonUser))
+            return;
+        _isSignIn = true;
+        _UserAM = JsonSerializer.Deserialize<UserAM>(jsonUser);
+        StateHasChanged();
+    }
+
+    async Task ShowCommentReply(Guid idComment)
+    {
+        _idShowComment = idComment;
+        StateHasChanged();
+    }
+
+    #endregion
+
+    #region Giao tiếp server
+
+    async Task PostNewComment()
+    {
+        if (!_isSignIn) return;
+        _CommentRequest.Level = 0;
+        _CommentRequest.IdUser = _UserAM.Id;
+        if (!string.IsNullOrEmpty(_IdComic))
+            _CommentRequest.IdComic = Guid.Parse(_IdComic);
+        if (!string.IsNullOrEmpty(_IdChapter))
+            _CommentRequest.IdChapter = Guid.Parse(_IdChapter);
+        var result = await _commentApi.PostComment(_CommentRequest);
+        if (!result.isSuccess) {
+            _element.ErrorComment = (true, result.value);
+            StateHasChanged();
+        }
+        //Load lại ds comment
+        _CommentRequest = new CommentRequest();
+
+        await GetComments();
+    }
+
+    async Task PostReplyComment(Guid idCommentReply)
+    {
+        if (!_isSignIn) return;
+        _CommentRequest.Level = 1;
+        _CommentRequest.IdUser = _UserAM.Id;
+        _CommentRequest.IdComic = Guid.Parse(_IdComic);
+        _CommentRequest.IdCommentReply = idCommentReply;
+
+        if (!string.IsNullOrEmpty(_IdChapter))
+            _CommentRequest.IdChapter = Guid.Parse(_IdChapter);
+        var result = await _commentApi.PostComment(_CommentRequest);
+        if (!result.isSuccess) {
+            _element.ErrorComment = (true, result.value);
+            StateHasChanged();
+        }
+        //Load lại ds comment
+        _CommentRequest = new CommentRequest();
+
+
+        await GetComments();
+    }
+
+
+    async Task GetComments()
+    {
+        Console.WriteLine($">>>GetComments: _wherePage: {_wherePage}");
+        if (_wherePage == PositionPage.Comic) {
+            _ListComment = await _commentApi.GetCommentInComic(Guid.Parse(_IdComic), _element.Skip, _element.Take);
+        } else {
+            _ListComment = await _commentApi.GetCommentInChapter(Guid.Parse(_IdChapter), _element.Skip, _element.Take);
+        }
+        Console.WriteLine($"_ListComment >>> {_ListComment.Count}");
+        foreach (var comment in _ListComment) {
+            //Console.WriteLine($"IdUser >>> {comment.IdUser}");
+            var user = await GetUser(comment.IdUser);
+            if (user == null) continue;
+            //Console.WriteLine($">>> {user.Nickname}");
+            comment.User = user;
+            if (_wherePage == PositionPage.Comic) {
+                comment.CommentReply = await _commentApi.GetCommentChildInComic(Guid.Parse(_IdComic), comment.Id, skip: 0, take: 10);
+            } else {
+                comment.CommentReply = await _commentApi.GetCommentChildInChapter(Guid.Parse(_IdChapter), comment.Id, skip: 0, take: 10);
+            }
+            foreach (var child in comment.CommentReply) {
+                var c_user = await GetUser(child.IdUser);
+                child.User = c_user;
+                StateHasChanged();
+            }
+            StateHasChanged();
+        }
+        StateHasChanged();
+
+    }
+
+    async Task DeleteComent(Guid idUser)
+    {
+        var result = await _commentApi.DeleteComment(idUser);
+        if (result) {
+            _toastService.ShowSuccess("Xóa thành công");
+            await GetComments();
+        } else {
+            _toastService.ShowError("Xóa thất bại");
+        }
+
+    }
+
+    async Task<UserAM> GetUser(Guid idUser)
+    {
+        if (idUser == Guid.Empty) return null;
+        var user = await _userApi.GetUser(idUser);
+        return user;
+    }
+
+    #endregion
+
+    enum PositionPage
+    {
+        Comic,
+        Chapter
+    }
+
+    public class Element
+    {
+        public (bool isError, string Messages) ErrorComment { get; set; } = (false, "");
+        public int Take { get; set; } = 10;
+        public int Skip { get; set; } = 0;
+        public bool ShowComentReply { get; set; } = false;
+
+        public string CurrentRole { get; set; } = "";
+        public Guid CurrentIdUser { get; set; }
+    }
+
+}

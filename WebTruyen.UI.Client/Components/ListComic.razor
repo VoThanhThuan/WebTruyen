@@ -1,0 +1,161 @@
+﻿@using WebTruyen.Library.Entities.ApiModel;
+@using WebTruyen.UI.Client.Service.ChapterService
+@using WebTruyen.UI.Client.Service.ComicService
+
+
+<div class="col-lg-8" name="list-truyen">
+    <div class="content p-2 rounded-5" style="min-height: 69px;">
+        <div class="">
+            <div class="rounded-5 p-2 border-bottom">
+                <a class="navbar-brand" href="#">Truyện mới</a>
+            </div>
+        </div>
+        <div class="m-2">
+            <div class="row row-cols-2 row-cols-xs-1 row-cols-sm-3 row-cols-md-4 g-3 gy-5">
+
+                @foreach (var item in _listComic) {
+                    if (item.isLoad == false) {
+                        <div class="col">
+                            <div class="card card-info card-comic shadow-sm">
+                                <a href="/@item.comic.NameAlias">
+                                    <img src="@item.comic.Thumbnail" alt="@item.comic.NameAlias" class="img-cover" />
+                                </a>
+                                <div class="p-1">
+                                    <div class="fs-5 title">@item.comic.Name</div>
+                                    <div class="chapnew mt-2">
+                                        @foreach (var chapter in item.chapters) {
+                                            <div class="d-flex justify-content-between">
+                                                <a class="col" href="/@item.comic.NameAlias/@chapter.Ordinal">Chapter @chapter.Ordinal</a>
+                                                <span class="col fw-lighter text-end time">@CalculateRelativeTime(chapter.DateTimeUp)</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    } else {
+                        <div class="col">
+                            <div class="card-skeleton"></div>
+                        </div>
+                    }
+                }
+
+
+            </div>
+        </div>
+        @if (ShowPagin) {
+            <Pagination Skip="skip" Take="take" Total="total" />
+        }
+    </div>
+</div>
+
+
+@code {
+
+    [Parameter] public string TextSearch { get; set; }
+    [Parameter] public string GenreSearch { get; set; }
+    [Parameter] public int Page { get; set; } = 0;
+
+
+    [Inject] IComicApiClient _comicApi { get; set; }
+    [Inject] IChapterApiClient _chapterApi { get; set; }
+    [Inject] IJSRuntime JS { get; set; }
+
+    private List<(ComicAM comic, List<ChapterAM> chapters, bool isLoad)> _listComic = new List<(ComicAM comic, List<ChapterAM> chapters, bool)>();
+
+    public int skip { get; set; } = 0;
+    public int take { get; set; } = 20;
+    public int total { get; set; } = 0;
+
+    public bool ShowPagin { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Dùng cho báo cáo
+        var t = await JS.InvokeAsync<string>("blazorExtensions.ReadCookie", "take_page");
+        if(string.IsNullOrEmpty(t)) {
+            await JS.InvokeAsync<string>("blazorExtensions.WriteCookie", "take_page", 4, 1);
+        } else {
+            take = int.Parse(t);
+        }
+        //Dùng cho báo cáo
+
+
+        //return base.OnInitializedAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        //Tính toán skip từ page và take
+        skip = Page * take;
+        //Tạo Trước List rỗng
+        _listComic = new List<(ComicAM comic, List<ChapterAM> chapters, bool)>();
+        for (var i = 0; i < take; i++) {
+            (ComicAM comic, List<ChapterAM> chapters, bool isLoad) null_comic = (null, null, true);
+            _listComic.Add(null_comic);
+        }
+        StateHasChanged();
+
+        //Lấy dữ liệu từ API
+        var comics = new ListComicAM();
+        if (!string.IsNullOrWhiteSpace(TextSearch)) {
+            comics = await _comicApi.SearchComics(TextSearch);
+        } else if (!string.IsNullOrWhiteSpace(GenreSearch)) {
+            comics = await _comicApi.GetComicsInGenre(int.Parse(GenreSearch), skip, take);
+        } else {
+            comics = await _comicApi.GetComics(skip, take);
+        }
+        total = comics.Total;
+        ShowPagin = true;
+
+        //Đổ dữ liệu vào list rỗng
+        for (var i = 0; i < take; i++) {
+            (ComicAM comic, List<ChapterAM> chapters, bool isLoad) null_comic = (null, null, true);
+            _listComic[i] = null_comic;
+        }
+        for (var i = 0; i < take && i < comics.Comic.Count; i++) {
+            var chapters = await _chapterApi.GetChaptersInComic(comics.Comic[i].Id, skip: 0, take: 3);
+            _listComic[i] = (comics.Comic[i], chapters, false);
+            StateHasChanged();
+        }
+    }
+
+    string CalculateRelativeTime(DateTime dataTime)
+    {
+        const int SECOND = 1;
+        const int MINUTE = 60 * SECOND;
+        const int HOUR = 60 * MINUTE;
+        const int DAY = 24 * HOUR;
+        const int MONTH = 30 * DAY;
+
+        var ts = DateTime.Now.Subtract(dataTime);
+        var delta = Math.Abs(ts.TotalSeconds);
+
+        switch (delta) {
+            case < 1 * MINUTE:
+                return ts.Seconds == 1 ? "one second ago" : ts.Seconds + " seconds ago";
+            case < 2 * MINUTE:
+                return "a minute ago";
+            case < 45 * MINUTE:
+                return ts.Minutes + " minutes ago";
+            case < 90 * MINUTE:
+                return "an hour ago";
+            case < 24 * HOUR:
+                return ts.Hours + " hours ago";
+            case < 48 * HOUR:
+                return "yesterday";
+            case < 30 * DAY:
+                return ts.Days + " days ago";
+            case < 12 * MONTH: {
+                var months = Convert.ToInt32(Math.Floor((double)ts.Days / 30));
+                return months <= 1 ? "one month ago" : months + " months ago";
+            }
+            default: {
+                var years = Convert.ToInt32(Math.Floor((double)ts.Days / 365));
+                return years <= 1 ? "one year ago" : years + " years ago";
+            }
+        }
+    }
+
+}

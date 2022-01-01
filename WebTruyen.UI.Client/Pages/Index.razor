@@ -1,0 +1,67 @@
+﻿@page "/"
+@page "/search/{_textSearch}"
+@page "/genre/{_genreSearch}"
+@page "/page/{_page:int}"
+
+@using WebTruyen.Library.Entities.ApiModel;
+@using WebTruyen.UI.Client.Service.ChapterService
+@using WebTruyen.UI.Client.Service.ComicService
+<main>
+    <div class="container-xl mt-xxl-5 rounded-5 pb-5">
+        <div class="row g-2 gx-4">
+            <!-- Danh sách truyện -->
+
+            <ListComic TextSearch="@_textSearch" GenreSearch="@_genreSearch" Page="@_page"></ListComic>
+
+            <!-- End [Danh sách truyện] -->
+            <!-- Card chức năng -->
+            <div class="col-lg-4">
+                <!-- Card thông tin -->
+                <div class="card mb-3 rounded-5 content" name="info">
+                    <div class="p-2">
+                        <div class="rounded-5 p-2 border-bottom">
+                            <a class="navbar-brand" href="#">Thông Tin</a>
+                        </div>
+                        <div class="mt-2">
+                            <div class="row card-info m-1 mb-3 p-2">
+                                <div class="col-auto m-auto p-0">
+                                    <img class="avatar-md rounded-circle" src="truyen.jpg" alt="avatar">
+                                </div>
+                                <div class="col">
+                                    <div class="mt-auto fs-2">Võ Thành Thuận</div>
+                                    <div>MSSV: DPM185194</div>
+                                </div>
+                            </div>
+                            <div class="content mt-2 m-1">
+                                <p class="card-info p-2">Sinh Năm: 2000</p>
+                                <p class="card-info p-2">Chuyên Ngành: Kỹ Thuật Phần Mềm</p>
+                                <p class="card-info p-2">Đồ Án: Web Truyện Online</p>
+                                <p class="card-info p-2">Facebook: <a href="https://www.facebook.com/anome69/">Võ Thuận</a></p>
+                                <p class="card-info p-2">Zalo: <a href="#">Signorethuna</a></p>
+                                <p class="card-info p-2">Github: <a href="https://github.com/VoThanhThuan">Võ Thành Thuận</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End [Card thông tin] -->
+                <!-- Card lịch sử đọc -->
+                <HistoriesRead></HistoriesRead>
+                <!-- End [Card lịch sử đọc] -->
+                <!-- Card Comment -->
+
+                <CommentPortable></CommentPortable>
+
+                <!-- End [Card Comment] -->
+                <!-- Card View -->
+                <div class="card mb-3 rounded-5 bg-content">View</div>
+                <!-- End [Card View] -->
+                <!-- Card Facebook -->
+                <div class="card mb-3 rounded-5 bg-content">Facebook</div>
+                <!-- End [Card Facebook] -->
+
+            </div>
+            <!-- End [Card chức năng] -->
+        </div>
+    </div>
+
+</main>

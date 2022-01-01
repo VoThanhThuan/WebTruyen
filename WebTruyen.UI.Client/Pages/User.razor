@@ -1,0 +1,354 @@
+﻿@page "/user"
+@using Blazored.Toast.Services
+@using System.Text.Json
+@using WebTruyen.UI.Client.Service.ImageService
+@using WebTruyen.UI.Client.Service.UserService
+@using WebTruyen.Library.Entities.ApiModel
+@using WebTruyen.Library.Entities.Request
+@using WebTruyen.UI.Client.Model
+
+<link rel="stylesheet" href="./vendors/Cropprjs/croppr.min.css">
+
+<main>
+    <div class="container-xl mt-xxl-5 rounded-5 pb-5">
+        <div class="row g-2 gx-4">
+
+            <!-- Card chức năng -->
+            <div class="col-lg-4">
+                <!-- Card thông tin -->
+                <div class="card mb-3 rounded-5 bg-content" name="info">
+                    <div class="p-2">
+                        <div class="rounded-5 p-2 border-bottom">
+                            <a class="navbar-brand" href="#">Thông Tin</a>
+                        </div>
+                        <div class="mt-2">
+                            <div class="row card-info m-1 mb-3 p-2">
+                                <div class="col-auto m-auto p-0">
+                                    <img class="avatar-md rounded-circle" src="@_UserAM.Avatar" alt="avatar">
+                                </div>
+                                <div class="col">
+                                    <div class="mt-auto fs-2">@_UserAM.Nickname</div>
+                                    <div>username: @_UserAM.Username</div>
+                                </div>
+                            </div>
+                            <div class="content mt-2 m-1">
+                                <p class="card-info p-2 cursor-pointer" @onclick="() =>{SwitchPage(ChangePage.ChangeAvatar);}">Đổi ảnh đại diện</p>
+                                <p class="card-info p-2 cursor-pointer" @onclick="() =>{SwitchPage(ChangePage.ChangePassword);}">Đổi mật khẩu</p>
+                                <p class="card-info p-2 cursor-pointer" @onclick="() =>{SwitchPage(ChangePage.ChangeInfo);}">Đổi thông tin cá nhân</p>
+                                <p class="card-info p-2 cursor-pointer" @onclick="() =>{SwitchPage(ChangePage.ComicFlowed);}">Truyện đang theo dõi</p>
+                                <p class="card-info p-2 cursor-pointer" @onclick="() =>{SwitchPage(ChangePage.SignOut);}">Đăng Xuất</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End [Card thông tin] -->
+
+            </div>
+            <!-- End [Card chức năng] -->
+            <!-- Form update -->
+
+            <div class="col-lg-8" name="list-truyen">
+                <div class="content p-2 rounded-5">
+                    <div class="">
+                        <div class="rounded-5 p-2 border-bottom">
+                            <a class="navbar-brand" href="#">Text</a>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        @switch (_changePage) {
+                            case ChangePage.ChangeAvatar:
+                                <EditForm Model="_Model.Avatar" OnSubmit="UpdateAvatar">
+                                    <div class="form-floating mb-3">
+                                        <InputFile class="form-control" id="floatavatar" placeholder="Mật khẩu cũ" OnChange="InputImage" accept="image/png, image/gif, image/jpeg" />
+                                        <label for="floatavatar">Đổi avatar</label>
+                                    </div>
+                                    <input type="submit" class="btn btn-primary" value="Đổi">
+                                </EditForm>
+                                break;
+                            case ChangePage.ChangePassword:
+                                <EditForm Model="_Model.ChangePasswordRequest" OnSubmit="UpdatePassword">
+                                    <div class="form-floating mb-3">
+                                        <InputText type="password" class="form-control" id="floatingOldPassword" placeholder="Mật khẩu cũ" @bind-Value="_Model.ChangePasswordRequest.OldPassword" />
+                                        <label for="floatingOldPassword">Mật khẩu cũ</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <InputText type="password" class="form-control" id="floatingPassword" placeholder="Mật khẩu mới" @bind-Value="_Model.ChangePasswordRequest.Password" />
+                                        <label for="floatingPassword">Mật khẩu mới</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <InputText type="password" class="form-control" id="floatingConfirmPassword" placeholder="Mật khẩu cũ" @bind-Value="_Model.ChangePasswordRequest.ConfirmPassword" />
+                                        <label for="floatingConfirmPassword">Xác nhận mật khẩu mới</label>
+                                    </div>
+                                    <input type="submit" class="btn btn-primary" value="Đổi mật khẩu">
+                                </EditForm>
+                                break;
+                            case ChangePage.ChangeInfo:
+                                <EditForm Model="_Model.ChangeInfoUser" OnSubmit="UpdateFinfo">
+                                    <div class="form-floating mb-3">
+                                        <InputText class="form-control" id="Nickname" placeholder="" @bind-Value="_Model.ChangeInfoUser.Nickname" />
+                                        <label for="Nickname">Nickname</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <InputText class="form-control" id="Email" placeholder="" @bind-Value="_Model.ChangeInfoUser.Email" />
+                                        <label for="Email">Email</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <InputDate class="form-control" id="Dob" placeholder="" @bind-Value="_Model.ChangeInfoUser.Dob" />
+                                        <label for="Dob">Ngày sinh</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <InputText class="form-control" id="Address" placeholder="" @bind-Value="_Model.ChangeInfoUser.Address" />
+                                        <label for="Address">Địa chỉ</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <InputText class="form-control" id="Website" placeholder="" @bind-Value="_Model.ChangeInfoUser.Fanpage" />
+                                        <label for="Website">Website</label>
+                                    </div>
+
+                                    <div class="form-floating mb-3">
+                                        <select class="form-select" id="floatingSelect" aria-label="Floating label select example" @onchange="(e) => { var v = e.Value.ToString();_Model.ChangeInfoUser.sex = string.IsNullOrEmpty(v) || bool.Parse(v); }">
+                                            <option value="True">Nam</option>
+                                            <option value="False">Nữ</option>
+                                        </select>
+                                        <label for="floatingSelect">Giới Tính</label>
+                                        <ValidationMessage For="() => _Model.ChangeInfoUser.sex" />
+                                    </div>
+                                    <input type="submit" class="btn btn-primary" value="Đổi">
+                                </EditForm>
+                                break;
+                            case ChangePage.ComicFlowed:
+                                break;
+                        }
+
+                    </div>
+
+                </div>
+            </div>
+            <!-- End [Form update] -->
+
+
+        </div>
+    </div>
+</main>
+
+@if (_element.CropOn) {
+    <!-- Modal Crop hình -->
+    <div class="modal fade" id="POPcrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Crop Hình</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img id="img-crop" src="@_element.AvatarCrop" alt="" class="img-thumbnail rounded" hidden>
+                    <img id="cropper" src="@_element.AvatarCrop" alt="" class="img-thumbnail rounded" style="max-width: 500px;">
+                </div>
+                <div class="modal-footer">
+                    <button id="close-ask-modal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" @onclick="CropImage">Xác Nhận</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Modal Crop hình -->
+}
+<button id="open-crop-image" data-bs-toggle="modal" data-bs-target="#POPcrop" hidden></button>
+
+
+
+@code {
+    [Inject] NavigationManager _navigationManager { get; set; }
+    [Inject] IJSRuntime JS { get; set; }
+    [Inject] IUserApiClient _userApi { get; set; }
+    [Inject] IToastService toastService { get; set; }
+    [Inject] private IImageService _image { get; set; }
+    [Inject] IToastService _toastService { get; set; }
+
+
+    public ViewElement _element { get; set; } = new();
+
+    public UserAM _UserAM { get; set; } = new UserAM();
+    public InfoUser _infoUser { get; set; } = new();
+    public ChangePasswordRequest _passwordChange { get; set; } = new();
+    public IBrowserFile _avatar { get; set; }
+    public ModelRequest _Model { get; set; } = new();
+    public ChangePage _changePage { get; set; } = ChangePage.ChangeInfo;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await JS.InvokeAsync<string>("blazorExtensions.ReadCookie", "Token");
+
+        if (string.IsNullOrEmpty(token)) {
+            _navigationManager.NavigateTo("/login");
+        } else {
+            await GetUserByToken(token);
+            await JS.InvokeAsync<string>("blazorExtensions.AddScript", "./vendors/Cropprjs/croppr.min.js");
+        }
+    }
+
+    #region Xử lý giao diện
+
+    void SwitchPage(ChangePage page)
+    {
+        switch (page) {
+            case ChangePage.ChangeAvatar:
+                _changePage = ChangePage.ChangeAvatar;
+                break;
+            case ChangePage.ChangePassword:
+                _changePage = ChangePage.ChangePassword;
+                break;
+            case ChangePage.ChangeInfo:
+                _changePage = ChangePage.ChangeInfo;
+                break;
+            case ChangePage.ComicFlowed:
+                _changePage = ChangePage.ComicFlowed;
+                break;
+            case ChangePage.SignOut:
+                FuncCode.SignOut();
+                break;
+        }
+        StateHasChanged();
+    }
+
+
+
+    #endregion
+
+    #region Giao tiếp với server
+    async Task GetUserByToken(string token)
+    {
+        var user = await _userApi.GetUserByAccessTokenAsync(token);
+        if (user == null) {
+            _navigationManager.NavigateTo("/login");
+        } else {
+            _UserAM = user;
+
+            _Model.ChangeInfoUser.Nickname = _UserAM.Nickname;
+            _Model.ChangeInfoUser.Username = _UserAM.Username;
+            _Model.ChangeInfoUser.Dob = _UserAM.Dob == null ? DateTime.Now : (DateTime)_UserAM.Dob;
+            _Model.ChangeInfoUser.sex = _UserAM.sex;
+            _Model.ChangeInfoUser.Address = _UserAM.Address;
+            _Model.ChangeInfoUser.Email = _UserAM.Email;
+            _Model.ChangeInfoUser.PhoneNumber = _UserAM.PhoneNumber;
+            _Model.ChangeInfoUser.Fanpage = _UserAM.Fanpage;
+
+            StateHasChanged();
+        }
+
+    }
+
+    async Task UpdatePassword()
+    {
+        var result = await _userApi.UpdatePassword(_UserAM.Id, _passwordChange);
+        if (result.statusCode == 200) {
+            _toastService.ShowSuccess("Đổi password thành công");
+        }else {
+            _toastService.ShowError($"Đổi thất bại erorr:{result.statusCode}");
+        }
+    }
+    async Task UpdateAvatar()
+    {
+        var result = await _userApi.UpdateAvatar(_UserAM.Id, _UserAM.Avatar, _avatar.Name);
+        if (result.statusCode == 200) {
+            _toastService.ShowSuccess("Đổi avatar thành công");
+        }else {
+            _toastService.ShowError($"Đổi thất bại erorr:{result.statusCode}");
+        }
+    }
+    async Task UpdateFinfo()
+    {
+        var result = await _userApi.UpdateInfoUser(_UserAM.Id, _infoUser);
+        if (result.statusCode == 200) {
+            _toastService.ShowSuccess("Đổi thông tin thành công");
+        } else {
+            _toastService.ShowError($"Đổi thất bại erorr:{result.statusCode}");
+        }
+    }
+
+    #endregion
+
+    #region Xử lý dữ liểu
+
+    private async Task CropImage()
+    {
+        if (_avatar == null)
+            return;
+        if (!_image.ImageIsValid(_avatar.ContentType))
+            return;
+        var valueCrop = await JS.InvokeAsync<ValueCrop>("GetValueCrop");
+
+        if (valueCrop.width < 1 || valueCrop.height < 1)
+            return;
+
+        var imgBase64 = await JS.InvokeAsync<string>("cropImageToBase64", new object[] { "#img-crop", valueCrop.x, valueCrop.y, valueCrop.width, valueCrop.height });
+
+        //_element.Avatar = $"{image.ToBase64String(format)}";
+        _element.Avatar = imgBase64;
+
+        await JS.InvokeVoidAsync("Click", "#close-ask-modal");
+
+        _UserAM.Avatar = _element.Avatar;
+
+        StateHasChanged();
+    }
+
+    private async void InputImage(InputFileChangeEventArgs e)
+    {
+        _element.CropOn = false;
+        StateHasChanged();
+        if (e == null) {
+            //await JS.InvokeVoidAsync("Click", "#close-ask-modal");
+            return;
+        }
+        _element.CropOn = true;
+        StateHasChanged();
+        await JS.InvokeVoidAsync("Click", "#open-crop-image");
+
+        _avatar = e.File;
+        if (!_image.ImageIsValid(_avatar.ContentType))
+            return;
+        var imageDataUrl = await _image.ImageToString(e.File);
+
+        _element.AvatarCrop = imageDataUrl;
+        //Cập nhât UI
+        StateHasChanged();
+        await Task.Delay(400);
+        await JS.InvokeVoidAsync("Cropper", "#cropper");
+
+    }
+
+    #endregion
+
+    public class ViewElement
+    {
+        public bool CropOn = false;
+        public string Avatar { get; set; } = "https://unsplash.it/500/500/?random";
+        public string AvatarCrop { get; set; } = "https://unsplash.it/500/500/?random";
+
+    }
+
+    public class ModelRequest
+    {
+        public ChangePasswordRequest ChangePasswordRequest { get; set; } = new();
+        public string Avatar { get; set; } = "";
+        public InfoUser ChangeInfoUser { get; set; } = new();
+    }
+
+    public enum ChangePage
+    {
+        ChangeAvatar,
+        ChangePassword,
+        ChangeInfo,
+        ComicFlowed,
+        SignOut
+    }
+    protected class ValueCrop
+    {
+        public int x { get; set; }
+        public int y { get; set; }
+        public int width { get; set; }
+        public int height { get; set; }
+    }
+}

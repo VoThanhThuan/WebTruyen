@@ -1,9 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31321.278
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebTruyen.API", "WebTruyen.API\WebTruyen.API.csproj", "{E8706851-AD2B-4CAD-B876-0D72670DBCCB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebTruyen.Library", "WebTruyen.Library\WebTruyen.Library.csproj", "{6FEA9519-844F-4A67-A804-2FAA784809D6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebTruyen.UI.Admin", "WebTruyen.UI.Admin\WebTruyen.UI.Admin.csproj", "{499758EF-2E25-43D5-B98F-E9DD2FB26C01}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebTruyen.UI.Client", "WebTruyen.UI.Client\WebTruyen.UI.Client.csproj", "{8C6BA43A-A245-4915-816C-2F8FE9DEBD8C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebTruyen.API", "WebTruyen.API\WebTruyen.API.csproj", "{3C14F650-5572-4A88-82C0-06C978598114}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ImageDemo", "ImageDemo", "{368167CD-1321-4BE0-9552-63CC9683782A}"
+	ProjectSection(SolutionItems) = preProject
+		TextFile1.txt = TextFile1.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +22,22 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E8706851-AD2B-4CAD-B876-0D72670DBCCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E8706851-AD2B-4CAD-B876-0D72670DBCCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E8706851-AD2B-4CAD-B876-0D72670DBCCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E8706851-AD2B-4CAD-B876-0D72670DBCCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FEA9519-844F-4A67-A804-2FAA784809D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FEA9519-844F-4A67-A804-2FAA784809D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FEA9519-844F-4A67-A804-2FAA784809D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FEA9519-844F-4A67-A804-2FAA784809D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{499758EF-2E25-43D5-B98F-E9DD2FB26C01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{499758EF-2E25-43D5-B98F-E9DD2FB26C01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{499758EF-2E25-43D5-B98F-E9DD2FB26C01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{499758EF-2E25-43D5-B98F-E9DD2FB26C01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C6BA43A-A245-4915-816C-2F8FE9DEBD8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C6BA43A-A245-4915-816C-2F8FE9DEBD8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C6BA43A-A245-4915-816C-2F8FE9DEBD8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C6BA43A-A245-4915-816C-2F8FE9DEBD8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C14F650-5572-4A88-82C0-06C978598114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C14F650-5572-4A88-82C0-06C978598114}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C14F650-5572-4A88-82C0-06C978598114}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C14F650-5572-4A88-82C0-06C978598114}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

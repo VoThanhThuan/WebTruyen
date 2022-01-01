@@ -1,0 +1,8 @@
+﻿body {
+    overflow: auto !important;
+}
+
+table thead {
+    background-color: #5e72e4 !important;
+    color: white;
+}
