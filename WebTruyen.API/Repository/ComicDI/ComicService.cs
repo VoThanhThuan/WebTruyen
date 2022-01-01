@@ -126,10 +126,14 @@ namespace WebTruyen.API.Repository.ComicDI
                 return false;
             }
             if (comic.IdPoster != idPoster) {
-                var user = await (await _context.Users.FirstOrDefaultAsync(x => x.Id == comic.IdPoster)).ToApiModel(_userManager);
-                if (user.RoleName != "Admin") {
-                    return false;
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == idPoster);
+                if (user != null) {
+                    var userAM = await user.ToApiModel(_userManager);
+                    if (userAM.RoleName != "Admin") {
+                        return false;
+                    }
                 }
+
             }
             comic.AnotherNameOfComic = string.IsNullOrEmpty(text.RemoveSpaces(request.AnotherNameOfComic)) == true ? comic.AnotherNameOfComic : request.AnotherNameOfComic;
             comic.Author = string.IsNullOrEmpty(text.RemoveSpaces(request.Author)) == true ? comic.Author : request.Author;

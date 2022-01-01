@@ -105,10 +105,10 @@ namespace WebTruyen.UI.Admin.Service.UserService
             requestContent.Add(new StringContent(request.ConfirmPassword), "ConfirmPassword");
             requestContent.Add(new StringContent(request.sex.ToString()), "sex");
             requestContent.Add(new StringContent(request.Dob.ToString()), "Dob");
-            requestContent.Add(new StringContent(request.Address), "Address");
-            requestContent.Add(new StringContent(request.PhoneNumber), "PhoneNumber");
-            requestContent.Add(new StringContent(request.Email), "Email");
-            requestContent.Add(new StringContent(request.Fanpage), "Fanpage");
+            requestContent.Add(new StringContent(string.IsNullOrEmpty(request.Address) ? "": request.Address), "Address");
+            requestContent.Add(new StringContent(string.IsNullOrEmpty(request.PhoneNumber) ? "" : request.PhoneNumber), "PhoneNumber");
+            requestContent.Add(new StringContent(string.IsNullOrEmpty(request.Email) ?"": request.Email), "Email");
+            requestContent.Add(new StringContent(string.IsNullOrEmpty(request.Fanpage) ?"":request.Fanpage), "Fanpage");
             requestContent.Add(new StringContent(request.IdRole.ToString()), "IdRole");
 
 

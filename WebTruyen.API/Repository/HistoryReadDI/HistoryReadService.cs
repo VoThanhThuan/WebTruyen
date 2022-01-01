@@ -40,7 +40,7 @@ namespace WebTruyen.API.Repository.HistoryReadDI
                     IdLastReadChapter = item.LastReadChapter,
                     TimeCreate = item.TimeCreate,
                     Comic = comic.ToApiModel(),
-                    Chapter = chapter.ToApiModel()
+                    Chapter = chapter != null ? chapter.ToApiModel() : new ChapterAM()
                 });
             }
             return _listHistoryVM;

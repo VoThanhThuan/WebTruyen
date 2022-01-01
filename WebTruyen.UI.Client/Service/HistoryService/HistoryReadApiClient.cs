@@ -34,7 +34,7 @@ namespace WebTruyen.UI.Client.Service.HistoryService
             var response = await _http.GetAsync($"api/HistoryReads/GetHistoryReadsOfAccount?idUser={idUser}&skip={skip}&take={take}");
             if (response.StatusCode != HttpStatusCode.OK) return null;
             var result = await response.Content.ReadFromJsonAsync<List<HistoryReadVM>>();
-            Console.WriteLine($"HistoryReadApiClient >> GetHistory >> result: {JsonSerializer.Serialize(result)}");
+            //Console.WriteLine($"HistoryReadApiClient >> GetHistory >> result: {JsonSerializer.Serialize(result)}");
             var histories = result?.Select(x => { x.Comic.Thumbnail = $"{_http.BaseAddress}{x.Comic.Thumbnail}"; return x; }).ToList();
             return histories;
 

@@ -56,7 +56,7 @@
                             <div class="btn-reply">
                                 <span @onclick="() => ShowCommentReply(comment.Id)"><i class="fad fa-reply"></i>Trả lời</span>
                                 @if (_element.CurrentIdUser == comment.IdUser) {
-                                    <span><i class="fad fa-pen"></i>Chỉnh sửa</span>
+                                    @*<span><i class="fad fa-pen"></i>Chỉnh sửa</span>*@
                                     <span class="remove"><i class="fad fa-trash"></i>Xóa</span>
                                 } else if (_element.CurrentRole == "Admin") {
                                     <span class="remove" @onclick="() => DeleteComent(comment.Id)"><i class="fad fa-trash"></i>Xóa</span>
