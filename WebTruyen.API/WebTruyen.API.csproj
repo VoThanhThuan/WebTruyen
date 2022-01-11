@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="MyStaticFiles\comic-collection\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>
