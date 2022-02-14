@@ -61,7 +61,7 @@ namespace WebTruyen.UI.Admin.Pages.ComicPage
                 _comic.AnotherNameOfComic ??= "";
                 _comic.Author ??= "";
                 _comic.Description ??= "";
-                _element.ThumbnailComic = await _image.GetImageFromUrl(_comic.Thumbnail);
+                _element.ThumbnailComic = _comic.Thumbnail;
 
                 _genreRequest = _comic.Genres;
                 foreach (var genre in _genreRequest)

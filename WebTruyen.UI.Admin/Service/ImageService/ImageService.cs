@@ -51,11 +51,14 @@ namespace WebTruyen.UI.Admin.Service.ImageService
 
         public string ByteToString(byte[] value)
         {
+            if (byte.Equals(value, 0))
+                return "";
             return $"data:image/jpg;base64,{Convert.ToBase64String(value)}";
         }
 
         public async Task<string> GetImageFromUrl(string url)
         {
+            Console.WriteLine($"url: {url}");
             if (url == _http.BaseAddress.ToString()) return "";
             GetSession();
             Console.WriteLine($">>> GetImageFromUrl: {url}");

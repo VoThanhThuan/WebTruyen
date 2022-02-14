@@ -107,7 +107,7 @@ namespace WebTruyen.UI.Client.Service.UserService
 
         public async Task<(int apiResult, string mess, UserAM user)> Register(RegisterRequestClient request)
         {
-           // await GetSession();
+            //await GetSession();
             var requestContent = new MultipartFormDataContent();
 
             if (!string.IsNullOrEmpty(request.Avatar.data)) {
@@ -145,7 +145,6 @@ namespace WebTruyen.UI.Client.Service.UserService
             var response = await _http.PostAsync($"/api/Users/Register/", requestContent);
             if (response.StatusCode == HttpStatusCode.OK) {
                 return ((int)response.StatusCode, "", await response.Content.ReadFromJsonAsync<UserAM>());
-
             }
 
             return ((int)response.StatusCode, response.RequestMessage.ToString(), null);
